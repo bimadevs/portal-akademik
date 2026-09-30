@@ -1,0 +1,3 @@
+# Struktur Navigasi Berbasis Berkas Expo Router dengan Pelindung Sesi (Auth Guard)
+
+Aplikasi portal akademik ini membutuhkan alur autentikasi sebelum pengguna dapat mengakses Menu Utama dan menu tab lainnya. Kami memutuskan untuk menggunakan arsitektur navigasi deklaratif berbasis berkas dari Expo Router v57, yang memisahkan layar autentikasi (`/login`) dengan grup bilah tab terlindungi (`/(tabs)`) di bawah pelindung sesi pada `_layout.tsx`. Keputusan ini menyederhanakan pelacakan status sesi, mencegah akses tidak sah ke halaman data mahasiswa, dan memastikan kepatuhan penuh terhadap standar arsitektur Expo SDK terkini.

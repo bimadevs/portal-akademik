@@ -1,5 +1,33 @@
 This is an Expo/React Native mobile application. Prioritize mobile-first patterns, performance, and cross-platform compatibility.
 
+## Absolute Rules (Mandatory & Non-Negotiable)
+
+These rules are strictly enforced and take precedence over all general habits. No code may be written or modified without complying with these gates:
+
+1. **Pre-Flight Project Specification Gate**:
+   - **NEVER** write or modify code from memory or assumptions.
+   - **ALWAYS** read and strictly follow the project specification documents before beginning any coding task:
+     - `docs/CONTEXT.md` (Domain background, UBD branding, and visual identity)
+     - `docs/PRD.md` (Product requirements, personas, and feature scopes)
+     - `docs/REQUIREMENTS.md` (Functional & non-functional requirements and Gherkin acceptance criteria)
+     - `docs/SYSTEM-DESIGN.md` (System architecture, navigation graph, data contracts, and sequence diagrams)
+     - `docs/DEVELOPMENT-GUIDE.md` (Phased milestones and QA verification checklist)
+     - `GLOSSARY.md` (Canonical domain terminology)
+     - `docs/adr/*.md` (Architectural decisions)
+
+2. **Mandatory MCP `context7` Documentation Lookup**:
+   - **NEVER** trust model training weights for Expo, React Native, or third-party library APIs.
+   - **ALWAYS** query the `context7` MCP server before implementing any library, API, hook, or component:
+     - Step 1: Call `resolve-library-id` with the library name (e.g. `@react-native-async-storage/async-storage`, `expo-router`, `react-native`).
+     - Step 2: Call `query-docs` with the specific topic to retrieve official, up-to-date documentation and code patterns.
+   - Never write code based on stale or assumed API signatures.
+
+3. **Mandatory Skills Utilization**:
+   - **ALWAYS** inspect and follow the relevant skills before and during implementation:
+     - Expo & React Native: `expo-overview`, `expo-router`, `expo-native-ui`, `expo-design-system`, `expo-data-fetching`.
+     - Code Quality & Engineering: `codebase-design`, `code-review`, `tdd`, or other relevant skills in `.agents/skills/`.
+   - Never bypass or ignore applicable skill instructions.
+
 ## Expo has changed — do not trust your training data
 
 Expo ships breaking changes every SDK release. APIs you remember are likely renamed, moved, or removed. Before writing any code that touches an Expo, EAS, or React Native API:
