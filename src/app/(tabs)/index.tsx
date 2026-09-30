@@ -71,8 +71,14 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      {/* Top Header Resmi UBD dengan Tombol Logout */}
-      <UBDHeader showLogout onLogout={handleLogout} variant="elevated" />
+      {/* Top Header Resmi UBD dengan Tombol Logout & Pengaturan */}
+      <UBDHeader
+        showLogout
+        onLogout={handleLogout}
+        showSettings
+        onSettings={() => router.push('/pengaturan')}
+        variant="elevated"
+      />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}

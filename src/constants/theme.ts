@@ -61,3 +61,19 @@ export const Spacing = {
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;
+
+export const UBD_COLORS = {
+  PRIMARY: '#2B52BA',
+  PRIMARY_DARK: '#1E3A8A',
+  PRIMARY_LIGHT: '#EFF6FF',
+  ACCENT: '#3B62C6',
+  ACCENT_DARK: '#1E3A8A',
+  BACKGROUND: '#F8FAFC',
+  SURFACE: '#FFFFFF',
+  TEXT: '#0F172A',
+  TEXT_MUTED: '#64748B',
+  BORDER: '#E2E8F0',
+  DANGER: '#EF4444',
+  SUCCESS: '#10B981',
+  WARNING: '#F59E0B',
+};

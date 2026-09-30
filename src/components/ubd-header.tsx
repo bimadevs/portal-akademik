@@ -12,6 +12,8 @@ import { colors, radius, shadows, spacing } from '@/theme';
 interface UBDHeaderProps {
   showLogout?: boolean;
   onLogout?: () => void;
+  showSettings?: boolean;
+  onSettings?: () => void;
   subtitle?: string;
   variant?: 'default' | 'elevated';
 }
@@ -19,6 +21,8 @@ interface UBDHeaderProps {
 export function UBDHeader({
   showLogout = false,
   onLogout,
+  showSettings = false,
+  onSettings,
   subtitle,
   variant = 'default',
 }: UBDHeaderProps) {
@@ -40,17 +44,33 @@ export function UBDHeader({
         ) : null}
       </View>
 
-      {showLogout && onLogout && (
-        <View style={styles.rightSection}>
-          {/* Admin Tag */}
-          <View style={styles.adminTag}>
-            <View style={styles.adminAvatar}>
-              <Ionicons name="person" size={12} color={colors.primary} />
-            </View>
-            <Text style={styles.adminText}>Admin</Text>
+      <View style={styles.rightSection}>
+        {/* Admin Tag */}
+        <View style={styles.adminTag}>
+          <View style={styles.adminAvatar}>
+            <Ionicons name="person" size={12} color={colors.primary} />
           </View>
+          <Text style={styles.adminText}>Admin</Text>
+        </View>
 
-          {/* Logout Action */}
+        {/* Settings Action */}
+        {showSettings && onSettings && (
+          <Pressable
+            onPress={onSettings}
+            style={({ pressed }) => [
+              styles.settingsButton,
+              pressed && styles.settingsButtonPressed,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel="Pengaturan Aplikasi"
+            hitSlop={8}
+          >
+            <Ionicons name="settings-outline" size={18} color="#475569" />
+          </Pressable>
+        )}
+
+        {/* Logout Action */}
+        {showLogout && onLogout && (
           <Pressable
             onPress={onLogout}
             style={({ pressed }) => [
@@ -63,8 +83,8 @@ export function UBDHeader({
           >
             <Ionicons name="log-out-outline" size={18} color={colors.danger} />
           </Pressable>
-        </View>
-      )}
+        )}
+      </View>
     </View>
   );
 }
@@ -132,6 +152,20 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     color: colors.primary,
+  },
+  settingsButton: {
+    width: 36,
+    height: 36,
+    borderRadius: radius.md,
+    backgroundColor: '#F1F5F9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  settingsButtonPressed: {
+    opacity: 0.75,
+    transform: [{ scale: 0.95 }],
   },
   logoutButton: {
     width: 36,

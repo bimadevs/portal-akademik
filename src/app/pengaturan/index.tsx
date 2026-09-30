@@ -1,0 +1,698 @@
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  ActivityIndicator,
+  Modal,
+  TextInput,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from '../../context/auth-context';
+import { SemesterService } from '../../services/semester-service';
+import { resetOperationalData, resetDatabase } from '../../services/database';
+import { Semester } from '../../types/mahasiswa';
+import { UBD_COLORS } from '../../constants/theme';
+
+export default function PengaturanScreen() {
+  const router = useRouter();
+  const { userSession, logout } = useAuth();
+
+  const [semesters, setSemesters] = useState<Semester[]>([]);
+  const [activeSemester, setActiveSemester] = useState<Semester | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Modal tambah semester baru
+  const [modalVisible, setModalVisible] = useState(false);
+  const [newSemName, setNewSemName] = useState('');
+  const [creating, setCreating] = useState(false);
+
+  const loadSemesters = async () => {
+    try {
+      const list = await SemesterService.getAll();
+      const active = await SemesterService.getActive();
+      setSemesters(list);
+      setActiveSemester(active);
+    } catch (err: any) {
+      Alert.alert('Error', err.message || 'Gagal memuat pengaturan semester');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let ignore = false;
+    async function fetchInitial() {
+      try {
+        const list = await SemesterService.getAll();
+        const active = await SemesterService.getActive();
+        if (!ignore) {
+          setSemesters(list);
+          setActiveSemester(active);
+        }
+      } catch (err: any) {
+        if (!ignore) {
+          Alert.alert('Error', err.message || 'Gagal memuat pengaturan semester');
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    }
+
+    fetchInitial();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const handleSelectSemester = async (sem: Semester) => {
+    if (sem.id === activeSemester?.id) return;
+
+    Alert.alert(
+      'Ganti Semester Aktif',
+      `Aktifkan semester "${sem.nama}" sebagai semester operasional saat ini?`,
+      [
+        { text: 'Batal', style: 'cancel' },
+        {
+          text: 'Aktifkan',
+          onPress: async () => {
+            try {
+              await SemesterService.setActive(sem.id);
+              await loadSemesters();
+              Alert.alert('Sukses', `Semester aktif berhasil diubah ke "${sem.nama}".`);
+            } catch (err: any) {
+              Alert.alert('Gagal', err.message || 'Terjadi kesalahan saat mengganti semester');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleCreateSemester = async () => {
+    if (!newSemName.trim()) {
+      Alert.alert('Peringatan', 'Nama semester tidak boleh kosong');
+      return;
+    }
+
+    setCreating(true);
+    try {
+      await SemesterService.create(newSemName.trim());
+      setNewSemName('');
+      setModalVisible(false);
+      await loadSemesters();
+      Alert.alert('Sukses', 'Semester baru berhasil ditambahkan');
+    } catch (err: any) {
+      Alert.alert('Gagal', err.message || 'Terjadi kesalahan');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const handleResetOperational = () => {
+    Alert.alert(
+      'Konfirmasi Reset Operasional',
+      'Tindakan ini akan MENGHAPUS SEMUA data KRS, Jadwal Kuliah, Presensi, dan Nilai. Data master Mahasiswa, Dosen, dan Mata Kuliah tetap tersimpan. Lanjutkan?',
+      [
+        { text: 'Batal', style: 'cancel' },
+        {
+          text: 'Ya, Reset Data',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await resetOperationalData();
+              Alert.alert('Sukses', 'Seluruh data operasional berhasil dibersihkan.');
+            } catch (err: any) {
+              Alert.alert('Gagal', err.message || 'Terjadi kesalahan saat mereset data');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleResetTotal = () => {
+    Alert.alert(
+      'Peringatan Danger Zone: Reset Total',
+      'Tindakan ini akan mengembalikan seluruh database ke kondisi instalasi awal (data seed standar UBD). Seluruh data input kustom akan terhapus. Lanjutkan?',
+      [
+        { text: 'Batal', style: 'cancel' },
+        {
+          text: 'RESET TOTAL',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await resetDatabase();
+              await loadSemesters();
+              Alert.alert('Sukses', 'Database telah direset ke data awal pabrik.');
+            } catch (err: any) {
+              Alert.alert('Gagal', err.message || 'Terjadi kesalahan saat reset database');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleLogout = () => {
+    Alert.alert('Konfirmasi Logout', 'Apakah Anda yakin ingin keluar dari sesi admin?', [
+      { text: 'Batal', style: 'cancel' },
+      {
+        text: 'Keluar',
+        style: 'destructive',
+        onPress: async () => {
+          await logout();
+          router.replace('/login');
+        },
+      },
+    ]);
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+          <Ionicons name="arrow-back" size={24} color="#0F172A" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Pengaturan Sistem</Text>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Section 1: Profil Admin */}
+        <View style={styles.section}>
+          <Text style={styles.sectionHeading}>Profil Administrator</Text>
+          <View style={styles.profileCard}>
+            <View style={styles.profileAvatar}>
+              <Ionicons name="person" size={28} color="#FFFFFF" />
+            </View>
+            <View style={styles.profileInfo}>
+              <Text style={styles.profileName}>{userSession?.username || 'Administrator'}</Text>
+              <Text style={styles.profileRole}>Admin Akademik • Hak Akses Penuh</Text>
+              <View style={styles.sessionBadge}>
+                <View style={styles.sessionDot} />
+                <Text style={styles.sessionText}>Sesi Aktif</Text>
+              </View>
+            </View>
+            <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+              <Ionicons name="log-out-outline" size={20} color="#DC2626" />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Section 2: Semester Aktif */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionHeading}>Semester Akademik</Text>
+            <TouchableOpacity
+              style={styles.addSemBtn}
+              onPress={() => setModalVisible(true)}
+            >
+              <Ionicons name="add" size={16} color="#2563EB" />
+              <Text style={styles.addSemText}>Tambah</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.cardSubtitle}>
+              Pilih semester yang dijadikan acuan operasional KRS, Presensi, dan Penilaian:
+            </Text>
+
+            <View style={styles.semList}>
+              {semesters.map((sem) => {
+                const isSelected = sem.id === activeSemester?.id;
+                return (
+                  <TouchableOpacity
+                    key={String(sem.id)}
+                    style={[styles.semItem, isSelected && styles.semItemActive]}
+                    onPress={() => handleSelectSemester(sem)}
+                  >
+                    <View style={styles.semRadio}>
+                      {isSelected ? (
+                        <Ionicons name="radio-button-on" size={20} color="#2563EB" />
+                      ) : (
+                        <Ionicons name="radio-button-off" size={20} color="#94A3B8" />
+                      )}
+                    </View>
+                    <View style={styles.semInfo}>
+                      <Text style={[styles.semName, isSelected && styles.semNameActive]}>
+                        {sem.nama}
+                      </Text>
+                      {isSelected && (
+                        <View style={styles.activePill}>
+                          <Text style={styles.activePillText}>AKTIF SAAT INI</Text>
+                        </View>
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+        </View>
+
+        {/* Section 3: Informasi Aplikasi */}
+        <View style={styles.section}>
+          <Text style={styles.sectionHeading}>Informasi Aplikasi</Text>
+          <View style={styles.card}>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoKey}>Nama Aplikasi</Text>
+              <Text style={styles.infoVal}>Portal Akademik UBD</Text>
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.infoRow}>
+              <Text style={styles.infoKey}>Versi Sistem</Text>
+              <View style={styles.versionBadge}>
+                <Text style={styles.versionBadgeText}>V2.0.0 (Relational)</Text>
+              </View>
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.infoRow}>
+              <Text style={styles.infoKey}>Database Engine</Text>
+              <Text style={styles.infoVal}>expo-sqlite (Local Offline)</Text>
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.infoRow}>
+              <Text style={styles.infoKey}>Universitas</Text>
+              <Text style={styles.infoVal}>Universitas Buddhi Dharma</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Section 4: Danger Zone */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionHeading, { color: '#DC2626' }]}>Zona Bahaya (Danger Zone)</Text>
+          <View style={styles.dangerCard}>
+            <View style={styles.dangerItem}>
+              <View style={styles.dangerTextContainer}>
+                <Text style={styles.dangerTitle}>Reset Data Operasional</Text>
+                <Text style={styles.dangerDesc}>
+                  Menghapus semua catatan KRS, Jadwal, Presensi, dan Nilai. Master data Mahasiswa & Dosen tetap aman.
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.dangerBtnOutline}
+                onPress={handleResetOperational}
+              >
+                <Text style={styles.dangerBtnOutlineText}>Reset Operasional</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.divider} />
+
+            <View style={styles.dangerItem}>
+              <View style={styles.dangerTextContainer}>
+                <Text style={styles.dangerTitle}>Reset Total Database</Text>
+                <Text style={styles.dangerDesc}>
+                  Menghapus seluruh isi tabel dan mengembalikan data bawaan pabrik (seed awal).
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.dangerBtnSolid}
+                onPress={handleResetTotal}
+              >
+                <Text style={styles.dangerBtnSolidText}>Reset Total</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+
+      {/* Modal Tambah Semester Baru */}
+      <Modal visible={modalVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Tambah Semester Baru</Text>
+            <Text style={styles.modalSub}>
+              Contoh penamaan: &apos;Genap 2025/2026&apos; atau &apos;Pendek 2026&apos;
+            </Text>
+
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Nama Semester"
+              value={newSemName}
+              onChangeText={setNewSemName}
+              autoFocus
+            />
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={styles.modalCancelBtn}
+                onPress={() => setModalVisible(false)}
+                disabled={creating}
+              >
+                <Text style={styles.modalCancelText}>Batal</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalSaveBtn}
+                onPress={handleCreateSemester}
+                disabled={creating}
+              >
+                {creating ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.modalSaveText}>Simpan</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
+  header: {
+    backgroundColor: '#FFFFFF',
+    paddingTop: 54,
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  backBtn: {
+    padding: 4,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  scrollContent: {
+    padding: 16,
+    gap: 20,
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  section: {
+    gap: 10,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  sectionHeading: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#475569',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  addSemBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#EFF6FF',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  addSemText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#2563EB',
+  },
+  profileCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    gap: 14,
+  },
+  profileAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#2563EB',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  profileInfo: {
+    flex: 1,
+    gap: 3,
+  },
+  profileName: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
+  profileRole: {
+    fontSize: 12,
+    color: '#64748B',
+  },
+  sessionBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: 2,
+  },
+  sessionDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#16A34A',
+  },
+  sessionText: {
+    fontSize: 11,
+    color: '#16A34A',
+    fontWeight: '600',
+  },
+  logoutBtn: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#FEE2E2',
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    gap: 12,
+  },
+  cardSubtitle: {
+    fontSize: 13,
+    color: '#64748B',
+    lineHeight: 18,
+  },
+  semList: {
+    gap: 8,
+  },
+  semItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    gap: 12,
+  },
+  semItemActive: {
+    borderColor: '#93C5FD',
+    backgroundColor: '#EFF6FF',
+  },
+  semRadio: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  semInfo: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  semName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1E293B',
+  },
+  semNameActive: {
+    color: '#1D4ED8',
+    fontWeight: '700',
+  },
+  activePill: {
+    backgroundColor: '#DBEAFE',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  activePillText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#1D4ED8',
+    letterSpacing: 0.5,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  infoKey: {
+    fontSize: 13,
+    color: '#64748B',
+  },
+  infoVal: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#0F172A',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#F1F5F9',
+  },
+  versionBadge: {
+    backgroundColor: '#DCFCE7',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  versionBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#166534',
+  },
+  dangerCard: {
+    backgroundColor: '#FFF5F5',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#FECACA',
+    gap: 14,
+  },
+  dangerItem: {
+    gap: 8,
+  },
+  dangerTextContainer: {
+    gap: 3,
+  },
+  dangerTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#991B1B',
+  },
+  dangerDesc: {
+    fontSize: 12,
+    color: '#7F1D1D',
+    lineHeight: 16,
+  },
+  dangerBtnOutline: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#DC2626',
+    backgroundColor: '#FFFFFF',
+    marginTop: 4,
+  },
+  dangerBtnOutlineText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#DC2626',
+  },
+  dangerBtnSolid: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 8,
+    backgroundColor: '#DC2626',
+    marginTop: 4,
+  },
+  dangerBtnSolidText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  modalContent: {
+    width: '100%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 22,
+    gap: 12,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  modalSub: {
+    fontSize: 13,
+    color: '#64748B',
+  },
+  modalInput: {
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: '#0F172A',
+    marginTop: 4,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 12,
+    marginTop: 10,
+  },
+  modalCancelBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  modalCancelText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#64748B',
+  },
+  modalSaveBtn: {
+    backgroundColor: '#2563EB',
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 8,
+    minWidth: 80,
+    alignItems: 'center',
+  },
+  modalSaveText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+});

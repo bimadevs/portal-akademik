@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Alert,
   Pressable,
   StyleSheet,
   Text,
@@ -25,19 +24,11 @@ interface AcademicMenuItem {
 export function AcademicGrid() {
   const router = useRouter();
 
-  const handleUnderDevelopment = (featureName: string) => {
-    Alert.alert(
-      'Informasi Sistem',
-      `Fitur ${featureName} sedang dalam tahap pengembangan.`,
-      [{ text: 'Mengerti', style: 'default' }]
-    );
-  };
-
   const menuItems: AcademicMenuItem[] = [
     {
       id: 'mahasiswa',
       title: 'Data Mahasiswa',
-      subtitle: 'Input & rekap data',
+      subtitle: 'Kelola data mahasiswa',
       iconName: 'school',
       gradientColors: ['#2563EB', '#1D4ED8'],
       isPrimary: true,
@@ -48,43 +39,93 @@ export function AcademicGrid() {
     },
     {
       id: 'dosen',
-      title: 'Jadwal Kuliah',
-      subtitle: 'Jadwal kelas & dosen',
-      iconName: 'calendar',
+      title: 'Data Dosen',
+      subtitle: 'Dosen pengampu UBD',
+      iconName: 'person-circle',
       gradientColors: ['#059669', '#047857'],
-      onPress: () => handleUnderDevelopment('Jadwal Kuliah / Dosen'),
+      onPress: () => {
+        router.push('/dosen');
+      },
+    },
+    {
+      id: 'matkul',
+      title: 'Mata Kuliah',
+      subtitle: 'Kurikulum & SKS',
+      iconName: 'book',
+      gradientColors: ['#4F46E5', '#4338CA'],
+      onPress: () => {
+        router.push('/mata-kuliah');
+      },
+    },
+    {
+      id: 'jadwal',
+      title: 'Jadwal Kuliah',
+      subtitle: 'Jadwal kelas & ruangan',
+      iconName: 'calendar',
+      gradientColors: ['#0D9488', '#0F766E'],
+      onPress: () => {
+        router.push('/jadwal');
+      },
     },
     {
       id: 'krs',
-      title: 'KRS / Dokumen',
-      subtitle: 'Rencana studi digital',
+      title: 'KRS Mahasiswa',
+      subtitle: 'Rencana studi semester',
       iconName: 'document-text',
       gradientColors: ['#D97706', '#B45309'],
-      onPress: () => handleUnderDevelopment('KRS / Dokumen'),
+      onPress: () => {
+        router.push('/krs');
+      },
+    },
+    {
+      id: 'presensi',
+      title: 'Presensi Kelas',
+      subtitle: 'Catatan kehadiran',
+      iconName: 'checkbox',
+      gradientColors: ['#E11D48', '#BE123C'],
+      onPress: () => {
+        router.push('/presensi');
+      },
+    },
+    {
+      id: 'prestasi',
+      title: 'Prestasi & Nilai',
+      subtitle: 'Input nilai & hitung IPK',
+      iconName: 'trophy',
+      gradientColors: ['#0284C7', '#0369A1'],
+      onPress: () => {
+        router.push('/nilai');
+      },
     },
     {
       id: 'kartu',
       title: 'Kartu Mahasiswa',
-      subtitle: 'Digital Student ID',
+      subtitle: 'Digital Student ID & QR',
       iconName: 'id-card',
       gradientColors: ['#7C3AED', '#6D28D9'],
-      onPress: () => handleUnderDevelopment('Kartu Mahasiswa'),
+      onPress: () => {
+        router.push('/kartu');
+      },
     },
     {
-      id: 'presensi',
-      title: 'Presensi Kampus',
-      subtitle: 'Catatan kehadiran',
-      iconName: 'checkbox',
-      gradientColors: ['#E11D48', '#BE123C'],
-      onPress: () => handleUnderDevelopment('Presensi & Catatan'),
+      id: 'laporan',
+      title: 'Statistik & Rekap',
+      subtitle: 'Grafik & agregasi data',
+      iconName: 'bar-chart',
+      gradientColors: ['#EA580C', '#C2410C'],
+      onPress: () => {
+        router.push('/laporan');
+      },
     },
     {
-      id: 'prestasi',
-      title: 'Prestasi & IPK',
-      subtitle: 'Portofolio akademik',
-      iconName: 'trophy',
-      gradientColors: ['#0284C7', '#0369A1'],
-      onPress: () => handleUnderDevelopment('Prestasi Akademik'),
+      id: 'pengaturan',
+      title: 'Pengaturan Sistem',
+      subtitle: 'Semester & konfigurasi',
+      iconName: 'settings',
+      gradientColors: ['#475569', '#334155'],
+      onPress: () => {
+        router.push('/pengaturan');
+      },
     },
   ];
 
@@ -96,12 +137,12 @@ export function AcademicGrid() {
           <Text style={styles.sectionSubtitle}>Akses modul terintegrasi kampus UBD</Text>
         </View>
         <View style={styles.servicePill}>
-          <Text style={styles.servicePillText}>6 Modul</Text>
+          <Text style={styles.servicePillText}>{menuItems.length} Modul</Text>
         </View>
       </View>
 
       <View style={styles.gridContainer}>
-        {[0, 2, 4].map((startIndex) => {
+        {Array.from({ length: Math.ceil(menuItems.length / 2) }, (_, i) => i * 2).map((startIndex) => {
           const rowItems = menuItems.slice(startIndex, startIndex + 2);
           return (
             <View key={startIndex} style={styles.gridRow}>
