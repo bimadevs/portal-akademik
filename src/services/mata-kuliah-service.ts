@@ -23,7 +23,7 @@ export const MataKuliahService = {
       args.push(fakultas);
     }
 
-    query += ' ORDER BY mk.kode ASC;';
+    query += ' ORDER BY mk.id ASC;';
 
     const rows = await db.getAllAsync<any>(query, args);
     return rows.map((r) => ({

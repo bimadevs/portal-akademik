@@ -9,11 +9,11 @@ import {
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { MahasiswaService } from '../../services/mahasiswa-service';
 import { Mahasiswa } from '../../types/mahasiswa';
 import { SearchBar } from '../../components/search-bar';
 import { UBD_COLORS } from '../../constants/theme';
+import { PhotoAvatar } from '@/components/photo-avatar';
 
 export default function KartuMahasiswaIndexScreen() {
   const router = useRouter();
@@ -84,16 +84,13 @@ export default function KartuMahasiswaIndexScreen() {
                 })
               }
             >
-              <LinearGradient
-                colors={['#2563EB', '#1D4ED8']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
+              <PhotoAvatar
+                uri={item.fotoUrl || (item as any).foto_url}
+                size={48}
+                shape="circle"
+                name={item.nama}
                 style={styles.avatar}
-              >
-                <Text style={styles.avatarText}>
-                  {item.nama.slice(0, 2).toUpperCase()}
-                </Text>
-              </LinearGradient>
+              />
 
               <View style={styles.info}>
                 <Text style={styles.nama} numberOfLines={1}>{item.nama}</Text>

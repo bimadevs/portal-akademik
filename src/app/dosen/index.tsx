@@ -14,6 +14,7 @@ import { DosenService } from '../../services/dosen-service';
 import { Dosen } from '../../types/mahasiswa';
 import { SearchBar } from '../../components/search-bar';
 import { UBD_COLORS } from '../../constants/theme';
+import { PhotoAvatar } from '@/components/photo-avatar';
 
 export default function DosenListScreen() {
   const router = useRouter();
@@ -91,9 +92,12 @@ export default function DosenListScreen() {
               onPress={() => router.push(`/dosen/${item.id}`)}
               activeOpacity={0.7}
             >
-              <View style={styles.avatar}>
-                <Ionicons name="person" size={24} color={UBD_COLORS.PRIMARY} />
-              </View>
+              <PhotoAvatar
+                uri={item.fotoUrl || (item as any).foto_url}
+                size={46}
+                name={item.nama}
+                style={{ marginRight: 12 }}
+              />
               <View style={styles.info}>
                 <Text style={styles.nama}>{item.nama}</Text>
                 <Text style={styles.nidn}>NIDN: {item.nidn}</Text>

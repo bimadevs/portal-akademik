@@ -86,6 +86,8 @@ export interface Mahasiswa {
   nama: string;
   jenisKelamin: Gender;
   fakultas: Fakultas;
+  fotoUrl?: string;
+  foto_url?: string;
   prodi?: string;
   angkatan?: string;
   tahunMasuk?: string;
@@ -102,6 +104,8 @@ export interface Dosen {
   nidn: string;
   nama: string;
   fakultas: Fakultas;
+  fotoUrl?: string;
+  foto_url?: string;
   gender?: Gender;
   jenis_kelamin?: string;
   telepon?: string;

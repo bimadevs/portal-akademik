@@ -10,7 +10,6 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,6 +19,7 @@ import {
 } from '@/components/interactive-modal';
 import { RadioButton } from '@/components/radio-button';
 import { UBDHeader } from '@/components/ubd-header';
+import { PhotoAvatar } from '@/components/photo-avatar';
 import { StorageService } from '@/services/storage';
 import { Fakultas, Mahasiswa } from '@/types/mahasiswa';
 import { colors, radius, shadows, spacing } from '@/theme';
@@ -183,17 +183,13 @@ export default function ReportScreen() {
           />
         </View>
 
-        {/* Squircle Avatar with Initial & Faculty Color */}
-        <LinearGradient
-          colors={facultyStyle.gradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.avatarSquircle}
-        >
-          <Text style={styles.avatarInitials}>
-            {item.nama.slice(0, 2).toUpperCase()}
-          </Text>
-        </LinearGradient>
+        {/* Squircle Avatar with Photo or Initial */}
+        <PhotoAvatar
+          uri={item.fotoUrl || (item as any).foto_url}
+          size={44}
+          shape="rounded"
+          name={item.nama}
+        />
 
         {/* Content Column: Nama Mahasiswa & NIM */}
         <View style={styles.contentCol}>

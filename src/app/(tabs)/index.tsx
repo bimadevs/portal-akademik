@@ -8,13 +8,13 @@ import {
   Text,
   View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AcademicGrid } from '@/components/academic-grid';
 import { CampusBanner } from '@/components/campus-banner';
 import { UBDHeader } from '@/components/ubd-header';
+import { PhotoAvatar } from '@/components/photo-avatar';
 import { useAuth } from '@/context/auth-context';
 import { StorageService } from '@/services/storage';
 import { Mahasiswa } from '@/types/mahasiswa';
@@ -194,14 +194,12 @@ export default function HomeScreen() {
                   pressed && styles.cardPressed,
                 ]}
               >
-                <LinearGradient
-                  colors={['#2563EB', '#1D4ED8']}
-                  style={styles.studentAvatar}
-                >
-                  <Text style={styles.avatarInitials}>
-                    {m.nama.slice(0, 2).toUpperCase()}
-                  </Text>
-                </LinearGradient>
+                <PhotoAvatar
+                  uri={m.fotoUrl || (m as any).foto_url}
+                  size={42}
+                  name={m.nama}
+                  shape="rounded"
+                />
 
                 <View style={styles.studentInfo}>
                   <Text style={styles.studentName} numberOfLines={1}>

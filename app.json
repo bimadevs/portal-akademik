@@ -33,7 +33,14 @@
           "imageWidth": 76
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Aplikasi memerlukan akses ke galeri foto Anda.",
+          "cameraPermission": "Aplikasi memerlukan akses ke kamera Anda."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

@@ -15,6 +15,7 @@ import { SemesterService } from '../../services/semester-service';
 import { KRSService } from '../../services/krs-service';
 import { Mahasiswa, Semester } from '../../types/mahasiswa';
 import { SearchBar } from '../../components/search-bar';
+import { PhotoAvatar } from '../../components/photo-avatar';
 import { UBD_COLORS } from '../../constants/theme';
 
 export default function KRSListScreen() {
@@ -94,9 +95,12 @@ export default function KRSListScreen() {
                 onPress={() => router.push(`/krs/${item.id}`)}
                 activeOpacity={0.7}
               >
-                <View style={styles.avatar}>
-                  <Ionicons name="person" size={22} color={UBD_COLORS.PRIMARY} />
-                </View>
+                <PhotoAvatar
+                  uri={item.fotoUrl || (item as any).foto_url}
+                  size={44}
+                  name={item.nama}
+                  shape="rounded"
+                />
                 <View style={styles.info}>
                   <Text style={styles.nama}>{item.nama}</Text>
                   <Text style={styles.nim}>NIM: {item.nim}</Text>

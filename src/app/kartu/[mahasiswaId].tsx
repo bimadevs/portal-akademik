@@ -15,6 +15,7 @@ import QRCode from 'react-native-qrcode-svg';
 import { MahasiswaService } from '../../services/mahasiswa-service';
 import { Mahasiswa } from '../../types/mahasiswa';
 import { UBD_COLORS } from '../../constants/theme';
+import { PhotoAvatar } from '@/components/photo-avatar';
 
 export default function KartuMahasiswaDetailScreen() {
   const router = useRouter();
@@ -77,13 +78,6 @@ export default function KartuMahasiswaDetailScreen() {
     );
   }
 
-  const initials = mahasiswa.nama
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((n) => n[0].toUpperCase())
-    .join('');
-
   return (
     <View style={styles.container}>
       {/* Header Bar */}
@@ -119,14 +113,13 @@ export default function KartuMahasiswaDetailScreen() {
 
             {/* Avatar Section */}
             <View style={styles.avatarRow}>
-              <LinearGradient
-                colors={['#60A5FA', '#3B82F6', '#2563EB']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
+              <PhotoAvatar
+                uri={mahasiswa.fotoUrl || (mahasiswa as any).foto_url}
+                size={68}
+                shape="circle"
+                name={mahasiswa.nama}
                 style={styles.avatarGradient}
-              >
-                <Text style={styles.avatarText}>{initials || 'UB'}</Text>
-              </LinearGradient>
+              />
               <View style={styles.primaryInfo}>
                 <Text style={styles.studentName} numberOfLines={2}>
                   {mahasiswa.nama}

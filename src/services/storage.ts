@@ -135,6 +135,7 @@ export const StorageService = {
         email: data.email,
         noHp: data.noHp,
         alamat: data.alamat,
+        fotoUrl: data.fotoUrl || data.foto_url,
       });
       return { success: true, mahasiswa: res };
     } catch (error: any) {

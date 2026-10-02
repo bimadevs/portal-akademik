@@ -9,6 +9,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Mahasiswa } from '@/types/mahasiswa';
+import { PhotoAvatar } from './photo-avatar';
 import { colors, radius, shadows, spacing } from '@/theme';
 
 interface MahasiswaClickModalProps {
@@ -37,14 +38,12 @@ export function MahasiswaClickModal({
         <View style={styles.dialogCard} onStartShouldSetResponder={() => true}>
           {/* Header Dialog */}
           <View style={styles.dialogHeader}>
-            <LinearGradient
-              colors={['#2563EB', '#1D4ED8']}
-              style={styles.avatarBadge}
-            >
-              <Text style={styles.avatarText}>
-                {mahasiswa.nama.slice(0, 2).toUpperCase()}
-              </Text>
-            </LinearGradient>
+            <PhotoAvatar
+              uri={mahasiswa.fotoUrl || (mahasiswa as any).foto_url}
+              size={44}
+              shape="rounded"
+              name={mahasiswa.nama}
+            />
 
             <View style={styles.headerTitleCol}>
               <View style={styles.badgeRow}>

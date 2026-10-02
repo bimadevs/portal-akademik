@@ -6,6 +6,8 @@ import { DosenService } from '../../services/dosen-service';
 import { Dosen } from '../../types/mahasiswa';
 import { UBD_COLORS } from '../../constants/theme';
 
+import { PhotoAvatar } from '@/components/photo-avatar';
+
 export default function DosenDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
@@ -39,9 +41,12 @@ export default function DosenDetailScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.profileCard}>
-        <View style={styles.avatar}>
-          <Ionicons name="person" size={40} color={UBD_COLORS.PRIMARY} />
-        </View>
+        <PhotoAvatar
+          uri={dosen.fotoUrl || (dosen as any).foto_url}
+          size={90}
+          name={dosen.nama}
+          style={{ marginBottom: 12 }}
+        />
         <Text style={styles.nama}>{dosen.nama}</Text>
         {dosen.gelar && <Text style={styles.gelar}>{dosen.gelar}</Text>}
         <View style={styles.badge}>

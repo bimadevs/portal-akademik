@@ -18,6 +18,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { FacultyPicker } from '@/components/faculty-picker';
 import { RadioButton } from '@/components/radio-button';
 import { UBDHeader } from '@/components/ubd-header';
+import { PhotoAvatar } from '@/components/photo-avatar';
+import { PhotoService } from '@/services/photo-service';
 import { StorageService } from '@/services/storage';
 import { Fakultas, Gender } from '@/types/mahasiswa';
 import { colors, radius, shadows, spacing } from '@/theme';
@@ -29,8 +31,18 @@ export default function InputMahasiswaScreen() {
   const [nama, setNama] = useState('');
   const [jenisKelamin, setJenisKelamin] = useState<Gender>('PRIA');
   const [fakultas, setFakultas] = useState<Fakultas>('Sains dan Teknologi');
+  const [fotoUrl, setFotoUrl] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [focusedInput, setFocusedInput] = useState<'nim' | 'nama' | null>(null);
+
+  const handlePickPhoto = () => {
+    PhotoService.showPhotoOptions({
+      title: 'Foto Profil Mahasiswa',
+      hasExistingPhoto: Boolean(fotoUrl),
+      onPhotoSelected: (uri) => setFotoUrl(uri),
+      onPhotoRemoved: () => setFotoUrl(null),
+    });
+  };
 
   const handleSave = async () => {
     const cleanNim = nim.trim();
@@ -49,6 +61,7 @@ export default function InputMahasiswaScreen() {
         nama: cleanNama,
         jenisKelamin,
         fakultas,
+        fotoUrl: fotoUrl || undefined,
       });
 
       if (!result.success) {
@@ -61,6 +74,7 @@ export default function InputMahasiswaScreen() {
       setNama('');
       setJenisKelamin('PRIA');
       setFakultas('Sains dan Teknologi');
+      setFotoUrl(null);
 
       // Auto-redirect ke tab Report sesuai alur FR-10
       router.push('/(tabs)/report');
@@ -76,6 +90,7 @@ export default function InputMahasiswaScreen() {
     setNama('');
     setJenisKelamin('PRIA');
     setFakultas('Sains dan Teknologi');
+    setFotoUrl(null);
   };
 
   return (
@@ -119,6 +134,34 @@ export default function InputMahasiswaScreen() {
 
           {/* Form Fields Card Container */}
           <View style={styles.formCard}>
+            {/* Foto Mahasiswa */}
+            <View style={styles.photoUploadRow}>
+              <PhotoAvatar
+                uri={fotoUrl}
+                size={84}
+                name={nama}
+                editable
+                onPress={handlePickPhoto}
+              />
+              <View style={styles.photoUploadInfo}>
+                <Text style={styles.photoUploadTitle}>Foto Mahasiswa</Text>
+                <Text style={styles.photoUploadSubtitle}>
+                  {fotoUrl ? 'Foto telah dipilih' : 'Tambahkan foto dari kamera atau galeri'}
+                </Text>
+                <Pressable
+                  onPress={handlePickPhoto}
+                  style={styles.photoUploadButton}
+                  accessibilityRole="button"
+                  accessibilityLabel="Pilih Foto Mahasiswa"
+                >
+                  <Ionicons name="camera-outline" size={15} color={colors.primary} />
+                  <Text style={styles.photoUploadButtonText}>
+                    {fotoUrl ? 'Ganti Foto' : 'Unggah Foto'}
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+
             {/* Field 1: Kode Mahasiswa / NIM */}
             <View style={styles.inputGroup}>
               <View style={styles.labelRow}>
@@ -400,6 +443,48 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(226, 232, 240, 0.8)',
     boxShadow: shadows.card,
     gap: spacing.lg,
+  },
+  photoUploadRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.md,
+    backgroundColor: '#F8FAFC',
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  photoUploadInfo: {
+    flex: 1,
+    gap: 4,
+  },
+  photoUploadTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.textPrimary,
+  },
+  photoUploadSubtitle: {
+    fontSize: 11,
+    color: colors.textSecondary,
+    lineHeight: 15,
+  },
+  photoUploadButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: colors.surface,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
+    alignSelf: 'flex-start',
+    marginTop: 2,
+  },
+  photoUploadButtonText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.primary,
   },
   inputGroup: {
     gap: 6,

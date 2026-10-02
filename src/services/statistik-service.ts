@@ -34,8 +34,8 @@ export class StatistikService {
       `SELECT fakultas, COUNT(*) as count FROM mahasiswa GROUP BY fakultas ORDER BY count DESC`
     );
 
-    const genderRows = await db.getAllAsync<{ jenis_kelamin: string; count: number }>(
-      `SELECT jenis_kelamin, COUNT(*) as count FROM mahasiswa GROUP BY jenis_kelamin`
+    const genderRows = await db.getAllAsync<{ gender: string; count: number }>(
+      `SELECT gender, COUNT(*) as count FROM mahasiswa GROUP BY gender`
     );
 
     const statusRows = await db.getAllAsync<{ status: string; count: number }>(
@@ -53,9 +53,9 @@ export class StatistikService {
     }));
 
     const mahasiswaByGender = genderRows.map((r) => ({
-      label: r.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan',
+      label: r.gender === 'PRIA' ? 'Pria' : 'Wanita',
       count: r.count,
-      color: r.jenis_kelamin === 'L' ? '#002B49' : '#E5A823',
+      color: r.gender === 'PRIA' ? '#002B49' : '#E5A823',
     }));
 
     const mahasiswaByStatus = statusRows.map((r) => ({

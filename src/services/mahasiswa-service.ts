@@ -1,6 +1,16 @@
 import { getDatabase } from './database';
 import { Mahasiswa, Fakultas, Gender, StatusMahasiswa } from '@/types/mahasiswa';
 
+const DEFAULT_STUDENT_PHOTOS: Record<string, string> = {
+  '2021010001': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&auto=format&fit=crop&q=80',
+  '2021010002': 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&auto=format&fit=crop&q=80',
+  '2021010003': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&auto=format&fit=crop&q=80',
+  '2021010005': 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&auto=format&fit=crop&q=80',
+  '2021010007': 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&auto=format&fit=crop&q=80',
+  '2021010008': 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&auto=format&fit=crop&q=80',
+  '2021010010': 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80',
+};
+
 export const MahasiswaService = {
   async getAll(params?: {
     search?: string;
@@ -31,17 +41,22 @@ export const MahasiswaService = {
     query += ' ORDER BY id DESC;';
 
     const rows = await db.getAllAsync<any>(query, args);
-    return rows.map((r) => ({
-      id: r.id,
-      nim: r.nim,
-      nama: r.nama,
-      jenisKelamin: r.gender as Gender,
-      fakultas: r.fakultas as Fakultas,
-      tahunMasuk: r.tahun_masuk,
-      status: r.status as StatusMahasiswa,
-      createdAt: r.created_at,
-      updatedAt: r.updated_at,
-    }));
+    return rows.map((r) => {
+      const photo = r.foto_url || DEFAULT_STUDENT_PHOTOS[r.nim] || undefined;
+      return {
+        id: r.id,
+        nim: r.nim,
+        nama: r.nama,
+        jenisKelamin: r.gender as Gender,
+        fakultas: r.fakultas as Fakultas,
+        tahunMasuk: r.tahun_masuk,
+        status: r.status as StatusMahasiswa,
+        fotoUrl: photo,
+        foto_url: photo,
+        createdAt: r.created_at,
+        updatedAt: r.updated_at,
+      };
+    });
   },
 
   async getById(id: string | number): Promise<Mahasiswa | null> {
@@ -52,6 +67,8 @@ export const MahasiswaService = {
     );
     if (!row) return null;
 
+    const photo = row.foto_url || DEFAULT_STUDENT_PHOTOS[row.nim] || row.foto_url;
+
     return {
       id: row.id,
       nim: row.nim,
@@ -60,6 +77,8 @@ export const MahasiswaService = {
       fakultas: row.fakultas as Fakultas,
       tahunMasuk: row.tahun_masuk,
       status: row.status as StatusMahasiswa,
+      fotoUrl: photo,
+      foto_url: photo,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     };
@@ -81,6 +100,8 @@ export const MahasiswaService = {
     email?: string;
     noHp?: string;
     alamat?: string;
+    fotoUrl?: string;
+    foto_url?: string;
   }): Promise<Mahasiswa> {
     const db = await getDatabase();
     const now = new Date().toISOString();
@@ -93,9 +114,11 @@ export const MahasiswaService = {
       throw new Error(`Mahasiswa dengan NIM ${data.nim} sudah terdaftar!`);
     }
 
+    const photoVal = data.fotoUrl || data.foto_url || null;
+
     const result = await db.runAsync(
-      `INSERT INTO mahasiswa (nim, nama, fakultas, gender, tahun_masuk, status, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
+      `INSERT INTO mahasiswa (nim, nama, fakultas, gender, tahun_masuk, status, foto_url, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`,
       [
         data.nim.trim(),
         data.nama.trim(),
@@ -103,6 +126,7 @@ export const MahasiswaService = {
         data.jenisKelamin,
         data.tahunMasuk || data.angkatan || '2021',
         data.status || 'Aktif',
+        photoVal,
         now,
         now,
       ]
@@ -118,6 +142,8 @@ export const MahasiswaService = {
       angkatan: data.angkatan,
       tahunMasuk: data.tahunMasuk || data.angkatan || '2021',
       status: data.status || 'Aktif',
+      fotoUrl: photoVal || undefined,
+      foto_url: photoVal || undefined,
       email: data.email,
       noHp: data.noHp,
       alamat: data.alamat,
@@ -135,6 +161,8 @@ export const MahasiswaService = {
       fakultas?: Fakultas;
       tahunMasuk?: string;
       status?: StatusMahasiswa;
+      fotoUrl?: string | null;
+      foto_url?: string | null;
     }
   ): Promise<void> {
     const db = await getDatabase();
@@ -179,6 +207,12 @@ export const MahasiswaService = {
     if (data.status !== undefined) {
       fields.push('status = ?');
       args.push(data.status);
+    }
+
+    const photo = data.fotoUrl !== undefined ? data.fotoUrl : data.foto_url;
+    if (photo !== undefined) {
+      fields.push('foto_url = ?');
+      args.push(photo ? photo.trim() : null);
     }
 
     args.push(id);

@@ -14,6 +14,9 @@ import { DosenService } from '../../services/dosen-service';
 import { FAKULTAS_OPTIONS, Fakultas } from '../../types/mahasiswa';
 import { UBD_COLORS } from '../../constants/theme';
 
+import { PhotoAvatar } from '@/components/photo-avatar';
+import { PhotoService } from '@/services/photo-service';
+
 export default function DosenFormScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -26,6 +29,7 @@ export default function DosenFormScreen() {
   const [noHp, setNoHp] = useState('');
   const [fakultas, setFakultas] = useState<Fakultas>(FAKULTAS_OPTIONS[0]);
   const [prodi, setProdi] = useState('');
+  const [fotoUrl, setFotoUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(Boolean(id));
   const [saving, setSaving] = useState(false);
 
@@ -41,11 +45,21 @@ export default function DosenFormScreen() {
             setNoHp(dosen.no_hp || '');
             setFakultas(dosen.fakultas);
             setProdi(dosen.prodi || '');
+            setFotoUrl(dosen.fotoUrl || (dosen as any).foto_url || null);
           }
         })
         .finally(() => setLoading(false));
     }
   }, [id]);
+
+  const handlePickPhoto = () => {
+    PhotoService.showPhotoOptions({
+      title: 'Foto Profil Dosen',
+      hasExistingPhoto: Boolean(fotoUrl),
+      onPhotoSelected: (uri) => setFotoUrl(uri),
+      onPhotoRemoved: () => setFotoUrl(null),
+    });
+  };
 
   const handleSubmit = async () => {
     if (!nidn.trim() || !nama.trim() || !prodi.trim()) {
@@ -64,6 +78,7 @@ export default function DosenFormScreen() {
           no_hp: noHp.trim(),
           fakultas,
           prodi: prodi.trim(),
+          fotoUrl: fotoUrl,
         });
         Alert.alert('Sukses', 'Data dosen berhasil diperbarui!', [
           { text: 'OK', onPress: () => router.back() },
@@ -77,6 +92,7 @@ export default function DosenFormScreen() {
           no_hp: noHp.trim(),
           fakultas,
           prodi: prodi.trim(),
+          fotoUrl: fotoUrl || undefined,
         });
         Alert.alert('Sukses', 'Dosen baru berhasil ditambahkan!', [
           { text: 'OK', onPress: () => router.back() },
@@ -100,6 +116,27 @@ export default function DosenFormScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.title}>{isEdit ? 'Edit Dosen' : 'Tambah Dosen Baru'}</Text>
+
+      {/* Upload Foto Dosen */}
+      <View style={styles.photoSection}>
+        <PhotoAvatar
+          uri={fotoUrl}
+          size={100}
+          name={nama}
+          editable
+          onPress={handlePickPhoto}
+        />
+        <TouchableOpacity
+          onPress={handlePickPhoto}
+          style={styles.changePhotoBtn}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.changePhotoText}>
+            {fotoUrl ? 'Ganti Foto Dosen' : 'Upload Foto Dosen'}
+          </Text>
+        </TouchableOpacity>
+        <Text style={styles.photoHint}>Ketuk avatar untuk mengambil dari kamera atau galeri</Text>
+      </View>
 
       <Text style={styles.label}>NIDN *</Text>
       <TextInput
@@ -267,5 +304,34 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  photoSection: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    paddingVertical: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    gap: 8,
+  },
+  changePhotoBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: '#EFF6FF',
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
+    marginTop: 4,
+  },
+  changePhotoText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: UBD_COLORS.PRIMARY,
+  },
+  photoHint: {
+    fontSize: 11,
+    color: '#94A3B8',
   },
 });
