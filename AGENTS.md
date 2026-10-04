@@ -28,6 +28,17 @@ These rules are strictly enforced and take precedence over all general habits. N
      - Code Quality & Engineering: `codebase-design`, `code-review`, `tdd`, or other relevant skills in `.agents/skills/`.
    - Never bypass or ignore applicable skill instructions.
 
+4. **Mandatory Application Version Synchronization Gate (SemVer & Release Hygiene)**:
+   - **ALWAYS** increment and synchronize the application release version across all config files and UI every time a feature is added, bug is fixed, or architectural change is introduced:
+     - `package.json`: bump `"version"` following Semantic Versioning (`MAJOR.MINOR.PATCH`).
+     - `app.json`: synchronize `expo.version` (`"X.Y.Z"`), increment `expo.android.versionCode` (`integer`), and update `expo.ios.buildNumber` (`"X.Y.Z"`).
+     - UI Release Indicator: update version labels in settings screen (`src/app/pengaturan/index.tsx`) or headers to match the bumped version.
+   - **SemVer Increment Criteria**:
+     - **PATCH** (`+0.0.1`): Bug fixes, hotfixes, security patches, styling/typo adjustments, refactorings without new features.
+     - **MINOR** (`+0.1.0`): New user-facing features, new screens/routes, new services, or backward-compatible capabilities.
+     - **MAJOR** (`+1.0.0`): Breaking changes, major milestone phase deliverables (e.g., V2, V3, V4), database migration versions.
+   - **NEVER** finish a coding task, commit, or push code with stale, mismatched, or neglected version numbers.
+
 ## Expo has changed — do not trust your training data
 
 Expo ships breaking changes every SDK release. APIs you remember are likely renamed, moved, or removed. Before writing any code that touches an Expo, EAS, or React Native API:
@@ -43,13 +54,14 @@ Use `bunx` instead of `npx` if the project uses bun (`bun.lock` present).
 ```bash
 npx expo install <package>  # ALWAYS use instead of npm/yarn/pnpm/bun add — resolves SDK-compatible versions
 npx expo start              # start the dev server
+bun test                    # run automated test suite
 npx expo lint               # lint
 npx tsc --noEmit            # typecheck
 npx expo-doctor             # diagnose dependency and config issues
 npx expo install --fix      # fix incompatible package versions
 ```
 
-Run lint and typecheck before declaring any task done.
+Run tests (`bun test`), lint (`npx expo lint`), typecheck (`npx tsc --noEmit`), and verify version synchronization before declaring any task done.
 
 ## Navigation & Routing
 
