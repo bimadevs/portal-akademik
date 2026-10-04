@@ -413,7 +413,7 @@ export default function PengaturanScreen() {
             <View style={styles.infoRow}>
               <Text style={styles.infoKey}>Versi Sistem</Text>
               <View style={styles.versionBadge}>
-                <Text style={styles.versionBadgeText}>V3.0.0 (Enterprise)</Text>
+                <Text style={styles.versionBadgeText}>V3.0.1 (Enterprise)</Text>
               </View>
             </View>
             <View style={styles.divider} />

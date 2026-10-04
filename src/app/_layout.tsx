@@ -1,14 +1,10 @@
+import '@/utils/ignore-warnings';
 import React, { useEffect } from 'react';
-import { ActivityIndicator, LogBox, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { colors } from '@/theme';
-
-// Abaikan peringatan internal timing React 19 / Expo-Router deep linking saat inisialisasi awal
-LogBox.ignoreLogs([
-  "Can't perform a React state update on a component that hasn't mounted yet",
-]);
 
 function RootNavigationLayout() {
   const { userSession, isLoading } = useAuth();

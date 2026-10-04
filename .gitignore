@@ -44,3 +44,6 @@ example
 
 # agent workspaces
 .agents/teamwork/
+.claude/
+.codex/
+.pi/
