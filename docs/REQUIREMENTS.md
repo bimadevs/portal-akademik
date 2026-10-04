@@ -395,6 +395,105 @@ Dokumen ini mendokumentasikan rincian spesifikasi kebutuhan fungsional (*Functio
 
 ---
 
+### Modul 11: Ekspor & Dokumen Cetak Resmi (FR-DOC)
+
+#### FR-41: Cetak KRS Resmi ke Dokumen PDF
+- **Deskripsi**: Sistem mengompilasi lembar Kartu Rencana Studi resmi mahasiswa ke dalam berkas PDF ber-kop surat resmi UBD.
+- **Kriteria Penerimaan**:
+  - *Given* admin berada di layar detail/pengisian KRS mahasiswa tertentu.
+  - *When* admin menekan tombol "Cetak KRS (PDF)".
+  - *Then* sistem mengompilasi dokumen HTML/CSS dengan kop surat Universitas Buddhi Dharma, data mahasiswa (Nama, NIM, Fakultas, Dosen PA), tabel mata kuliah (Kode, Nama, SKS, Dosen, Hari, Jam, Ruang), total SKS semester, kolom tanda tangan (Mahasiswa dan Pembimbing Akademik), serta QR verifikasi berkas.
+  - *And* sistem memunculkan lembar dialog sistem (*native share/print sheet*) untuk menyimpan atau membagikan berkas PDF.
+
+#### FR-42: Cetak KHS & Transkrip Nilai ke Dokumen PDF
+- **Deskripsi**: Sistem mengompilasi lembar Kartu Hasil Studi (KHS) dan Transkrip Nilai Akademik ke dalam berkas PDF resmi.
+- **Kriteria Penerimaan**:
+  - *Given* admin berada di layar detail nilai/transkrip mahasiswa.
+  - *When* admin menekan tombol "Cetak KHS / Transkrip (PDF)".
+  - *Then* sistem menghasilkan dokumen PDF resmi yang memuat daftar seluruh mata kuliah yang telah ditempuh, bobot numerik, huruf mutu, kalkulasi IPS, dan IPK kumulatif disertai pengesahan tanda tangan BAAK.
+  - *And* berkas PDF siap diunduh atau dibagikan melalui dialog sistem.
+
+#### FR-43: Ekspor Rekap Presensi Kelas ke PDF
+- **Deskripsi**: Sistem mengekspor berita acara dan daftar hadir kelas per mata kuliah ke dalam format dokumen resmi.
+- **Kriteria Penerimaan**:
+  - *Given* admin berada di layar Rekap Presensi suatu mata kuliah.
+  - *When* admin menekan tombol "Ekspor Berita Acara (PDF)".
+  - *Then* sistem menyusun tabel seluruh mahasiswa peserta kelas beserta persentase kehadiran masing-masing dan status kelayakan ujian ke dalam dokumen PDF resmi.
+
+#### FR-44: Bagikan Kartu Mahasiswa Digital
+- **Deskripsi**: Admin dapat mengekspor atau membagikan gambar/dokumen kartu identitas mahasiswa digital.
+- **Kriteria Penerimaan**:
+  - *Given* admin berada di layar detail Kartu Mahasiswa.
+  - *When* admin menekan tombol "Bagikan Kartu Mahasiswa".
+  - *Then* sistem menyajikan dialog bagikan (*share sheet*) dengan tautan/berkas kartu mahasiswa untuk dibagikan ke aplikasi lain.
+
+---
+
+### Modul 12: Penegakan Aturan Akademik (FR-RULE)
+
+#### FR-45: Pembatasan Kuota Beban SKS Berbasis IPS (SKS Capping)
+- **Deskripsi**: Sistem membatasi jumlah SKS maksimal yang dapat diambil mahasiswa dalam semester aktif berdasarkan capaian IPS semester sebelumnya mengacu pada standar resmi Dikti.
+- **Aturan Beban**:
+  - $\text{IPS} \ge 3.00 \implies \text{Maksimal } 24 \text{ SKS}$
+  - $2.50 \le \text{IPS} < 3.00 \implies \text{Maksimal } 21 \text{ SKS}$
+  - $2.00 \le \text{IPS} < 2.50 \implies \text{Maksimal } 18 \text{ SKS}$
+  - $\text{IPS} < 2.00 \implies \text{Maksimal } 15 \text{ SKS}$
+  - Mahasiswa Baru (Semester 1): Default paket 20 SKS
+- **Kriteria Penerimaan**:
+  - *Given* admin berada di layar checklist KRS mahasiswa yang memiliki riwayat nilai semester sebelumnya.
+  - *When* jumlah SKS mata kuliah yang dicentang melebihi kuota beban SKS mahasiswa.
+  - *Then* sistem menampilkan pesan peringatan batas SKS dan menonaktifkan tombol "Simpan KRS".
+  - *When* admin mengaktifkan tombol *toggle* "Dispensasi SKS Dekanat" dan mengisi alasan/nomor surat.
+  - *Then* tombol "Simpan KRS" kembali aktif dan sistem mencatat dispensasi tersebut ke dalam tabel `audit_logs`.
+
+#### FR-46: Ambang Batas Kehadiran 75% untuk Ujian Akhir (Attendance Threshold)
+- **Deskripsi**: Sistem memantau syarat kehadiran minimal 75% per mata kuliah pada saat proses penginputan nilai akhir mahasiswa.
+- **Kriteria Penerimaan**:
+  - *Given* admin membuka layar input nilai untuk mata kuliah tertentu.
+  - *When* terdapat mahasiswa peserta kelas yang memiliki persentase kehadiran kumulatif di bawah 75%.
+  - *Then* sistem menampilkan lencana tanda peringatan (*warning badge*) oranye/merah bertuliskan: *"Kehadiran < 75% (Perlu Perhatian)"*.
+  - *And* admin tetap diizinkan mengisi nilai akhir jika mahasiswa memiliki surat dispensasi khusus.
+
+---
+
+### Modul 13: Cadangan & Pemulihan Basis Data (FR-DATA)
+
+#### FR-47: Pencadangan Basis Data Mandiri (Backup JSON Archive)
+- **Deskripsi**: Admin dapat mengekspor seluruh basis data aplikasi lokal ke dalam berkas arsip JSON terstruktur.
+- **Kriteria Penerimaan**:
+  - *Given* admin berada di layar Pengaturan Sistem.
+  - *When* admin menekan tombol "Cadangkan Data (Backup JSON)".
+  - *Then* sistem membaca seluruh tabel SQLite (`semesters`, `mahasiswa`, `dosen`, `mata_kuliah`, `jadwal`, `krs`, `presensi`, `nilai`, `audit_logs`), membuat berkas `.json` terstruktur dengan metadata versi, stempel waktu, dan checksum.
+  - *And* sistem memicu `expo-sharing` agar berkas dapat disimpan di penyimpanan eksternal atau dikirim via aplikasi lain.
+
+#### FR-48: Pemulihan Basis Data (Atomic Restore)
+- **Deskripsi**: Admin dapat memulihkan seluruh basis data aplikasi dari berkas cadangan JSON yang valid.
+- **Kriteria Penerimaan**:
+  - *Given* admin menekan tombol "Pulihkan Data (Restore)" di layar Pengaturan Sistem.
+  - *When* admin memilih berkas cadangan JSON yang valid dan mengonfirmasi dialog peringatan.
+  - *Then* sistem menjalankan transaksi atomik SQLite: mengosongkan tabel lama dan menginjeksi seluruh data dari berkas cadangan tanpa merusak integritas foreign key.
+  - *When* berkas yang diunggah rusak atau skema tidak cocok.
+  - *Then* sistem membatalkan proses (*rollback*), mempertahankan data saat ini, dan menampilkan pesan kesalahan: *"Berkas cadangan tidak valid atau rusak!"*.
+
+---
+
+### Modul 14: Audit Log Aktivitas Administratif (FR-AUDIT)
+
+#### FR-49: Pencatatan Otomatis Mutasi Kritis
+- **Deskripsi**: Sistem mencatat setiap operasi administratif berisiko tinggi ke dalam tabel `audit_logs`.
+- **Aksi yang Dicatat**: Pengubahan/Input Nilai, Pengesahan KRS dengan Dispensasi, Perubahan Status Mahasiswa (Cuti/Lulus/DO), Penghapusan Data Master, dan Pemulihan Basis Data.
+- **Kriteria Penerimaan**:
+  - *Given* admin melakukan perubahan nilai atau menyimpan KRS dengan dispensasi.
+  - *Then* sistem secara otomatis menyimpan record baru di tabel `audit_logs` memuat timestamp, action, entity, entity_id, details, dan username actor.
+
+#### FR-50: Peninjau Riwayat Audit Log
+- **Deskripsi**: Admin dapat melihat, memfilter, dan mencari rekam jejak aktivitas sistem.
+- **Kriteria Penerimaan**:
+  - *Given* admin membuka layar "Audit Log" di Pengaturan Sistem.
+  - *Then* sistem menampilkan daftar rekam jejak kronologis terurut dari yang terbaru, dilengkapi filter jenis aksi dan kolom pencarian.
+
+---
+
 ## 2. Kebutuhan Non-Fungsional (Non-Functional Requirements)
 
 | ID | Parameter | Spesifikasi |
@@ -405,10 +504,13 @@ Dokumen ini mendokumentasikan rincian spesifikasi kebutuhan fungsional (*Functio
 | **NFR-04** | **Integritas Tipe Data (Type Safety)** | Seluruh kode ditulis dalam TypeScript ketat (`strict: true`) tanpa menggunakan tipe `any`. |
 | **NFR-05** | **Manajemen Memori & List Rendering** | Menggunakan `FlatList` dengan virtualisasi untuk render daftar mahasiswa agar efisien dan tidak terjadi *memory leak*. |
 | **NFR-06** | **Konsistensi UI/UX** | Skema warna, tata letak input, font, dan elemen visual harus mematuhi panduan desain pada `docs/CONTEXT.md`. |
-| **NFR-07** | **Ketahanan Penyimpanan (Data Durability)** | Data yang disimpan ke AsyncStorage harus terjamin integritas JSON-nya dan tidak rusak jika aplikasi ditutup paksa. |
+| **NFR-07** | **Ketahanan Penyimpanan (Data Durability)** | Data yang disimpan ke SQLite harus terjamin integritas relasinya dan tidak rusak jika aplikasi ditutup paksa. |
 | **NFR-08** | **Database Relasional Lokal** | Menggunakan `expo-sqlite` sebagai database relasional lokal dengan foreign key constraints aktif untuk menjaga integritas referensial antar tabel. |
 | **NFR-09** | **Pencarian Real-Time** | Pencarian/filter pada setiap layar list harus responsif dan menampilkan hasil dalam waktu kurang dari 200ms untuk dataset hingga 1000 record. |
 | **NFR-10** | **Akurasi Kalkulasi** | Perhitungan IPS dan IPK harus akurat hingga 2 desimal, sesuai standar perhitungan universitas Indonesia. |
+| **NFR-11** | **Performa Kompilasi Dokumen PDF** | Kompilasi HTML ke berkas PDF via `expo-print` harus selesai dalam waktu kurang dari 1.5 detik untuk dokumen multi-halaman. |
+| **NFR-12** | **Integritas Atomik Pemulihan Data** | Proses Restore database harus dieksekusi dalam satu transaksi atomik SQLite; jika terjadi kegagalan di tengah proses, seluruh state di-*rollback* ke kondisi semula. |
+| **NFR-13** | **Keamanan Rekam Jejak Audit** | Catatan pada tabel `audit_logs` bersifat *append-only* (hanya bisa ditambahkan dan tidak dapat disunting atau diubah oleh admin biasa). |
 
 ---
 

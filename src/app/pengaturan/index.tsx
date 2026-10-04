@@ -9,12 +9,14 @@ import {
   ActivityIndicator,
   Modal,
   TextInput,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/auth-context';
 import { SemesterService } from '../../services/semester-service';
 import { resetOperationalData, resetDatabase } from '../../services/database';
+import { BackupRestoreService } from '../../services/backup-restore-service';
 import { Semester } from '../../types/mahasiswa';
 import { UBD_COLORS } from '../../constants/theme';
 
@@ -30,6 +32,13 @@ export default function PengaturanScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [newSemName, setNewSemName] = useState('');
   const [creating, setCreating] = useState(false);
+
+  // Backup & Restore states
+  const [backupLoading, setBackupLoading] = useState(false);
+  const [restoreModalVisible, setRestoreModalVisible] = useState(false);
+  const [restoreJsonInput, setRestoreJsonInput] = useState('');
+  const [pickedFileName, setPickedFileName] = useState<string | null>(null);
+  const [restoring, setRestoring] = useState(false);
 
   const loadSemesters = async () => {
     try {
@@ -160,6 +169,74 @@ export default function PengaturanScreen() {
     );
   };
 
+  const handleBackup = async () => {
+    setBackupLoading(true);
+    try {
+      const res = await BackupRestoreService.generateBackupJson();
+      Alert.alert(
+        'Cadangan Berhasil Dibuat',
+        `Data berhasil dicadangkan (${Object.keys(res.payload.tables).length} tabel, checksum: ${res.payload.checksum}). Berkas telah diekspor.`
+      );
+    } catch (err: any) {
+      Alert.alert('Gagal Mencadangkan', err.message || 'Terjadi kesalahan saat membuat cadangan');
+    } finally {
+      setBackupLoading(false);
+    }
+  };
+
+  const handlePickRestoreFile = async () => {
+    try {
+      const picked = await BackupRestoreService.pickBackupFile();
+      if (picked) {
+        setRestoreJsonInput(picked.jsonString);
+        setPickedFileName(picked.fileName || 'berkas_cadangan.json');
+        Alert.alert('Berkas Dipilih', `Berkas ${picked.fileName || 'cadangan'} berhasil dimuat. Silakan periksa atau klik Mulai Pemulihan.`);
+      }
+    } catch (err: any) {
+      Alert.alert('Peringatan', err.message || 'Gagal membaca berkas cadangan.');
+    }
+  };
+
+  const handleExecuteRestore = () => {
+    if (!restoreJsonInput.trim()) {
+      Alert.alert('Peringatan', 'Silakan pilih berkas cadangan atau tempelkan JSON cadangan terlebih dahulu.');
+      return;
+    }
+
+    Alert.alert(
+      'Konfirmasi Pemulihan Atomik',
+      'PERINGATAN: Tindakan ini akan menimpa seluruh data sistem saat ini dengan data dari cadangan JSON. Seluruh proses bersifat transaksi atomik. Lanjutkan pemulihan?',
+      [
+        { text: 'Batal', style: 'cancel' },
+        {
+          text: 'Ya, Pulihkan Sekarang',
+          style: 'destructive',
+          onPress: async () => {
+            setRestoring(true);
+            try {
+              const res = await BackupRestoreService.restoreFromJson(
+                restoreJsonInput.trim(),
+                userSession?.username || 'admin'
+              );
+              await loadSemesters();
+              setRestoreModalVisible(false);
+              setRestoreJsonInput('');
+              setPickedFileName(null);
+              Alert.alert(
+                'Pemulihan Berhasil',
+                `Basis data berhasil dipulihkan secara penuh (${res.restoredCount} entitas dipulihkan).`
+              );
+            } catch (err: any) {
+              Alert.alert('Gagal Memulihkan', err.message || 'Terjadi kesalahan saat memulihkan database.');
+            } finally {
+              setRestoring(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const handleLogout = () => {
     Alert.alert('Konfirmasi Logout', 'Apakah Anda yakin ingin keluar dari sesi admin?', [
       { text: 'Batal', style: 'cancel' },
@@ -265,7 +342,66 @@ export default function PengaturanScreen() {
           </View>
         </View>
 
-        {/* Section 3: Informasi Aplikasi */}
+        {/* Section 3: Audit & Keamanan */}
+        <View style={styles.section}>
+          <Text style={styles.sectionHeading}>Audit & Keamanan</Text>
+          <TouchableOpacity
+            style={styles.menuCard}
+            onPress={() => router.push('/pengaturan/audit-log' as any)}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.menuIconContainer, { backgroundColor: '#EEF2FF' }]}>
+              <Ionicons name="shield-checkmark" size={24} color="#4F46E5" />
+            </View>
+            <View style={styles.menuInfo}>
+              <Text style={styles.menuTitle}>Riwayat & Log Audit Sistem</Text>
+              <Text style={styles.menuSubtitle}>
+                Pantau mutasi nilai, perubahan status mahasiswa, dispensasi KRS, dan aktivitas sistem.
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Section 4: Cadangan & Pemulihan Basis Data */}
+        <View style={styles.section}>
+          <Text style={styles.sectionHeading}>Cadangan & Pemulihan Basis Data</Text>
+          <View style={styles.card}>
+            <Text style={styles.cardSubtitle}>
+              Ekspor seluruh data akademik ke berkas JSON mandiri dengan checksum integritas, atau pulihkan data dari salinan cadangan secara atomik.
+            </Text>
+
+            <View style={styles.backupActions}>
+              <TouchableOpacity
+                style={styles.backupBtn}
+                onPress={handleBackup}
+                disabled={backupLoading}
+                activeOpacity={0.8}
+              >
+                {backupLoading ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                ) : (
+                  <>
+                    <Ionicons name="cloud-download-outline" size={18} color="#FFFFFF" />
+                    <Text style={styles.backupBtnText}>Cadangkan Data (Backup JSON)</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.restoreBtn}
+                onPress={() => setRestoreModalVisible(true)}
+                disabled={backupLoading}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="cloud-upload-outline" size={18} color="#2563EB" />
+                <Text style={styles.restoreBtnText}>Pulihkan Data (Restore JSON)</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
+        {/* Section 5: Informasi Aplikasi */}
         <View style={styles.section}>
           <Text style={styles.sectionHeading}>Informasi Aplikasi</Text>
           <View style={styles.card}>
@@ -277,7 +413,7 @@ export default function PengaturanScreen() {
             <View style={styles.infoRow}>
               <Text style={styles.infoKey}>Versi Sistem</Text>
               <View style={styles.versionBadge}>
-                <Text style={styles.versionBadgeText}>V2.0.0 (Relational)</Text>
+                <Text style={styles.versionBadgeText}>V3.0.0 (Enterprise)</Text>
               </View>
             </View>
             <View style={styles.divider} />
@@ -293,7 +429,7 @@ export default function PengaturanScreen() {
           </View>
         </View>
 
-        {/* Section 4: Danger Zone */}
+        {/* Section 6: Danger Zone */}
         <View style={styles.section}>
           <Text style={[styles.sectionHeading, { color: '#DC2626' }]}>Zona Bahaya (Danger Zone)</Text>
           <View style={styles.dangerCard}>
@@ -366,6 +502,97 @@ export default function PengaturanScreen() {
                   <ActivityIndicator size="small" color="#FFFFFF" />
                 ) : (
                   <Text style={styles.modalSaveText}>Simpan</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal Pemulihan Basis Data */}
+      <Modal visible={restoreModalVisible} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { maxHeight: '90%' }]}>
+            <View style={styles.modalHeaderRow}>
+              <View style={styles.modalHeaderInfo}>
+                <Text style={styles.modalTitle}>Pulihkan Basis Data</Text>
+                <Text style={styles.modalSub}>
+                  Pilih berkas JSON cadangan atau tempel payload secara langsung
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  if (!restoring) {
+                    setRestoreModalVisible(false);
+                    setRestoreJsonInput('');
+                    setPickedFileName(null);
+                  }
+                }}
+                disabled={restoring}
+              >
+                <Ionicons name="close" size={24} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.restoreWarningBox}>
+              <Ionicons name="warning" size={18} color="#B45309" />
+              <Text style={styles.restoreWarningText}>
+                Pemulihan akan menimpa seluruh basis data secara atomik. Jika terjadi kesalahan saat proses, perubahan akan otomatis dibatalkan (rollback).
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.pickFileBtn}
+              onPress={handlePickRestoreFile}
+              disabled={restoring}
+            >
+              <Ionicons name="document-text-outline" size={20} color="#2563EB" />
+              <Text style={styles.pickFileBtnText}>
+                {pickedFileName ? `Berkas: ${pickedFileName}` : 'Pilih Berkas JSON Cadangan'}
+              </Text>
+            </TouchableOpacity>
+
+            <Text style={styles.inputLabel}>Atau Tempel Payload JSON:</Text>
+            <TextInput
+              style={styles.jsonTextArea}
+              placeholder='Tempelkan isi JSON cadangan di sini ({"app": "Portal Akademik UBD", ...})'
+              placeholderTextColor="#94A3B8"
+              value={restoreJsonInput}
+              onChangeText={(text) => {
+                setRestoreJsonInput(text);
+                if (pickedFileName) setPickedFileName(null);
+              }}
+              multiline
+              numberOfLines={6}
+              textAlignVertical="top"
+              editable={!restoring}
+            />
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={styles.modalCancelBtn}
+                onPress={() => {
+                  setRestoreModalVisible(false);
+                  setRestoreJsonInput('');
+                  setPickedFileName(null);
+                }}
+                disabled={restoring}
+              >
+                <Text style={styles.modalCancelText}>Batal</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.modalSaveBtn,
+                  { backgroundColor: '#DC2626' },
+                  (!restoreJsonInput.trim() || restoring) && { opacity: 0.6 },
+                ]}
+                onPress={handleExecuteRestore}
+                disabled={!restoreJsonInput.trim() || restoring}
+              >
+                {restoring ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.modalSaveText}>Mulai Pemulihan</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -694,5 +921,133 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: '#FFFFFF',
+  },
+  menuCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    gap: 14,
+  },
+  menuIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  menuInfo: {
+    flex: 1,
+    gap: 2,
+  },
+  menuTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
+  menuSubtitle: {
+    fontSize: 12,
+    color: '#64748B',
+    lineHeight: 16,
+  },
+  backupActions: {
+    gap: 10,
+    marginTop: 4,
+  },
+  backupBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#2563EB',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    gap: 8,
+  },
+  backupBtnText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  restoreBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#EFF6FF',
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    gap: 8,
+  },
+  restoreBtnText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#2563EB',
+  },
+  modalHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  modalHeaderInfo: {
+    flex: 1,
+    gap: 4,
+  },
+  restoreWarningBox: {
+    flexDirection: 'row',
+    backgroundColor: '#FEF3C7',
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+    borderRadius: 10,
+    padding: 12,
+    gap: 10,
+    alignItems: 'flex-start',
+  },
+  restoreWarningText: {
+    flex: 1,
+    fontSize: 12,
+    color: '#92400E',
+    lineHeight: 16,
+    fontWeight: '500',
+  },
+  pickFileBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F1F5F9',
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderStyle: 'dashed',
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    gap: 8,
+  },
+  pickFileBtnText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#1E293B',
+  },
+  inputLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#334155',
+  },
+  jsonTextArea: {
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 12,
+    color: '#0F172A',
+    backgroundColor: '#F8FAFC',
+    minHeight: 110,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
   },
 });

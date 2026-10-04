@@ -158,6 +158,20 @@ async function initSchema(db: SQLite.SQLiteDatabase): Promise<void> {
       FOREIGN KEY (semester_id) REFERENCES semesters (id) ON DELETE CASCADE,
       FOREIGN KEY (mata_kuliah_id) REFERENCES mata_kuliah (id) ON DELETE CASCADE
     );
+
+    CREATE TABLE IF NOT EXISTS audit_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      timestamp TEXT NOT NULL,
+      action TEXT NOT NULL,
+      entity TEXT NOT NULL,
+      entity_id TEXT,
+      details TEXT,
+      actor TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_audit_logs_action ON audit_logs(action);
+    CREATE INDEX IF NOT EXISTS idx_audit_logs_timestamp ON audit_logs(timestamp);
   `);
 
   // Idempotent column migrations for existing databases
@@ -633,6 +647,7 @@ export async function resetDatabase(): Promise<void> {
       DELETE FROM mahasiswa;
       DELETE FROM semesters;
       DELETE FROM sessions;
+      DELETE FROM audit_logs;
     `);
 
     await seedInitialData(db);

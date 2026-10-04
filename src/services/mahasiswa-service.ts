@@ -1,5 +1,6 @@
 import { getDatabase } from './database';
 import { Mahasiswa, Fakultas, Gender, StatusMahasiswa } from '@/types/mahasiswa';
+import { AuditService } from './audit-service';
 
 const DEFAULT_STUDENT_PHOTOS: Record<string, string> = {
   '2021010001': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&auto=format&fit=crop&q=80',
@@ -220,13 +221,42 @@ export const MahasiswaService = {
       `UPDATE mahasiswa SET ${fields.join(', ')} WHERE id = ? OR nim = ?;`,
       [...args, String(id)]
     );
+
+    if (data.status !== undefined) {
+      try {
+        await AuditService.logActivity(
+          'MAHASISWA_STATUS_CHANGE',
+          'Mahasiswa',
+          id,
+          `Status mahasiswa diubah menjadi ${data.status}`
+        );
+      } catch (err) {
+        console.warn('Gagal mencatat audit log status mahasiswa:', err);
+      }
+    }
+  },
+
+  async updateStatus(id: string | number, status: StatusMahasiswa): Promise<void> {
+    return this.update(id, { status });
   },
 
   async delete(id: string | number): Promise<void> {
     const db = await getDatabase();
+    const existing = await this.getById(id);
     await db.runAsync('DELETE FROM mahasiswa WHERE id = ? OR nim = ?;', [
       id,
       String(id),
     ]);
+
+    try {
+      await AuditService.logActivity(
+        'MASTER_DATA_DELETE',
+        'Mahasiswa',
+        id,
+        `Penghapusan data mahasiswa: ${existing?.nama || id} (${existing?.nim || id})`
+      );
+    } catch (err) {
+      console.warn('Gagal mencatat audit log hapus mahasiswa:', err);
+    }
   },
 };

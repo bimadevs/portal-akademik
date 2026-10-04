@@ -6,13 +6,13 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
-  Share,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import QRCode from 'react-native-qrcode-svg';
 import { MahasiswaService } from '../../services/mahasiswa-service';
+import { PDFService } from '../../services/pdf-service';
 import { Mahasiswa } from '../../types/mahasiswa';
 import { UBD_COLORS } from '../../constants/theme';
 import { PhotoAvatar } from '@/components/photo-avatar';
@@ -50,11 +50,9 @@ export default function KartuMahasiswaDetailScreen() {
   const handleShare = async () => {
     if (!mahasiswa) return;
     try {
-      await Share.share({
-        message: `Kartu Mahasiswa Digital UBD\nNama: ${mahasiswa.nama}\nNIM: ${mahasiswa.nim}\nFakultas: ${mahasiswa.fakultas}\nStatus: ${mahasiswa.status || 'Aktif'}`,
-      });
+      await PDFService.shareStudentCard(mahasiswa);
     } catch (err: any) {
-      console.error('Error saat share:', err);
+      console.error('Error saat share kartu:', err);
     }
   };
 
@@ -182,6 +180,16 @@ export default function KartuMahasiswaDetailScreen() {
             </View>
           </View>
         </View>
+
+        {/* Tombol Bagikan Kartu Mahasiswa */}
+        <TouchableOpacity
+          style={styles.shareCardBtn}
+          onPress={handleShare}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="share-social-outline" size={18} color="#FFFFFF" />
+          <Text style={styles.shareCardBtnText}>Bagikan Kartu Mahasiswa</Text>
+        </TouchableOpacity>
 
         {/* Security & Verification Card Info */}
         <View style={styles.noticeBox}>
@@ -446,5 +454,22 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#64748B',
     lineHeight: 18,
+  },
+  shareCardBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: UBD_COLORS.PRIMARY,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    width: '100%',
+    maxWidth: 380,
+  },
+  shareCardBtnText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
   },
 });

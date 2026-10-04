@@ -17,10 +17,11 @@ Aplikasi dibangun menggunakan pola arsitektur berlapis (*Layered Client Architec
 |  - DosenListScreen, DosenFormScreen                         |
 |  - MataKuliahListScreen, MataKuliahFormScreen               |
 |  - JadwalScreen, JadwalFormScreen                           |
-|  - KRSScreen, KRSChecklistScreen                            |
-|  - PresensiScreen, PresensiChecklistScreen, PresensiRekapScreen |
-|  - NilaiScreen, NilaiInputScreen, TranskripScreen           |
-|  - KartuMahasiswaScreen, SettingsScreen                     |
+|  - KRSScreen, KRSChecklistScreen (with SKS Capping & Disp)  |
+|  - PresensiScreen, PresensiChecklistScreen, PresensiRekap   |
+|  - NilaiScreen, NilaiInputScreen (with 75% Attendance Warn) |
+|  - KartuMahasiswaScreen, SettingsScreen, AuditLogScreen     |
+|  - Export Actions (Cetak KRS, KHS, Presensi, Share Card)    |
 |  - Reusable UI Components (Header, Radio, Picker, Banner)   |
 +-------------------------------------------------------------+
                               |
@@ -39,13 +40,18 @@ Aplikasi dibangun menggunakan pola arsitektur berlapis (*Layered Client Architec
 |  - DosenService, MataKuliahService, JadwalService           |
 |  - KRSService, PresensiService, NilaiService                |
 |  - SemesterService, StatistikService                        |
+|  - PDFService (Template Compiler & PDF Exporter)            |
+|  - AcademicRulesService (SKS Capping & Attendance Rules)    |
+|  - BackupRestoreService (JSON Serialization & Restore)      |
+|  - AuditService (Append-only Audit Log Tracker)             |
 +-------------------------------------------------------------+
                               |
 +-------------------------------------------------------------+
 |                   DATA PERSISTENCE LAYER                    |
 |  - expo-sqlite                                              |
 |  - Tables: sessions, semesters, mahasiswa, dosen,           |
-|    mata_kuliah, jadwal, krs, presensi, nilai                |
+|    mata_kuliah, jadwal, krs, presensi, nilai, audit_logs    |
+|  - File Export/Import: expo-file-system, expo-sharing       |
 +-------------------------------------------------------------+
 ```
 
@@ -57,11 +63,14 @@ Aplikasi dibangun menggunakan pola arsitektur berlapis (*Layered Client Architec
 |---|---|---|---|
 | **Core Framework** | React Native / Expo | Expo ~57.0.26 / RN 0.86.3 | Standar industri ekosistem mobile, performa native tinggi, dukungan lintas platform. |
 | **Routing & Navigasi** | Expo Router | ~57.0.24 | Berbasis sistem berkas (*file-based*), integrasi native tabs dan stack yang mulus. |
-| **Penyimpanan Lokal** | expo-sqlite | `expo-sqlite` | Mendukung relasi antar tabel (foreign keys), query SQL kompleks, dan performa tinggi untuk dataset akademik berelasi. |
+| **Penyimpanan Lokal** | expo-sqlite | ~57.0.3 | Mendukung relasi antar tabel (foreign keys), query SQL kompleks, dan performa tinggi untuk dataset akademik berelasi. |
 | **Bahasa Pemrograman** | TypeScript | ~6.0.3 | Menjamin *type safety*, meminimalkan runtime error, memudahkan kolaborasi AI dan developer. |
 | **Ikonografi** | `@expo/vector-icons` | Ionicons / MaterialIcons | Menyediakan ikon akademik (toga, buku, piala, kartu, rumah) berkualitas vektor tajam. |
-| **Visualisasi Data** | Custom Views + react-native-svg | - | Untuk chart statistik dashboard (bar chart, pie chart) |
-| **QR Code** | react-native-qrcode-svg | - | Untuk generate QR code pada Kartu Mahasiswa Digital |
+| **Visualisasi Data** | Custom Views + react-native-svg | 15.15.4 | Untuk chart statistik dashboard (bar chart, pie chart) |
+| **QR Code** | react-native-qrcode-svg | ^6.3.26 | Untuk generate QR code pada Kartu Mahasiswa Digital |
+| **Mesin Kompilasi PDF** | expo-print | ~57.0.x | Mengompilasi string template HTML/CSS ber-kop resmi UBD menjadi berkas PDF lokal secara 100% offline. |
+| **Sistem Berbagi Berkas** | expo-sharing | ~57.0.x | Membuka dialog sistem native Android/iOS untuk menyimpan atau membagikan berkas PDF & arsip JSON cadangan. |
+
 
 ---
 
@@ -223,6 +232,17 @@ export interface Nilai {
   createdAt: number;
 }
 
+export interface AuditLog {
+  id: number;
+  timestamp: string;
+  action: string;
+  entity: string;
+  entityId?: string;
+  details?: string;
+  actor: string;
+  createdAt: string;
+}
+
 export interface UserSession {
   username: string;
   isLoggedIn: boolean;
@@ -323,6 +343,19 @@ CREATE TABLE IF NOT EXISTS nilai (
     created_at INTEGER NOT NULL,
     FOREIGN KEY (krs_id) REFERENCES krs(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT NOT NULL,
+    action TEXT NOT NULL,
+    entity TEXT NOT NULL,
+    entity_id TEXT,
+    details TEXT,
+    actor TEXT NOT NULL,
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_action ON audit_logs(action);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_timestamp ON audit_logs(timestamp);
 ```
 
 ---

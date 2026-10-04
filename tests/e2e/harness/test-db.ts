@@ -79,6 +79,7 @@ const SCHEMA_SQL = `
     nama TEXT NOT NULL,
     sks INTEGER NOT NULL CHECK(sks >= 1 AND sks <= 6),
     fakultas TEXT NOT NULL,
+    semester INTEGER DEFAULT 1,
     dosen_id INTEGER,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
@@ -88,13 +89,15 @@ const SCHEMA_SQL = `
   CREATE TABLE IF NOT EXISTS jadwal (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     mata_kuliah_id INTEGER NOT NULL,
+    dosen_id INTEGER,
     hari TEXT NOT NULL,
     jam_mulai TEXT NOT NULL,
     jam_selesai TEXT NOT NULL,
     ruangan TEXT NOT NULL,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
-    FOREIGN KEY (mata_kuliah_id) REFERENCES mata_kuliah (id) ON DELETE CASCADE
+    FOREIGN KEY (mata_kuliah_id) REFERENCES mata_kuliah (id) ON DELETE CASCADE,
+    FOREIGN KEY (dosen_id) REFERENCES dosen (id) ON DELETE SET NULL
   );
 
   CREATE TABLE IF NOT EXISTS krs (
@@ -144,6 +147,20 @@ const SCHEMA_SQL = `
     FOREIGN KEY (semester_id) REFERENCES semesters (id) ON DELETE CASCADE,
     FOREIGN KEY (mata_kuliah_id) REFERENCES mata_kuliah (id) ON DELETE CASCADE
   );
+
+  CREATE TABLE IF NOT EXISTS audit_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT NOT NULL,
+    action TEXT NOT NULL,
+    entity TEXT NOT NULL,
+    entity_id TEXT,
+    details TEXT,
+    actor TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_audit_logs_action ON audit_logs(action);
+  CREATE INDEX IF NOT EXISTS idx_audit_logs_timestamp ON audit_logs(timestamp);
 `;
 
 function populateSeeds(db: Database) {

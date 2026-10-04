@@ -69,4 +69,18 @@ export class SemesterService {
       updatedAt: created.updated_at,
     };
   }
+
+  static async getById(id: number | string): Promise<Semester | null> {
+    const db = await getDatabase();
+    const row = await db.getFirstAsync<any>(`SELECT * FROM semesters WHERE id = ? LIMIT 1;`, [id]);
+    if (!row) return null;
+    return {
+      id: row.id,
+      nama: row.nama,
+      aktif: row.aktif,
+      is_active: row.aktif,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    };
+  }
 }

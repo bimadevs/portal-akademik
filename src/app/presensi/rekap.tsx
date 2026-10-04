@@ -6,10 +6,15 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { PresensiService, RekapPresensi } from '../../services/presensi-service';
 import { SemesterService } from '../../services/semester-service';
+import { MataKuliahService } from '../../services/mata-kuliah-service';
+import { PDFService } from '../../services/pdf-service';
+import { Semester, MataKuliah } from '../../types/mahasiswa';
 import { UBD_COLORS } from '../../constants/theme';
 
 export default function PresensiRekapScreen() {
@@ -19,13 +24,21 @@ export default function PresensiRekapScreen() {
   }>();
 
   const [rekapList, setRekapList] = useState<RekapPresensi[]>([]);
+  const [semester, setSemester] = useState<Semester | null>(null);
+  const [mataKuliah, setMataKuliah] = useState<MataKuliah | null>(null);
   const [loading, setLoading] = useState(true);
+  const [printing, setPrinting] = useState(false);
 
   useEffect(() => {
     async function load() {
       try {
         if (!mataKuliahId) return;
         const sem = await SemesterService.getActive();
+        setSemester(sem);
+
+        const mk = await MataKuliahService.getById(mataKuliahId);
+        setMataKuliah(mk);
+
         if (sem) {
           const list = await PresensiService.getRekapByMataKuliah(mataKuliahId, sem.id);
           setRekapList(list);
@@ -39,6 +52,31 @@ export default function PresensiRekapScreen() {
     load();
   }, [mataKuliahId]);
 
+  const handleExportPDF = async () => {
+    if (!mataKuliah || !semester) {
+      Alert.alert('Perhatian', 'Informasi mata kuliah atau semester belum lengkap.');
+      return;
+    }
+
+    if (rekapList.length === 0) {
+      Alert.alert('Perhatian', 'Belum ada data kehadiran peserta untuk diekspor ke PDF.');
+      return;
+    }
+
+    setPrinting(true);
+    try {
+      await PDFService.generatePresensiPdf({
+        mataKuliah,
+        rekapList,
+        semester,
+      });
+    } catch (err: any) {
+      Alert.alert('Gagal Ekspor', err.message || 'Terjadi kesalahan saat mengekspor Berita Acara Presensi.');
+    } finally {
+      setPrinting(false);
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.center}>
@@ -50,8 +88,26 @@ export default function PresensiRekapScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Rekap Presensi Mahasiswa</Text>
-        <Text style={styles.sub}>{nama}</Text>
+        <View style={styles.headerTitleCol}>
+          <Text style={styles.title}>Rekap Presensi Mahasiswa</Text>
+          <Text style={styles.sub}>{mataKuliah?.nama || nama} ({mataKuliah?.kode || 'MK'})</Text>
+          <Text style={styles.semText}>Semester: {semester?.nama || 'Semester Aktif'}</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.exportBtn}
+          onPress={handleExportPDF}
+          disabled={printing}
+          activeOpacity={0.7}
+        >
+          {printing ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <>
+              <Ionicons name="document-text-outline" size={16} color="#FFFFFF" />
+              <Text style={styles.exportBtnText}>Ekspor PDF</Text>
+            </>
+          )}
+        </TouchableOpacity>
       </View>
 
       <FlatList
@@ -69,8 +125,8 @@ export default function PresensiRekapScreen() {
             <View style={styles.card}>
               <View style={styles.cardTop}>
                 <View style={styles.studentInfo}>
-                  <Text style={styles.studentNama}>{item.mahasiswa_nama}</Text>
-                  <Text style={styles.studentNim}>NIM: {item.mahasiswa_nim}</Text>
+                  <Text style={styles.studentNama}>{item.nama || item.mahasiswa_nama}</Text>
+                  <Text style={styles.studentNim}>NIM: {item.nim || item.mahasiswa_nim}</Text>
                 </View>
                 <View
                   style={[
@@ -84,7 +140,7 @@ export default function PresensiRekapScreen() {
                       { color: isSafe ? '#166534' : '#991B1B' },
                     ]}
                   >
-                    {item.persentase}%
+                    {item.persentase}% {isSafe ? '(Memenuhi)' : '(< 75%)'}
                   </Text>
                 </View>
               </View>
@@ -103,11 +159,11 @@ export default function PresensiRekapScreen() {
                   <Text style={styles.statLabel}>Sakit</Text>
                 </View>
                 <View style={styles.statBox}>
-                  <Text style={styles.statVal}>{item.alfa}</Text>
+                  <Text style={styles.statVal}>{item.alpha ?? (item as any).alfa ?? 0}</Text>
                   <Text style={styles.statLabel}>Alfa</Text>
                 </View>
                 <View style={styles.statBox}>
-                  <Text style={styles.statVal}>{item.total_pertemuan}</Text>
+                  <Text style={styles.statVal}>{item.totalPertemuan ?? item.total_pertemuan ?? 0}</Text>
                   <Text style={styles.statLabel}>Total</Text>
                 </View>
               </View>
@@ -129,6 +185,13 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderColor: '#E2E8F0',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerTitleCol: {
+    flex: 1,
+    paddingRight: 12,
   },
   title: {
     fontSize: 16,
@@ -137,8 +200,28 @@ const styles = StyleSheet.create({
   },
   sub: {
     fontSize: 13,
-    color: '#64748B',
+    fontWeight: '600',
+    color: '#334155',
     marginTop: 2,
+  },
+  semText: {
+    fontSize: 11,
+    color: UBD_COLORS.ACCENT_DARK,
+    marginTop: 2,
+  },
+  exportBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: UBD_COLORS.PRIMARY,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  exportBtnText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
   },
   listContent: {
     padding: 16,
@@ -176,7 +259,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   pctText: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '800',
   },
   statsRow: {

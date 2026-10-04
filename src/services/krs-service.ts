@@ -1,5 +1,14 @@
 import { getDatabase } from './database';
 import { KRS } from '@/types/mahasiswa';
+import { AuditService } from './audit-service';
+import { AcademicRulesService } from './academic-rules-service';
+
+export interface KRSDispensasiInfo {
+  nomorSurat: string;
+  totalSks?: number;
+  kuotaNormal?: number;
+  actor?: string;
+}
 
 export const KRSService = {
   async getByMahasiswaAndSemester(
@@ -42,11 +51,51 @@ export const KRSService = {
   async saveKrs(
     mahasiswaId: number | string,
     semesterId: number | string,
-    mataKuliahIds: (number | string)[]
+    mataKuliahIds: (number | string)[],
+    dispensasiInfoOrBoolean?: boolean | KRSDispensasiInfo,
+    dispensationNomorParam?: string
   ): Promise<void> {
     const db = await getDatabase();
     const now = new Date().toISOString();
 
+    let isDispensation = false;
+    let dispensationNomor: string | undefined;
+    let dispensationActor = 'admin';
+
+    if (typeof dispensasiInfoOrBoolean === 'boolean') {
+      isDispensation = dispensasiInfoOrBoolean;
+      dispensationNomor = dispensationNomorParam;
+    } else if (dispensasiInfoOrBoolean && typeof dispensasiInfoOrBoolean === 'object') {
+      isDispensation = true;
+      dispensationNomor = dispensasiInfoOrBoolean.nomorSurat;
+      dispensationActor = dispensasiInfoOrBoolean.actor || 'admin';
+    }
+
+    // 1. Validasi Batas Beban Studi (Regulasi Dikti)
+    let totalSks = 0;
+    if (mataKuliahIds.length > 0) {
+      const placeholders = mataKuliahIds.map(() => '?').join(',');
+      const rows = await db.getAllAsync<{ sks: number }>(
+        `SELECT sks FROM mata_kuliah WHERE id IN (${placeholders});`,
+        mataKuliahIds
+      );
+      totalSks = rows.reduce((sum, r) => sum + (r.sks || 0), 0);
+    }
+
+    const quotaInfo = await AcademicRulesService.getSksQuotaInfo(mahasiswaId, semesterId, totalSks);
+
+    if (totalSks > quotaInfo.kuotaMaksimal) {
+      if (!isDispensation) {
+        throw new Error(
+          `Melebihi batas beban studi: Total SKS (${totalSks}) melebihi kuota maksimal (${quotaInfo.kuotaMaksimal} SKS)`
+        );
+      }
+      if (!dispensationNomor || !dispensationNomor.trim()) {
+        throw new Error('Nomor surat keputusan Dekanat wajib diisi untuk dispensasi SKS.');
+      }
+    }
+
+    // 2. Simpan perubahan KRS secara transaksional
     await db.withTransactionAsync(async () => {
       // Hapus data KRS mahasiswa di semester ini yang tidak ada di list baru
       if (mataKuliahIds.length === 0) {
@@ -77,14 +126,32 @@ export const KRSService = {
         }
       }
     });
+
+    // 3. Catat audit log jika terdapat dispensasi dekanat yang disetujui
+    if (isDispensation && dispensationNomor && dispensationNomor.trim()) {
+      try {
+        const details = `Dispensasi SKS: ${totalSks} SKS (Kuota normal ${quotaInfo.kuotaMaksimal} SKS) - No Surat: ${dispensationNomor.trim()}`;
+        await AuditService.logActivity(
+          'KRS_DISPENSASI',
+          'KRS',
+          String(mahasiswaId),
+          details,
+          dispensationActor
+        );
+      } catch (err) {
+        console.warn('Gagal mencatat audit log dispensasi KRS:', err);
+      }
+    }
   },
 
   async saveKRS(
     mahasiswaId: number | string,
     semesterId: number | string,
-    mataKuliahIds: (number | string)[]
+    mataKuliahIds: (number | string)[],
+    dispensasiInfoOrBoolean?: boolean | KRSDispensasiInfo,
+    dispensationNomorParam?: string
   ): Promise<void> {
-    return this.saveKrs(mahasiswaId, semesterId, mataKuliahIds);
+    return this.saveKrs(mahasiswaId, semesterId, mataKuliahIds, dispensasiInfoOrBoolean, dispensationNomorParam);
   },
 
   async getTotalSks(

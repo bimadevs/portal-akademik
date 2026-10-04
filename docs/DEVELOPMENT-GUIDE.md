@@ -149,6 +149,50 @@ Dokumen ini adalah panduan pelaksanaan teknis bertahap (*Step-by-Step Implementa
 - Pastikan integritas referensial SQLite.
 - Demo end-to-end seluruh modul.
 
+### Part C (V3 - Professional Enterprise Expansion)
+
+**Fase 20: Pustaka Dokumen & Template Ekspor PDF**
+- Pasang pustaka `expo-print` dan `expo-sharing` via `npx expo install expo-print expo-sharing`.
+- Buat service `src/services/pdf-service.ts`:
+  - `generateKRSPdf(mahasiswa, krsItems, semester)`: Render dokumen KRS ber-kop surat resmi UBD, data mahasiswa, tabel mata kuliah, tanda tangan, dan verifikasi QR.
+  - `generateKHSPdf(mahasiswa, nilaiItems, semester, ips, ipk)`: Render lembar KHS/Transkrip Nilai resmi dengan tanda tangan BAAK.
+  - `generatePresensiPdf(mataKuliah, rekapList)`: Render berita acara absensi kelas.
+  - `shareStudentCard(mahasiswa)`: Mekanisme berbagi kartu mahasiswa digital.
+- Tambahkan tombol aksi ekspor pada layar terkait (`krs/[mahasiswaId].tsx`, `nilai/[mahasiswaId].tsx`, `presensi/rekap.tsx`, `kartu/[mahasiswaId].tsx`).
+
+**Fase 21: Mesin Penegakan Aturan Akademik (Academic Rules)**
+- Buat service `src/services/academic-rules-service.ts`:
+  - `getMaxSksForStudent(mahasiswaId, currentSemesterId)`: Kalkulasi beban SKS maksimal berdasarkan IPS semester sebelumnya (standar Dikti: 15-24 SKS, semester 1 = 20 SKS).
+  - `checkAttendanceEligibility(mahasiswaId, mataKuliahId, semesterId)`: Cek apakah kehadiran >= 75%.
+- Update UI `src/app/krs/[mahasiswaId].tsx`:
+  - Tampilkan kuota SKS dan indikator batas.
+  - Nonaktifkan tombol simpan jika over-quota.
+  - Sediakan toggle "Dispensasi SKS Dekanat" + form catatan dispensasi.
+- Update UI `src/app/nilai/index.tsx` & input nilai:
+  - Tampilkan lencana peringatan ("Kehadiran < 75%") bagi mahasiswa yang kurang absensi.
+
+**Fase 22: Cadangan & Pemulihan Basis Data (Backup & Restore)**
+- Buat service `src/services/backup-restore-service.ts`:
+  - `exportBackupJson()`: Ekspor seluruh tabel database ke berkas `.json` terstruktur dengan checksum dan buka via `expo-sharing`.
+  - `importRestoreJson(jsonString)`: Validasi skema, parsing, dan jalankan transaksi atomik `PRAGMA foreign_keys = OFF; ...; PRAGMA foreign_keys = ON;`.
+- Update UI `src/app/pengaturan/index.tsx`:
+  - Tambahkan grup menu "Cadangan & Pemulihan Data" (Tombol Backup & Tombol Restore).
+
+**Fase 23: Audit Log Aktivitas Administratif**
+- Tambahkan tabel `audit_logs` pada `src/services/database.ts` dengan indeks performa.
+- Buat service `src/services/audit-service.ts`:
+  - `logActivity(action, entity, entityId, details, actor)`: Simpan riwayat mutasi kritis.
+  - `getAuditLogs(filterAction?, limit?)`: Ambil daftar audit log terurut.
+- Buat layar `src/app/pengaturan/audit-log.tsx`:
+  - Daftar riwayat kronologis, filter jenis aksi, pencarian, dan visual badge aksi.
+- Rekam aktivitas kritis pada mutasi nilai, dispensasi SKS, ganti status mahasiswa, dan restore data.
+
+**Fase 24: QA Final V3 & Verifikasi Ekspor Dokumen**
+- Jalankan `npx expo lint` dan `npx tsc --noEmit`.
+- Verifikasi pencetakan PDF di Android, iOS, dan Web.
+- Verifikasi alur dispensasi SKS dan pencatatan audit log.
+- Verifikasi backup JSON dan pemulihan database tanpa kehilangan relasi data.
+
 ---
 
 ## 2. Matriks Rencana Pengujian Manual (QA Test Cases)
@@ -193,6 +237,16 @@ Dokumen ini adalah panduan pelaksanaan teknis bertahap (*Step-by-Step Implementa
 | **TC-36** | Search Dosen | Ketik nama di search bar daftar dosen | Filter real-time berfungsi | [ ] |
 | **TC-37** | Search Matkul | Ketik kode MK di search bar | Filter real-time berfungsi | [ ] |
 | **TC-38** | Integritas Referensial | Coba hapus dosen yang mengampu matkul | Sistem mencegah penghapusan / menampilkan peringatan | [ ] |
+| **TC-39** | Cetak KRS PDF | Di layar KRS klik "Cetak KRS (PDF)" | PDF terkompilasi dengan kop surat UBD dan lembar dialog share muncul | [ ] |
+| **TC-40** | Cetak KHS / Transkrip | Di layar Nilai klik "Cetak KHS / Transkrip" | PDF memuat riwayat nilai, SKS, IPS, IPK, dan tanda tangan BAAK | [ ] |
+| **TC-41** | Ekspor Berita Acara Presensi | Di layar Rekap Presensi klik "Ekspor PDF" | PDF memuat rekap kehadiran seluruh mahasiswa kelas | [ ] |
+| **TC-42** | Pembatasan Kuota SKS | Centang matkul melebihi kuota IPS (misal >18 SKS) | Tombol simpan terkunci, muncul peringatan batas beban SKS | [ ] |
+| **TC-43** | Dispensasi SKS Dekanat | Aktifkan toggle dispensasi dan isi nomor surat | Tombol simpan aktif, tersimpan dan tercatat di Audit Log | [ ] |
+| **TC-44** | Peringatan Presensi 75% | Buka input nilai untuk mahasiswa dengan absen <75% | Muncul lencana peringatan visual "Kehadiran < 75%" | [ ] |
+| **TC-45** | Cadangkan Data (Backup) | Di Pengaturan klik "Cadangkan Data (JSON)" | Berkas JSON lengkap tersimpan/dibagikan via dialog sistem | [ ] |
+| **TC-46** | Pulihkan Data (Restore) | Unggah file JSON cadangan dan konfirmasi | Seluruh data dipulihkan secara atomik tanpa merusak skema | [ ] |
+| **TC-47** | Catat Audit Log | Ubah nilai mahasiswa atau status ke Cuti | Catatan baru muncul di layar Audit Log dengan detail mutasi | [ ] |
+| **TC-48** | Pencarian & Filter Audit Log | Buka Audit Log, filter berdasarkan aksi | Daftar riwayat memfilter sesuai kategori aksi yang dipilih | [ ] |
 
 ---
 

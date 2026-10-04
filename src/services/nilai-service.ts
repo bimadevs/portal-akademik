@@ -1,5 +1,6 @@
 import { getDatabase } from './database';
 import { Nilai, NilaiHuruf, NILAI_BOBOT } from '../types/mahasiswa';
+import { AuditService } from './audit-service';
 
 export interface NilaiInput {
   mahasiswa_id?: string | number;
@@ -166,14 +167,27 @@ export class NilaiService {
       }
     };
 
+    let savedNilai: Nilai;
     if (inTx) {
-      return runSave();
+      savedNilai = await runSave();
     } else {
       await db.runAsync('BEGIN TRANSACTION;');
-      const result = await runSave();
+      savedNilai = await runSave();
       await db.runAsync('COMMIT;');
-      return result;
     }
+
+    try {
+      await AuditService.logActivity(
+        'NILAI_MUTATION',
+        'Nilai',
+        savedNilai.id,
+        `Input/pembaruan nilai mahasiswa ID ${mId} mata kuliah ID ${mkId}: Akhir=${akhir}, Huruf=${huruf}, Bobot=${bobot}`
+      );
+    } catch (err) {
+      console.warn('Gagal mencatat audit log mutasi nilai:', err);
+    }
+
+    return savedNilai;
   }
 
   static async hitungIPS(mahasiswaId: string | number, semesterId: string | number): Promise<{ totalSks: number; ips: number }> {

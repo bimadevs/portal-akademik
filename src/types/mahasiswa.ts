@@ -235,6 +235,54 @@ export interface UserSession {
   token?: string;
 }
 
+export type AuditActionType =
+  | 'NILAI_MUTATION'
+  | 'KRS_DISPENSASI'
+  | 'MAHASISWA_STATUS_CHANGE'
+  | 'MASTER_DATA_DELETE'
+  | 'DATABASE_RESTORE';
+
+export interface AuditLog {
+  id: number;
+  timestamp: string;
+  action: AuditActionType | string;
+  entity: string;
+  entityId?: string | null;
+  entity_id?: string | null;
+  details?: string | null;
+  actor: string;
+  createdAt?: string;
+  created_at?: string;
+}
+
+export interface SksQuotaInfo {
+  ipsLalu: number | null;
+  kuotaMaksimal: number;
+  sksTerpilih: number;
+  isOverLimit: boolean;
+  isDispensasiActive?: boolean;
+  nomorSuratDispensasi?: string;
+}
+
+export interface BackupPayload {
+  app: string;
+  version: string;
+  exportedAt: string;
+  checksum?: string;
+  tables: {
+    sessions?: any[];
+    semesters: any[];
+    mahasiswa: any[];
+    dosen: any[];
+    mata_kuliah: any[];
+    jadwal: any[];
+    krs: any[];
+    presensi: any[];
+    nilai: any[];
+    audit_logs: any[];
+  };
+}
+
 export const STORAGE_KEYS = {
   SESSION: '@ubd_session_v1',
   MAHASISWA_LIST: '@ubd_mahasiswa_v1',
@@ -243,5 +291,5 @@ export const STORAGE_KEYS = {
 
 export const DATABASE = {
   NAME: 'portal_akademik_ubd.db',
-  VERSION: 2,
+  VERSION: 3,
 } as const;

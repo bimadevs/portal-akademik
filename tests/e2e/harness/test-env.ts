@@ -117,6 +117,50 @@ mock.module('expo-crypto', () => ({
   randomUUID: () => crypto.randomUUID(),
 }));
 
+// 7. Mock expo-print
+export const mockExpoPrint = {
+  lastPrintedHtml: '',
+  printToFileAsync: async ({ html }: { html: string }) => {
+    mockExpoPrint.lastPrintedHtml = html;
+    return { uri: 'file:///mock/document.pdf', numberOfPages: 1 };
+  },
+  printAsync: async ({ html }: { html: string }) => {
+    mockExpoPrint.lastPrintedHtml = html;
+  },
+};
+mock.module('expo-print', () => mockExpoPrint);
+
+// 8. Mock expo-sharing
+export const mockExpoSharing = {
+  lastSharedUrl: '',
+  isAvailableAsync: async () => true,
+  shareAsync: async (url: string, options?: any) => {
+    mockExpoSharing.lastSharedUrl = url;
+  },
+};
+mock.module('expo-sharing', () => mockExpoSharing);
+
+// 9. Mock expo-file-system
+export const mockExpoFileSystem = {
+  cacheDirectory: 'file:///mock/cache/',
+  lastWrittenFile: '',
+  lastWrittenContent: '',
+  writeAsStringAsync: async (path: string, contents: string, options?: any) => {
+    mockExpoFileSystem.lastWrittenFile = path;
+    mockExpoFileSystem.lastWrittenContent = contents;
+  },
+  readAsStringAsync: async (path: string) => '',
+  EncodingType: { UTF8: 'utf8' },
+};
+mock.module('expo-file-system/legacy', () => mockExpoFileSystem);
+mock.module('expo-file-system', () => ({
+  File: {
+    pickFileAsync: async () => ({ canceled: true }),
+  },
+  Directory: {},
+  Paths: {},
+}));
+
 export const mockAlerts: Array<{ title: string; message?: string; buttons?: any[] }> = [];
 export const mockBackHandler = { exitAppCalled: false };
 
@@ -125,4 +169,8 @@ export function clearMockHistory() {
   mockNavigation.reset();
   mockAlerts.length = 0;
   mockBackHandler.exitAppCalled = false;
+  mockExpoPrint.lastPrintedHtml = '';
+  mockExpoSharing.lastSharedUrl = '';
+  mockExpoFileSystem.lastWrittenFile = '';
+  mockExpoFileSystem.lastWrittenContent = '';
 }
