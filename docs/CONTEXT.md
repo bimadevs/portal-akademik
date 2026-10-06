@@ -27,20 +27,24 @@ Tujuan utama proyek:
 
 ---
 
-## 3. Identitas Visual & Branding Kampus
+## 3. Identitas Visual & Branding Kampus (UBD Official)
 
-Aplikasi mengadopsi identitas visual resmi Universitas Buddhi Dharma:
+Aplikasi mengadopsi identitas visual resmi Universitas Buddhi Dharma (UBD) yang diselaraskan dengan logo resmi kampus:
 - **Institusi**: Universitas Buddhi Dharma (UBD).
 - **Motto Resmi**: *"Kreativitas Membangkitkan Inovasi"*.
-- **Palet Warna Utama**:
-  - Primary Blue: `#2B52BA` / `#3B62C6` (Warna tombol `LOGIN`, `SAVE`, indikator aksi aktif).
-  - Background: `#FFFFFF` (Putih bersih dengan tata letak minimalis).
-  - Border & Dividers: `#CCCCCC` / `#E0E0E0` (Garis pemisah list, border input field).
-  - Text: `#1E1E1E` (Teks utama kontras tinggi), `#666666` (Placeholder & secondary text).
-- **Aset Header**:
-  - Logo UBD resmi dengan lambang universitas dan teks motto di bagian header setiap layar utama.
+- **Palet Warna Resmi (Berdasarkan Logo UBD)**:
+  - **Primary (UBD Crimson Red)**: `#B3202A` / `#941B23` (Warna kelopak teratai & wordmark resmi UBD, tombol utama, tab aktif, header institusional).
+  - **Secondary (UBD Royal Blue)**: `#2556A8` / `#1E4282` (Warna stupa Borobudur & buku terbuka, badge akademik, info).
+  - **Tertiary Accent (Saffron & Sun Gold)**: `#EE8A25` / `#F5C518` (Warna roda dharma cakram, cincin keemasan, status peringatan & sorotan).
+  - **Background & Neutrals (Warm Stone)**: `#FAF8F6` / `#F4F1EE` (Latar belakang modern bertekstur hangat, permukaan kartu `#FFFFFF`).
+  - **Border & Dividers**: `#E8E3DE` / `#D4CDC5` (Garis pemisah list, border input field).
+  - **Text**: `#1C1917` (Teks utama kontras tinggi), `#57514C` (Teks sekunder/muted).
+  - **Status**: Vermilion (`#D7372A`) untuk aksi berbahaya terpisah dari crimson kampus, Emerald (`#1F8A5B`) untuk presensi aman/lulus.
+- **Aset & Motif Brand**:
+  - Logo UBD resmi (`assets/images/ubd-logo.webp`) dengan watermark motif 12 kelopak teratai (`LotusRing`).
 - **Tipografi**:
-  - Font Sans-Serif sistem (Roboto pada Android, San Francisco pada iOS) dengan variasi ketebalan `Regular`, `Medium`, dan `Bold`.
+  - Display & Headings: **Bricolage Grotesque** (`@expo-google-fonts/bricolage-grotesque`, 700 Bold) untuk judul layar, angka statistik tabular, dan nama universitas.
+  - Body Text: System sans-serif (San Francisco di iOS, Roboto di Android) dengan skala modular.
 
 ---
 

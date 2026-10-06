@@ -472,8 +472,8 @@ const styles = StyleSheet.create({
     borderColor: colors.borderSubtle,
   },
   quotaBadgeDanger: {
-    backgroundColor: '#FEE2E2',
-    borderColor: '#FECACA',
+    backgroundColor: colors.dangerLight,
+    borderColor: colors.dangerBorder,
   },
   quotaBadgeText: {
     fontSize: 12,
@@ -504,9 +504,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#FEF2F2',
+    backgroundColor: colors.dangerLight,
     borderWidth: 1,
-    borderColor: '#FCA5A5',
+    borderColor: colors.dangerBorder,
     borderRadius: radius.sm,
     padding: 10,
     marginTop: spacing.sm,

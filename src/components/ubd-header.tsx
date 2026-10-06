@@ -53,35 +53,37 @@ export function UBDHeader({
           <Text style={styles.adminText}>Admin</Text>
         </View>
 
-        {/* Settings Action */}
+        {/* Settings Action (44x44 Apple HIG Touch Target) */}
         {showSettings && onSettings && (
           <Pressable
             onPress={onSettings}
             style={({ pressed }) => [
+              styles.iconButton,
               styles.settingsButton,
-              pressed && styles.settingsButtonPressed,
+              pressed && styles.iconButtonPressed,
             ]}
             accessibilityRole="button"
             accessibilityLabel="Pengaturan Aplikasi"
-            hitSlop={8}
+            hitSlop={6}
           >
-            <Ionicons name="settings-outline" size={17} color={colors.textSecondary} />
+            <Ionicons name="settings-outline" size={19} color={colors.textSecondary} />
           </Pressable>
         )}
 
-        {/* Logout Action */}
+        {/* Logout Action (44x44 Apple HIG Touch Target) */}
         {showLogout && onLogout && (
           <Pressable
             onPress={onLogout}
             style={({ pressed }) => [
+              styles.iconButton,
               styles.logoutButton,
-              pressed && styles.logoutButtonPressed,
+              pressed && styles.iconButtonPressed,
             ]}
             accessibilityRole="button"
-            accessibilityLabel="Logout Administrator"
-            hitSlop={8}
+            accessibilityLabel="Keluar dari sesi Administrator"
+            hitSlop={6}
           >
-            <Ionicons name="log-out-outline" size={17} color={colors.danger} />
+            <Ionicons name="log-out-outline" size={19} color={colors.danger} />
           </Pressable>
         )}
       </View>
@@ -94,7 +96,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: colors.surface,
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm + 2,
+    paddingVertical: spacing.sm,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -109,14 +111,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logoWrapper: {
-    height: 38,
+    height: 40,
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
   logoImage: {
-    width: '100%',
-    height: '100%',
-    maxWidth: 185,
+    width: 190,
+    height: 38,
   },
   subtitleText: {
     fontSize: 11,
@@ -127,18 +128,18 @@ const styles = StyleSheet.create({
   rightSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: spacing.xs + 2,
   },
   adminTag: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
     backgroundColor: colors.primaryLight,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 9,
+    paddingVertical: 5,
     borderRadius: radius.full,
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: colors.primaryBorder,
   },
   adminAvatar: {
     width: 18,
@@ -153,32 +154,24 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.primary,
   },
-  settingsButton: {
-    width: 34,
-    height: 34,
+  iconButton: {
+    width: 44,
+    height: 44,
     borderRadius: radius.md,
-    backgroundColor: colors.surfaceSubtle,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
+  },
+  iconButtonPressed: {
+    opacity: 0.75,
+    transform: [{ scale: 0.96 }],
+  },
+  settingsButton: {
+    backgroundColor: colors.surfaceSubtle,
     borderColor: colors.border,
   },
-  settingsButtonPressed: {
-    opacity: 0.75,
-    transform: [{ scale: 0.95 }],
-  },
   logoutButton: {
-    width: 34,
-    height: 34,
-    borderRadius: radius.md,
     backgroundColor: colors.dangerLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#FECACA',
-  },
-  logoutButtonPressed: {
-    opacity: 0.75,
-    transform: [{ scale: 0.95 }],
+    borderColor: colors.dangerBorder,
   },
 });

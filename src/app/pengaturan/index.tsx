@@ -19,7 +19,7 @@ import { SemesterService } from '../../services/semester-service';
 import { resetOperationalData, resetDatabase } from '../../services/database';
 import { BackupRestoreService } from '../../services/backup-restore-service';
 import { Semester } from '../../types/mahasiswa';
-import { UBD_COLORS } from '../../constants/theme';
+import { colors, fonts, radius, shadows, spacing } from '@/theme';
 
 export default function PengaturanScreen() {
   const router = useRouter();
@@ -255,7 +255,7 @@ export default function PengaturanScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -268,7 +268,7 @@ export default function PengaturanScreen() {
           <Text style={styles.sectionHeading}>Profil Administrator</Text>
           <View style={styles.profileCard}>
             <View style={styles.profileAvatar}>
-              <Ionicons name="person" size={28} color="#FFFFFF" />
+              <Ionicons name="person" size={26} color={colors.textOnPrimary} />
             </View>
             <View style={styles.profileInfo}>
               <Text style={styles.profileName}>{userSession?.username || 'Administrator'}</Text>
@@ -279,7 +279,7 @@ export default function PengaturanScreen() {
               </View>
             </View>
             <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-              <Ionicons name="log-out-outline" size={20} color="#DC2626" />
+              <Ionicons name="log-out-outline" size={20} color={colors.danger} />
             </TouchableOpacity>
           </View>
         </View>
@@ -292,7 +292,7 @@ export default function PengaturanScreen() {
               style={styles.addSemBtn}
               onPress={() => setModalVisible(true)}
             >
-              <Ionicons name="add" size={16} color="#2563EB" />
+              <Ionicons name="add" size={16} color={colors.primary} />
               <Text style={styles.addSemText}>Tambah</Text>
             </TouchableOpacity>
           </View>
@@ -313,9 +313,9 @@ export default function PengaturanScreen() {
                   >
                     <View style={styles.semRadio}>
                       {isSelected ? (
-                        <Ionicons name="radio-button-on" size={20} color="#2563EB" />
+                        <Ionicons name="radio-button-on" size={20} color={colors.primary} />
                       ) : (
-                        <Ionicons name="radio-button-off" size={20} color="#94A3B8" />
+                        <Ionicons name="radio-button-off" size={20} color={colors.textMuted} />
                       )}
                     </View>
                     <View style={styles.semInfo}>
@@ -343,8 +343,8 @@ export default function PengaturanScreen() {
             onPress={() => router.push('/pengaturan/audit-log' as any)}
             activeOpacity={0.7}
           >
-            <View style={[styles.menuIconContainer, { backgroundColor: '#EEF2FF' }]}>
-              <Ionicons name="shield-checkmark" size={24} color="#4F46E5" />
+            <View style={[styles.menuIconContainer, { backgroundColor: colors.primaryLight }]}>
+              <Ionicons name="shield-checkmark" size={24} color={colors.primary} />
             </View>
             <View style={styles.menuInfo}>
               <Text style={styles.menuTitle}>Riwayat & Log Audit Sistem</Text>
@@ -352,7 +352,7 @@ export default function PengaturanScreen() {
                 Pantau mutasi nilai, perubahan status mahasiswa, dispensasi KRS, dan aktivitas sistem.
               </Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
+            <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
           </TouchableOpacity>
         </View>
 
@@ -372,10 +372,10 @@ export default function PengaturanScreen() {
                 activeOpacity={0.8}
               >
                 {backupLoading ? (
-                  <ActivityIndicator size="small" color="#FFFFFF" />
+                  <ActivityIndicator size="small" color={colors.textOnPrimary} />
                 ) : (
                   <>
-                    <Ionicons name="cloud-download-outline" size={18} color="#FFFFFF" />
+                    <Ionicons name="cloud-download-outline" size={18} color={colors.textOnPrimary} />
                     <Text style={styles.backupBtnText}>Cadangkan Data (Backup JSON)</Text>
                   </>
                 )}
@@ -387,7 +387,7 @@ export default function PengaturanScreen() {
                 disabled={backupLoading}
                 activeOpacity={0.8}
               >
-                <Ionicons name="cloud-upload-outline" size={18} color="#2563EB" />
+                <Ionicons name="cloud-upload-outline" size={18} color={colors.accent} />
                 <Text style={styles.restoreBtnText}>Pulihkan Data (Restore JSON)</Text>
               </TouchableOpacity>
             </View>
@@ -418,7 +418,7 @@ export default function PengaturanScreen() {
             <View style={styles.infoRow}>
               <Text style={styles.infoKey}>Versi Sistem</Text>
               <View style={styles.versionBadge}>
-                <Text style={styles.versionBadgeText}>v3.1.2 (Enterprise)</Text>
+                <Text style={styles.versionBadgeText}>v3.2.0 (Enterprise)</Text>
               </View>
             </View>
             <View style={styles.divider} />
@@ -436,7 +436,7 @@ export default function PengaturanScreen() {
 
         {/* Section 6: Danger Zone */}
         <View style={styles.section}>
-          <Text style={[styles.sectionHeading, { color: '#DC2626' }]}>Zona Bahaya (Danger Zone)</Text>
+          <Text style={[styles.sectionHeading, { color: colors.danger }]}>Zona Bahaya (Danger Zone)</Text>
           <View style={styles.dangerCard}>
             <View style={styles.dangerItem}>
               <View style={styles.dangerTextContainer}>
@@ -498,13 +498,14 @@ export default function PengaturanScreen() {
               >
                 <Text style={styles.modalCancelText}>Batal</Text>
               </TouchableOpacity>
+
               <TouchableOpacity
                 style={styles.modalSaveBtn}
                 onPress={handleCreateSemester}
                 disabled={creating}
               >
                 {creating ? (
-                  <ActivityIndicator size="small" color="#FFFFFF" />
+                  <ActivityIndicator size="small" color={colors.textOnPrimary} />
                 ) : (
                   <Text style={styles.modalSaveText}>Simpan</Text>
                 )}
@@ -514,35 +515,33 @@ export default function PengaturanScreen() {
         </View>
       </Modal>
 
-      {/* Modal Pemulihan Basis Data */}
-      <Modal visible={restoreModalVisible} transparent animationType="slide">
+      {/* Modal Pemulihan Data (Restore JSON) */}
+      <Modal visible={restoreModalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { maxHeight: '90%' }]}>
+          <View style={styles.modalContent}>
             <View style={styles.modalHeaderRow}>
               <View style={styles.modalHeaderInfo}>
                 <Text style={styles.modalTitle}>Pulihkan Basis Data</Text>
                 <Text style={styles.modalSub}>
-                  Pilih berkas JSON cadangan atau tempel payload secara langsung
+                  Pilih file JSON cadangan dari penyimpanan perangkat atau tempel isi JSON di bawah ini.
                 </Text>
               </View>
               <TouchableOpacity
                 onPress={() => {
-                  if (!restoring) {
-                    setRestoreModalVisible(false);
-                    setRestoreJsonInput('');
-                    setPickedFileName(null);
-                  }
+                  setRestoreModalVisible(false);
+                  setRestoreJsonInput('');
+                  setPickedFileName(null);
                 }}
                 disabled={restoring}
               >
-                <Ionicons name="close" size={24} color="#64748B" />
+                <Ionicons name="close" size={24} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
 
             <View style={styles.restoreWarningBox}>
-              <Ionicons name="warning" size={18} color="#B45309" />
+              <Ionicons name="warning-outline" size={20} color={colors.warning} />
               <Text style={styles.restoreWarningText}>
-                Pemulihan akan menimpa seluruh basis data secara atomik. Jika terjadi kesalahan saat proses, perubahan akan otomatis dibatalkan (rollback).
+                Pemulihan akan menimpa seluruh data sistem saat ini dengan isi berkas cadangan.
               </Text>
             </View>
 
@@ -551,24 +550,20 @@ export default function PengaturanScreen() {
               onPress={handlePickRestoreFile}
               disabled={restoring}
             >
-              <Ionicons name="document-text-outline" size={20} color="#2563EB" />
+              <Ionicons name="document-attach-outline" size={20} color={colors.primary} />
               <Text style={styles.pickFileBtnText}>
-                {pickedFileName ? `Berkas: ${pickedFileName}` : 'Pilih Berkas JSON Cadangan'}
+                {pickedFileName ? `Berkas: ${pickedFileName}` : 'Pilih Berkas Cadangan (.json)'}
               </Text>
             </TouchableOpacity>
 
-            <Text style={styles.inputLabel}>Atau Tempel Payload JSON:</Text>
+            <Text style={styles.inputLabel}>Atau Tempel Teks Cadangan JSON:</Text>
             <TextInput
               style={styles.jsonTextArea}
-              placeholder='Tempelkan isi JSON cadangan di sini ({"app": "Portal Akademik UBD", ...})'
-              placeholderTextColor="#94A3B8"
+              placeholder='{"app": "portal-akademik", "version": "3.2.0", ...}'
               value={restoreJsonInput}
-              onChangeText={(text) => {
-                setRestoreJsonInput(text);
-                if (pickedFileName) setPickedFileName(null);
-              }}
+              onChangeText={setRestoreJsonInput}
               multiline
-              numberOfLines={6}
+              numberOfLines={5}
               textAlignVertical="top"
               editable={!restoring}
             />
@@ -585,17 +580,14 @@ export default function PengaturanScreen() {
               >
                 <Text style={styles.modalCancelText}>Batal</Text>
               </TouchableOpacity>
+
               <TouchableOpacity
-                style={[
-                  styles.modalSaveBtn,
-                  { backgroundColor: '#DC2626' },
-                  (!restoreJsonInput.trim() || restoring) && { opacity: 0.6 },
-                ]}
+                style={[styles.modalSaveBtn, { backgroundColor: colors.accent }]}
                 onPress={handleExecuteRestore}
-                disabled={!restoreJsonInput.trim() || restoring}
+                disabled={restoring}
               >
                 {restoring ? (
-                  <ActivityIndicator size="small" color="#FFFFFF" />
+                  <ActivityIndicator size="small" color={colors.textOnPrimary} />
                 ) : (
                   <Text style={styles.modalSaveText}>Mulai Pemulihan</Text>
                 )}
@@ -611,19 +603,21 @@ export default function PengaturanScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
-  },
-  scrollContent: {
-    padding: 16,
-    gap: 20,
+    backgroundColor: colors.background,
   },
   center: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: colors.background,
+  },
+  scrollContent: {
+    padding: spacing.md,
+    gap: spacing.lg,
+    paddingBottom: spacing.xxl,
   },
   section: {
-    gap: 10,
+    gap: spacing.sm,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
@@ -631,56 +625,61 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sectionHeading: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#475569',
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
+    fontFamily: fonts.displayBold,
+    fontSize: 15,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    letterSpacing: -0.2,
   },
   addSemBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.primaryLight,
     paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingVertical: 5,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: colors.primaryBorder,
   },
   addSemText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#2563EB',
+    color: colors.primary,
   },
   profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: colors.surface,
+    borderRadius: radius.xl,
+    padding: spacing.md,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    gap: 14,
+    borderColor: colors.border,
+    boxShadow: shadows.card,
+    gap: spacing.md,
   },
   profileAvatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#2563EB',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
+    boxShadow: shadows.glow,
   },
   profileInfo: {
     flex: 1,
     gap: 3,
   },
   profileName: {
+    fontFamily: fonts.displayBold,
     fontSize: 16,
-    fontWeight: '700',
-    color: '#0F172A',
+    fontWeight: '800',
+    color: colors.textPrimary,
   },
   profileRole: {
     fontSize: 12,
-    color: '#64748B',
+    color: colors.textSecondary,
   },
   sessionBadge: {
     flexDirection: 'row',
@@ -689,50 +688,56 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   sessionDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#16A34A',
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    backgroundColor: colors.success,
   },
   sessionText: {
     fontSize: 11,
-    color: '#16A34A',
+    color: colors.success,
     fontWeight: '600',
   },
   logoutBtn: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: '#FEE2E2',
+    width: 40,
+    height: 40,
+    borderRadius: radius.md,
+    backgroundColor: colors.dangerLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.dangerBorder,
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: colors.surface,
+    borderRadius: radius.xl,
+    padding: spacing.md,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    gap: 12,
+    borderColor: colors.border,
+    boxShadow: shadows.card,
+    gap: spacing.sm + 4,
   },
   cardSubtitle: {
     fontSize: 13,
-    color: '#64748B',
+    color: colors.textSecondary,
     lineHeight: 18,
   },
   semList: {
-    gap: 8,
+    gap: spacing.sm,
   },
   semItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    borderRadius: 12,
-    backgroundColor: '#F8FAFC',
+    padding: spacing.md,
+    borderRadius: radius.lg,
+    backgroundColor: colors.surfaceSubtle,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    gap: 12,
+    borderColor: colors.border,
+    gap: spacing.md,
   },
   semItemActive: {
-    borderColor: '#93C5FD',
-    backgroundColor: '#EFF6FF',
+    borderColor: colors.primaryBorder,
+    backgroundColor: colors.primaryLight,
   },
   semRadio: {
     justifyContent: 'center',
@@ -747,28 +752,28 @@ const styles = StyleSheet.create({
   semName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1E293B',
+    color: colors.textPrimary,
   },
   semNameActive: {
-    color: '#1D4ED8',
+    color: colors.primary,
     fontWeight: '700',
   },
   activePill: {
-    backgroundColor: '#DBEAFE',
+    backgroundColor: colors.primary,
     paddingHorizontal: 8,
     paddingVertical: 2,
-    borderRadius: 6,
+    borderRadius: radius.xs,
   },
   activePillText: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '800',
-    color: '#1D4ED8',
+    color: colors.textOnPrimary,
     letterSpacing: 0.5,
   },
   appBrandingHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: spacing.md,
     paddingBottom: 4,
   },
   appLogoEmblem: {
@@ -780,15 +785,16 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   appBrandingTitle: {
+    fontFamily: fonts.displayBold,
     fontSize: 15,
     fontWeight: '800',
-    color: '#0F172A',
+    color: colors.textPrimary,
     letterSpacing: -0.2,
   },
   appBrandingMotto: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#2563EB',
+    color: colors.primary,
     fontStyle: 'italic',
   },
   infoRow: {
@@ -798,34 +804,36 @@ const styles = StyleSheet.create({
   },
   infoKey: {
     fontSize: 13,
-    color: '#64748B',
+    color: colors.textSecondary,
   },
   infoVal: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   divider: {
     height: 1,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.borderSubtle,
   },
   versionBadge: {
-    backgroundColor: '#DCFCE7',
+    backgroundColor: colors.primaryLight,
     paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
+    paddingVertical: 3,
+    borderRadius: radius.xs,
+    borderWidth: 1,
+    borderColor: colors.primaryBorder,
   },
   versionBadgeText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#166534',
+    color: colors.primary,
   },
   dangerCard: {
-    backgroundColor: '#FFF5F5',
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: colors.dangerLight,
+    borderRadius: radius.xl,
+    padding: spacing.md,
     borderWidth: 1,
-    borderColor: '#FECACA',
+    borderColor: colors.dangerBorder,
     gap: 14,
   },
   dangerItem: {
@@ -837,117 +845,121 @@ const styles = StyleSheet.create({
   dangerTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#991B1B',
+    color: colors.dangerDark,
   },
   dangerDesc: {
     fontSize: 12,
-    color: '#7F1D1D',
+    color: colors.dangerDark,
     lineHeight: 16,
   },
   dangerBtnOutline: {
     alignSelf: 'flex-start',
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 8,
+    borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: '#DC2626',
-    backgroundColor: '#FFFFFF',
+    borderColor: colors.danger,
+    backgroundColor: colors.surface,
     marginTop: 4,
   },
   dangerBtnOutlineText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#DC2626',
+    color: colors.danger,
   },
   dangerBtnSolid: {
     alignSelf: 'flex-start',
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: '#DC2626',
+    borderRadius: radius.md,
+    backgroundColor: colors.danger,
     marginTop: 4,
   },
   dangerBtnSolidText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.textOnPrimary,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(28, 25, 23, 0.6)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: spacing.xl,
   },
   modalContent: {
     width: '100%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 22,
-    gap: 12,
+    backgroundColor: colors.surface,
+    borderRadius: radius['2xl'],
+    padding: spacing.xl,
+    gap: spacing.md,
+    boxShadow: shadows.modal,
   },
   modalTitle: {
+    fontFamily: fonts.displayBold,
     fontSize: 18,
     fontWeight: '800',
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   modalSub: {
     fontSize: 13,
-    color: '#64748B',
+    color: colors.textSecondary,
   },
   modalInput: {
     borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 10,
+    borderColor: colors.border,
+    borderRadius: radius.md,
     paddingHorizontal: 14,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#0F172A',
+    color: colors.textPrimary,
+    backgroundColor: colors.surfaceSubtle,
     marginTop: 4,
   },
   modalActions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    gap: 12,
+    gap: spacing.md,
     marginTop: 10,
   },
   modalCancelBtn: {
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 8,
+    borderRadius: radius.md,
   },
   modalCancelText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#64748B',
+    color: colors.textSecondary,
   },
   modalSaveBtn: {
-    backgroundColor: '#2563EB',
+    backgroundColor: colors.primary,
     paddingHorizontal: 18,
     paddingVertical: 10,
-    borderRadius: 8,
+    borderRadius: radius.md,
     minWidth: 80,
     alignItems: 'center',
   },
   modalSaveText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.textOnPrimary,
   },
   menuCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: colors.surface,
+    borderRadius: radius.xl,
+    padding: spacing.md,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
+    boxShadow: shadows.card,
     gap: 14,
   },
   menuIconContainer: {
     width: 44,
     height: 44,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -958,11 +970,11 @@ const styles = StyleSheet.create({
   menuTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   menuSubtitle: {
     fontSize: 12,
-    color: '#64748B',
+    color: colors.textSecondary,
     lineHeight: 16,
   },
   backupActions: {
@@ -973,33 +985,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#2563EB',
+    backgroundColor: colors.primary,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 10,
+    borderRadius: radius.md,
     gap: 8,
   },
   backupBtnText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.textOnPrimary,
   },
   restoreBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.accentLight,
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: colors.accentBorder,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 10,
+    borderRadius: radius.md,
     gap: 8,
   },
   restoreBtnText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#2563EB',
+    color: colors.accent,
   },
   modalHeaderRow: {
     flexDirection: 'row',
@@ -1012,10 +1024,10 @@ const styles = StyleSheet.create({
   },
   restoreWarningBox: {
     flexDirection: 'row',
-    backgroundColor: '#FEF3C7',
+    backgroundColor: colors.warningLight,
     borderWidth: 1,
-    borderColor: '#FDE68A',
-    borderRadius: 10,
+    borderColor: colors.warningBorder,
+    borderRadius: radius.md,
     padding: 12,
     gap: 10,
     alignItems: 'flex-start',
@@ -1023,7 +1035,7 @@ const styles = StyleSheet.create({
   restoreWarningText: {
     flex: 1,
     fontSize: 12,
-    color: '#92400E',
+    color: colors.warningDark,
     lineHeight: 16,
     fontWeight: '500',
   },
@@ -1031,11 +1043,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceSubtle,
     borderWidth: 1,
-    borderColor: '#CBD5E1',
+    borderColor: colors.border,
     borderStyle: 'dashed',
-    borderRadius: 10,
+    borderRadius: radius.md,
     paddingVertical: 12,
     paddingHorizontal: 14,
     gap: 8,
@@ -1043,22 +1055,22 @@ const styles = StyleSheet.create({
   pickFileBtnText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#1E293B',
+    color: colors.textPrimary,
   },
   inputLabel: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#334155',
+    color: colors.textPrimary,
   },
   jsonTextArea: {
     borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 10,
+    borderColor: colors.border,
+    borderRadius: radius.md,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 12,
-    color: '#0F172A',
-    backgroundColor: '#F8FAFC',
+    color: colors.textPrimary,
+    backgroundColor: colors.surfaceSubtle,
     minHeight: 110,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
   },

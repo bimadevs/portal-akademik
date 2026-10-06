@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: colors.primarySoft,
   },
   semTextCol: {
     gap: 2,
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minWidth: 48,
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: colors.primarySoft,
   },
   sksNumber: {
     fontSize: 15,

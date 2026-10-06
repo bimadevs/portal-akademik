@@ -269,7 +269,7 @@ export default function NilaiDetailScreen() {
                   </View>
                   {isAttendanceLow && (
                     <View style={styles.warningPill}>
-                      <Ionicons name="warning-outline" size={12} color="#DC2626" />
+                      <Ionicons name="warning-outline" size={12} color={colors.danger} />
                       <Text style={styles.warningPillText}>
                         Kehadiran {attendance.persentase}% (&lt; 75%)
                       </Text>
@@ -317,7 +317,7 @@ export default function NilaiDetailScreen() {
             {/* Attendance warning in modal if low */}
             {selectedAttendance && !selectedAttendance.isEligible && (
               <View style={styles.modalWarningBox}>
-                <Ionicons name="warning" size={16} color="#DC2626" />
+                <Ionicons name="warning" size={16} color={colors.danger} />
                 <Text style={styles.modalWarningText}>
                   Kehadiran {selectedAttendance.persentase}% (&lt; 75%). Memerlukan dispensasi untuk UAS.
                 </Text>
@@ -527,9 +527,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 3,
-    backgroundColor: '#FEE2E2',
+    backgroundColor: colors.dangerLight,
     borderWidth: 1,
-    borderColor: '#FECACA',
+    borderColor: colors.dangerBorder,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: radius.xs,
@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
   warningPillText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#B91C1C',
+    color: colors.dangerDark,
   },
   matkul: {
     fontSize: 14,
@@ -611,9 +611,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#FEF2F2',
+    backgroundColor: colors.dangerLight,
     borderWidth: 1,
-    borderColor: '#FCA5A5',
+    borderColor: colors.dangerBorder,
     padding: 10,
     borderRadius: radius.sm,
   },
@@ -621,7 +621,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 11,
     fontWeight: '600',
-    color: '#B91C1C',
+    color: colors.dangerDark,
   },
   formGroup: {
     gap: 4,

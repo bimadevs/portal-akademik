@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: colors.primarySoft,
   },
   sksNumber: {
     fontSize: 15,

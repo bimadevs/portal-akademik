@@ -75,9 +75,9 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(226, 232, 240, 0.8)',
+    borderTopColor: colors.border,
     height: Platform.OS === 'ios' ? 86 : 68,
     paddingTop: 8,
     paddingBottom: Platform.OS === 'ios' ? 24 : 10,
@@ -88,14 +88,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconContainer: {
-    width: 40,
-    height: 30,
+    width: 44,
+    height: 32,
     borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
   iconContainerActive: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.primaryLight,
   },
   tabBarLabel: {
     fontSize: 11,
@@ -104,4 +104,3 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
 });
-

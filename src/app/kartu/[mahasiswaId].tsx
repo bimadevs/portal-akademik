@@ -14,8 +14,9 @@ import QRCode from 'react-native-qrcode-svg';
 import { MahasiswaService } from '../../services/mahasiswa-service';
 import { PDFService } from '../../services/pdf-service';
 import { Mahasiswa } from '../../types/mahasiswa';
-import { UBD_COLORS } from '../../constants/theme';
+import { LotusRing } from '@/components/lotus-ring';
 import { PhotoAvatar } from '@/components/photo-avatar';
+import { colors, fonts, radius, shadows, spacing } from '@/theme';
 
 export default function KartuMahasiswaDetailScreen() {
   const router = useRouter();
@@ -59,7 +60,7 @@ export default function KartuMahasiswaDetailScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -67,7 +68,7 @@ export default function KartuMahasiswaDetailScreen() {
   if (!mahasiswa) {
     return (
       <View style={styles.center}>
-        <Ionicons name="alert-circle-outline" size={56} color="#94A3B8" />
+        <Ionicons name="alert-circle-outline" size={56} color={colors.textMuted} />
         <Text style={styles.emptyText}>Data Mahasiswa tidak ditemukan</Text>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <Text style={styles.backButtonText}>Kembali</Text>
@@ -81,16 +82,21 @@ export default function KartuMahasiswaDetailScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Digital Student Card Container */}
         <View style={styles.cardContainer}>
-          {/* Card Header Gradient */}
+          {/* Card Header Gradient UBD Crimson */}
           <LinearGradient
-            colors={['#2B52BA', '#1E40AF', '#1D4ED8']}
+            colors={colors.gradients.heroLogin}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.cardHeader}
           >
+            {/* Watermark Motif Teratai */}
+            <View style={styles.watermarkLayer}>
+              <LotusRing size={160} color="#FFFFFF" opacity={0.15} strokeWidth={1.2} />
+            </View>
+
             <View style={styles.universityHeader}>
               <View style={styles.logoBadge}>
-                <Ionicons name="school" size={24} color="#FFFFFF" />
+                <Ionicons name="school" size={22} color={colors.highlight} />
               </View>
               <View style={styles.universityTextContainer}>
                 <Text style={styles.universityName}>UNIVERSITAS BUDDHI DHARMA</Text>
@@ -119,6 +125,9 @@ export default function KartuMahasiswaDetailScreen() {
               </View>
             </View>
           </LinearGradient>
+
+          {/* Gold Accent Divider Strip */}
+          <View style={styles.goldDividerStrip} />
 
           {/* Card Body Information */}
           <View style={styles.cardBody}>
@@ -152,7 +161,7 @@ export default function KartuMahasiswaDetailScreen() {
                 <QRCode
                   value={mahasiswa.nim}
                   size={110}
-                  color="#1E293B"
+                  color={colors.textPrimary}
                   backgroundColor="#FFFFFF"
                 />
               </View>
@@ -162,7 +171,7 @@ export default function KartuMahasiswaDetailScreen() {
 
             {/* Official Footer Note */}
             <View style={styles.cardFooter}>
-              <Ionicons name="shield-checkmark" size={16} color="#2563EB" />
+              <Ionicons name="shield-checkmark" size={16} color={colors.accent} />
               <Text style={styles.cardFooterText}>
                 Dokumen Resmi Universitas Buddhi Dharma • Tangerang
               </Text>
@@ -176,13 +185,13 @@ export default function KartuMahasiswaDetailScreen() {
           onPress={handleShare}
           activeOpacity={0.8}
         >
-          <Ionicons name="share-social-outline" size={18} color="#FFFFFF" />
+          <Ionicons name="share-social-outline" size={18} color={colors.textOnPrimary} />
           <Text style={styles.shareCardBtnText}>Bagikan Kartu Mahasiswa</Text>
         </TouchableOpacity>
 
         {/* Security & Verification Card Info */}
         <View style={styles.noticeBox}>
-          <Ionicons name="information-circle-outline" size={20} color="#64748B" />
+          <Ionicons name="information-circle-outline" size={20} color={colors.accent} />
           <Text style={styles.noticeText}>
             Kartu Mahasiswa Digital ini sah dan berlaku sebagai tanda pengenal identitas akademik di seluruh lingkungan kampus UBD.
           </Text>
@@ -195,83 +204,89 @@ export default function KartuMahasiswaDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.background,
   },
   scrollContent: {
-    padding: 20,
-    gap: 16,
+    padding: spacing.lg,
+    gap: spacing.md,
     alignItems: 'center',
   },
   center: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: spacing.xl,
+    backgroundColor: colors.background,
   },
   emptyText: {
     fontSize: 16,
-    color: '#64748B',
+    color: colors.textSecondary,
     marginTop: 12,
   },
   backButton: {
     marginTop: 16,
-    backgroundColor: '#2563EB',
+    backgroundColor: colors.primary,
     paddingHorizontal: 20,
     paddingVertical: 10,
-    borderRadius: 8,
+    borderRadius: radius.md,
   },
   backButtonText: {
-    color: '#FFFFFF',
+    color: colors.textOnPrimary,
     fontWeight: '700',
   },
   cardContainer: {
     width: '100%',
     maxWidth: 380,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
+    backgroundColor: colors.surface,
+    borderRadius: radius['2xl'],
     overflow: 'hidden',
-    shadowColor: '#1E293B',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.12,
-    shadowRadius: 18,
-    elevation: 8,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
+    boxShadow: shadows.elevated,
   },
   cardHeader: {
-    padding: 22,
-    paddingBottom: 24,
-    gap: 18,
+    padding: spacing.lg + 2,
+    paddingBottom: spacing.xl,
+    gap: spacing.md,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  watermarkLayer: {
+    position: 'absolute',
+    right: -25,
+    top: -15,
+    zIndex: 0,
   },
   universityHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: spacing.sm + 2,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.25)',
-    paddingBottom: 14,
+    borderBottomColor: 'rgba(255, 255, 255, 0.2)',
+    paddingBottom: spacing.sm + 4,
+    zIndex: 1,
   },
   logoBadge: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    width: 40,
+    height: 40,
+    borderRadius: radius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.4)',
+    borderColor: 'rgba(245, 197, 24, 0.4)',
   },
   universityTextContainer: {
     flex: 1,
   },
   universityName: {
     color: '#FFFFFF',
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '900',
     letterSpacing: 0.5,
   },
   cardTypeTitle: {
-    color: '#BFDBFE',
+    color: colors.onPrimaryMuted,
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 0.8,
@@ -280,7 +295,8 @@ const styles = StyleSheet.create({
   avatarRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
+    gap: spacing.md,
+    zIndex: 1,
   },
   avatarGradient: {
     width: 68,
@@ -288,32 +304,23 @@ const styles = StyleSheet.create({
     borderRadius: 34,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 3,
-    borderColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  avatarText: {
-    color: '#FFFFFF',
-    fontSize: 24,
-    fontWeight: '900',
-    letterSpacing: 1,
+    borderWidth: 2.5,
+    borderColor: colors.highlight,
+    boxShadow: shadows.glow,
   },
   primaryInfo: {
     flex: 1,
-    gap: 4,
+    gap: 3,
   },
   studentName: {
+    fontFamily: fonts.displayBold,
     color: '#FFFFFF',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '800',
     lineHeight: 22,
   },
   studentNim: {
-    color: '#DBEAFE',
+    color: colors.onPrimaryMuted,
     fontSize: 13,
     fontWeight: '600',
   },
@@ -321,10 +328,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 12,
+    borderRadius: radius.full,
     gap: 5,
     marginTop: 2,
   },
@@ -332,23 +339,28 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#4ADE80',
+    backgroundColor: colors.successBorder,
   },
   statusPillText: {
     color: '#FFFFFF',
     fontSize: 10,
     fontWeight: '700',
   },
+  goldDividerStrip: {
+    height: 4,
+    backgroundColor: colors.highlight,
+    width: '100%',
+  },
   cardBody: {
-    padding: 22,
-    gap: 20,
-    backgroundColor: '#FFFFFF',
+    padding: spacing.lg + 2,
+    gap: spacing.lg,
+    backgroundColor: colors.surface,
   },
   infoGrid: {
-    gap: 12,
+    gap: spacing.sm + 4,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-    paddingBottom: 16,
+    borderBottomColor: colors.borderSubtle,
+    paddingBottom: spacing.md,
   },
   infoRow: {
     flexDirection: 'row',
@@ -357,13 +369,13 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 13,
-    color: '#64748B',
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   infoValue: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#1E293B',
+    color: colors.textPrimary,
   },
   qrSection: {
     alignItems: 'center',
@@ -371,26 +383,23 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   qrWrapper: {
-    padding: 12,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 2,
+    padding: spacing.md,
+    backgroundColor: colors.surface,
+    borderRadius: radius.xl,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    boxShadow: shadows.card,
   },
   qrCaption: {
     fontSize: 11,
-    color: '#64748B',
+    color: colors.textSecondary,
     marginTop: 6,
   },
   qrNim: {
-    fontSize: 14,
+    fontFamily: fonts.displayBold,
+    fontSize: 15,
     fontWeight: '800',
-    color: '#0F172A',
+    color: colors.textPrimary,
     letterSpacing: 2,
   },
   cardFooter: {
@@ -400,29 +409,30 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
+    borderTopColor: colors.borderSubtle,
   },
   cardFooterText: {
-    fontSize: 10,
-    color: '#64748B',
+    fontSize: 11,
+    color: colors.textSecondary,
     fontWeight: '600',
   },
   noticeBox: {
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: colors.surface,
+    borderRadius: radius.xl,
+    padding: spacing.md,
     maxWidth: 380,
     width: '100%',
     alignItems: 'flex-start',
-    gap: 12,
+    gap: spacing.sm + 4,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
+    boxShadow: shadows.card,
   },
   noticeText: {
     flex: 1,
     fontSize: 12,
-    color: '#64748B',
+    color: colors.textSecondary,
     lineHeight: 18,
   },
   shareCardBtn: {
@@ -430,16 +440,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: UBD_COLORS.PRIMARY,
-    paddingVertical: 12,
+    backgroundColor: colors.primary,
+    paddingVertical: 14,
     paddingHorizontal: 24,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     width: '100%',
     maxWidth: 380,
+    boxShadow: shadows.glow,
   },
   shareCardBtnText: {
-    color: '#FFFFFF',
-    fontSize: 13,
+    color: colors.textOnPrimary,
+    fontSize: 14,
     fontWeight: '700',
   },
 });

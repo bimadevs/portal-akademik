@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { FAKULTAS_OPTIONS, Fakultas } from '@/types/mahasiswa';
-import { colors, radius, shadows, spacing } from '@/theme';
+import { colors, fonts, radius, shadows, spacing } from '@/theme';
 
 interface FacultyPickerProps {
   value: Fakultas;
@@ -29,29 +29,29 @@ const FACULTY_META: Record<Fakultas, FacultyMeta> = {
     name: 'Sains dan Teknologi',
     shortName: 'FST',
     icon: 'laptop-outline',
-    color: '#0284C7',
-    bgLight: '#E0F2FE',
+    color: colors.faculty.saintek,
+    bgLight: colors.faculty.saintekLight,
   },
   'Bisnis': {
     name: 'Bisnis',
     shortName: 'FB',
     icon: 'briefcase-outline',
-    color: '#0D9488',
-    bgLight: '#CCFBF1',
+    color: colors.faculty.bisnis,
+    bgLight: colors.faculty.bisnisLight,
   },
   'Ilmu Komunikasi dan Desain': {
     name: 'Ilmu Komunikasi dan Desain',
     shortName: 'FIKD',
     icon: 'color-palette-outline',
-    color: '#7C3AED',
-    bgLight: '#EDE9FE',
+    color: colors.faculty.komunikasi,
+    bgLight: colors.faculty.komunikasiLight,
   },
   'Sosial dan Humaniora': {
     name: 'Sosial dan Humaniora',
     shortName: 'FSH',
     icon: 'people-outline',
-    color: '#D97706',
-    bgLight: '#FEF3C7',
+    color: colors.faculty.soshum,
+    bgLight: colors.faculty.soshumLight,
   },
 };
 
@@ -197,9 +197,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.surfaceSubtle,
     borderWidth: 1.5,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: 10,
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
   },
   triggerBoxPressed: {
     borderColor: colors.primary,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
   },
   triggerBoxDisabled: {
     opacity: 0.6,
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.55)',
+    backgroundColor: 'rgba(28, 25, 23, 0.6)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: spacing.lg,
@@ -263,12 +263,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+    borderBottomColor: colors.borderSubtle,
     marginBottom: spacing.xs,
   },
   modalTitle: {
+    fontFamily: fonts.displayBold,
     fontSize: 18,
-    fontWeight: '800',
+    fontWeight: '700',
     color: colors.textPrimary,
   },
   modalSubtitle: {
@@ -279,7 +280,7 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: spacing.xs,
     borderRadius: radius.full,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceSubtle,
   },
   optionsList: {
     gap: spacing.sm,
@@ -290,14 +291,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: spacing.md,
     borderRadius: radius.xl,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.surfaceSubtle,
     borderWidth: 1.5,
     borderColor: 'transparent',
     gap: spacing.md,
   },
   optionItemSelected: {
-    backgroundColor: '#EFF6FF',
-    borderColor: '#93C5FD',
+    backgroundColor: colors.primaryLight,
+    borderColor: colors.primaryBorder,
   },
   optionItemPressed: {
     opacity: 0.8,
@@ -336,7 +337,6 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#CBD5E1',
+    borderColor: colors.border,
   },
 });
-

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { G, Circle } from 'react-native-svg';
+import { colors, fonts, radius, shadows, spacing } from '@/theme';
 
 export interface PieChartItem {
   label: string;
@@ -17,8 +18,8 @@ interface PieChartProps {
 export function PieChart({ data, title, size = 130 }: PieChartProps) {
   const total = data.reduce((acc, cur) => acc + cur.count, 0);
   const strokeWidth = 22;
-  const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
+  const chartRadius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * chartRadius;
 
   let accumulatedPercent = 0;
 
@@ -33,8 +34,8 @@ export function PieChart({ data, title, size = 130 }: PieChartProps) {
                 <Circle
                   cx={size / 2}
                   cy={size / 2}
-                  r={radius}
-                  stroke="#E2E8F0"
+                  r={chartRadius}
+                  stroke={colors.border}
                   strokeWidth={strokeWidth}
                   fill="none"
                 />
@@ -49,7 +50,7 @@ export function PieChart({ data, title, size = 130 }: PieChartProps) {
                       key={index}
                       cx={size / 2}
                       cy={size / 2}
-                      r={radius}
+                      r={chartRadius}
                       stroke={item.color}
                       strokeWidth={strokeWidth}
                       strokeDasharray={`${circumference} ${circumference}`}
@@ -93,18 +94,19 @@ export function PieChart({ data, title, size = 130 }: PieChartProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    padding: 16,
-    marginVertical: 8,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    marginVertical: spacing.xs,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
+    boxShadow: shadows.card,
   },
   title: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 14,
+    color: colors.textPrimary,
+    marginBottom: spacing.sm + 4,
   },
   content: {
     flexDirection: 'row',
@@ -117,24 +119,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   innerTotal: {
+    fontFamily: fonts.displayBold,
     fontSize: 18,
     fontWeight: '800',
-    color: '#0F172A',
+    color: colors.textPrimary,
+    fontVariant: ['tabular-nums'],
   },
   innerSubtitle: {
     fontSize: 10,
-    color: '#64748B',
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   legendContainer: {
-    gap: 8,
+    gap: spacing.sm,
     flex: 1,
-    paddingLeft: 16,
+    paddingLeft: spacing.md,
   },
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: spacing.sm,
   },
   dot: {
     width: 10,
@@ -146,12 +150,12 @@ const styles = StyleSheet.create({
   },
   legendLabel: {
     fontSize: 12,
-    color: '#475569',
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   legendValue: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
 });

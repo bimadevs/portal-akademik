@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LaporanService, DashboardStats } from '../../services/laporan-service';
 import { BarChart } from '../../components/bar-chart';
 import { PieChart } from '../../components/pie-chart';
-import { colors, radius, spacing, shadows } from '@/theme';
+import { colors, radius, spacing, shadows, fonts } from '@/theme';
 
 export default function LaporanScreen() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -66,7 +66,7 @@ export default function LaporanScreen() {
     { label: 'A', count: stats?.gradeDistribution?.['A'] || 0, color: colors.success },
     { label: 'B', count: stats?.gradeDistribution?.['B'] || 0, color: colors.info },
     { label: 'C', count: stats?.gradeDistribution?.['C'] || 0, color: colors.warning },
-    { label: 'D', count: stats?.gradeDistribution?.['D'] || 0, color: '#EA580C' },
+    { label: 'D', count: stats?.gradeDistribution?.['D'] || 0, color: colors.saffronDark },
     { label: 'E', count: stats?.gradeDistribution?.['E'] || 0, color: colors.danger },
   ];
 
@@ -74,7 +74,7 @@ export default function LaporanScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <View style={styles.kpiGrid}>
         <View style={styles.kpiCard}>
-          <View style={[styles.kpiIcon, { backgroundColor: '#EFF6FF' }]}>
+          <View style={[styles.kpiIcon, { backgroundColor: colors.primaryLight }]}>
             <Ionicons name="people" size={18} color={colors.primary} />
           </View>
           <Text style={styles.kpiNum}>{stats?.totalMahasiswa || 0}</Text>
@@ -82,24 +82,24 @@ export default function LaporanScreen() {
         </View>
 
         <View style={styles.kpiCard}>
-          <View style={[styles.kpiIcon, { backgroundColor: '#FEF3C7' }]}>
-            <Ionicons name="person" size={18} color="#D97706" />
+          <View style={[styles.kpiIcon, { backgroundColor: colors.secondaryLight }]}>
+            <Ionicons name="person" size={18} color={colors.secondary} />
           </View>
           <Text style={styles.kpiNum}>{stats?.totalDosen || 0}</Text>
           <Text style={styles.kpiLabel}>Dosen Pengajar</Text>
         </View>
 
         <View style={styles.kpiCard}>
-          <View style={[styles.kpiIcon, { backgroundColor: '#ECFDF5' }]}>
-            <Ionicons name="book" size={18} color="#059669" />
+          <View style={[styles.kpiIcon, { backgroundColor: colors.saffronLight }]}>
+            <Ionicons name="book" size={18} color={colors.saffronDark} />
           </View>
           <Text style={styles.kpiNum}>{stats?.totalMataKuliah || 0}</Text>
           <Text style={styles.kpiLabel}>Mata Kuliah Aktif</Text>
         </View>
 
         <View style={styles.kpiCard}>
-          <View style={[styles.kpiIcon, { backgroundColor: '#F5F3FF' }]}>
-            <Ionicons name="calendar" size={18} color="#7C3AED" />
+          <View style={[styles.kpiIcon, { backgroundColor: colors.successLight }]}>
+            <Ionicons name="calendar" size={18} color={colors.success} />
           </View>
           <Text style={styles.kpiNum}>{stats?.totalJadwal || 0}</Text>
           <Text style={styles.kpiLabel}>Sesi Perkuliahan</Text>
@@ -149,10 +149,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   kpiNum: {
+    fontFamily: fonts.displayBold,
     fontSize: 24,
     fontWeight: '800',
     color: colors.textPrimary,
     letterSpacing: -0.5,
+    fontVariant: ['tabular-nums'],
   },
   kpiLabel: {
     fontSize: 12,

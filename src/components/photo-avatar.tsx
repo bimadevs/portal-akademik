@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
-import { UBD_COLORS } from '@/constants/theme';
+import { colors, fonts } from '@/theme';
 
 interface PhotoAvatarProps {
   uri?: string | null;
@@ -70,7 +70,7 @@ export function PhotoAvatar({
         <View
           style={[
             styles.fallbackContainer,
-            { width: size, height: size, borderRadius, backgroundColor: '#2563EB' },
+            { width: size, height: size, borderRadius, backgroundColor: colors.primary },
           ]}
         >
           <Text
@@ -86,13 +86,13 @@ export function PhotoAvatar({
         <View
           style={[
             styles.fallbackContainer,
-            { width: size, height: size, borderRadius, backgroundColor: '#E2E8F0' },
+            { width: size, height: size, borderRadius, backgroundColor: colors.surfaceSubtle },
           ]}
         >
           <Ionicons
             name="person"
             size={Math.round(size * 0.5)}
-            color={UBD_COLORS.PRIMARY}
+            color={colors.primary}
           />
         </View>
       )}
@@ -108,7 +108,7 @@ export function PhotoAvatar({
             },
           ]}
         >
-          <Ionicons name="camera" size={Math.round(badgeSize * 0.6)} color="#FFFFFF" />
+          <Ionicons name="camera" size={Math.round(badgeSize * 0.6)} color={colors.textOnPrimary} />
         </View>
       )}
     </View>
@@ -143,6 +143,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   initialsText: {
+    fontFamily: fonts.displayBold,
     color: '#FFFFFF',
     fontWeight: '800',
     letterSpacing: 0.5,
@@ -151,7 +152,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: -2,
     right: -2,
-    backgroundColor: UBD_COLORS.PRIMARY,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,

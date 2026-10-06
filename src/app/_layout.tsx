@@ -3,16 +3,38 @@ import React, { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import * as SplashScreen from 'expo-splash-screen';
+import {
+  useFonts,
+  BricolageGrotesque_600SemiBold,
+  BricolageGrotesque_700Bold,
+  BricolageGrotesque_800ExtraBold,
+} from '@expo-google-fonts/bricolage-grotesque';
 import { AuthProvider, useAuth } from '@/context/auth-context';
-import { colors } from '@/theme';
+import { colors, fonts } from '@/theme';
+
+// Cegah splash screen tertutup otomatis sebelum font & auth sesi siap
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 function RootNavigationLayout() {
   const { userSession, isLoading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
 
+  const [fontsLoaded] = useFonts({
+    BricolageGrotesque_600SemiBold,
+    BricolageGrotesque_700Bold,
+    BricolageGrotesque_800ExtraBold,
+  });
+
   useEffect(() => {
-    if (isLoading) return;
+    if (fontsLoaded && !isLoading) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [fontsLoaded, isLoading]);
+
+  useEffect(() => {
+    if (isLoading || !fontsLoaded) return;
 
     // Gunakan macrotask timer agar NavigationContainer dan fiber tree telah mounted sepenuhnya
     const timer = setTimeout(() => {
@@ -28,9 +50,9 @@ function RootNavigationLayout() {
     }, 10);
 
     return () => clearTimeout(timer);
-  }, [userSession, isLoading, segments, router]);
+  }, [userSession, isLoading, fontsLoaded, segments, router]);
 
-  if (isLoading) {
+  if (isLoading || !fontsLoaded) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
@@ -48,6 +70,7 @@ function RootNavigationLayout() {
           },
           headerTintColor: colors.primary,
           headerTitleStyle: {
+            fontFamily: fonts.displayBold,
             fontWeight: '700',
             fontSize: 17,
             color: colors.textPrimary,

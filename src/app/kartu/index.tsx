@@ -12,8 +12,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { MahasiswaService } from '../../services/mahasiswa-service';
 import { Mahasiswa } from '../../types/mahasiswa';
 import { SearchBar } from '../../components/search-bar';
-import { UBD_COLORS } from '../../constants/theme';
 import { PhotoAvatar } from '@/components/photo-avatar';
+import { colors, fonts, radius, shadows, spacing } from '@/theme';
 
 export default function KartuMahasiswaIndexScreen() {
   const router = useRouter();
@@ -53,7 +53,7 @@ export default function KartuMahasiswaIndexScreen() {
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : (
         <FlatList
@@ -62,7 +62,7 @@ export default function KartuMahasiswaIndexScreen() {
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Ionicons name="id-card-outline" size={56} color="#94A3B8" />
+              <Ionicons name="id-card-outline" size={56} color={colors.textMuted} />
               <Text style={styles.emptyTitle}>Mahasiswa Tidak Ditemukan</Text>
               <Text style={styles.emptySub}>Coba kata kunci pencarian lain</Text>
             </View>
@@ -99,10 +99,10 @@ export default function KartuMahasiswaIndexScreen() {
                       {
                         backgroundColor:
                           item.status === 'Aktif'
-                            ? '#DCFCE7'
+                            ? colors.successLight
                             : item.status === 'Cuti'
-                            ? '#FEF9C3'
-                            : '#FEE2E2',
+                            ? colors.warningLight
+                            : colors.dangerLight,
                       },
                     ]}
                   >
@@ -112,10 +112,10 @@ export default function KartuMahasiswaIndexScreen() {
                         {
                           color:
                             item.status === 'Aktif'
-                              ? '#166534'
+                              ? colors.success
                               : item.status === 'Cuti'
-                              ? '#854D0E'
-                              : '#991B1B',
+                              ? colors.warning
+                              : colors.danger,
                         },
                       ]}
                     >
@@ -126,7 +126,7 @@ export default function KartuMahasiswaIndexScreen() {
               </View>
 
               <View style={styles.arrowContainer}>
-                <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
+                <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
               </View>
             </TouchableOpacity>
           )}
@@ -139,44 +139,41 @@ export default function KartuMahasiswaIndexScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   header: {
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    backgroundColor: colors.surface,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-    gap: 8,
+    borderBottomColor: colors.border,
+    gap: spacing.sm,
   },
   subtitle: {
     fontSize: 13,
-    color: '#64748B',
+    color: colors.textSecondary,
     lineHeight: 18,
   },
   listContent: {
-    padding: 16,
-    gap: 12,
+    padding: spacing.md,
+    gap: spacing.sm + 4,
   },
   center: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: colors.background,
   },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: colors.surface,
+    borderRadius: radius.xl,
+    padding: spacing.md,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 1,
-    gap: 14,
+    borderColor: colors.border,
+    boxShadow: shadows.card,
+    gap: spacing.md,
   },
   avatar: {
     width: 48,
@@ -185,23 +182,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  avatarText: {
-    color: '#FFFFFF',
-    fontWeight: '800',
-    fontSize: 16,
-  },
   info: {
     flex: 1,
     gap: 4,
   },
   nama: {
-    fontSize: 16,
+    fontFamily: fonts.displayBold,
+    fontSize: 15,
     fontWeight: '700',
-    color: '#1E293B',
+    color: colors.textPrimary,
   },
   nim: {
     fontSize: 13,
-    color: '#64748B',
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   tagRow: {
@@ -212,20 +205,20 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   fakultasBadge: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.accentLight,
     paddingHorizontal: 8,
     paddingVertical: 2,
-    borderRadius: 6,
+    borderRadius: radius.xs,
   },
   fakultasText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#2563EB',
+    color: colors.accent,
   },
   statusBadge: {
     paddingHorizontal: 8,
     paddingVertical: 2,
-    borderRadius: 6,
+    borderRadius: radius.xs,
   },
   statusText: {
     fontSize: 11,
@@ -240,14 +233,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   emptyTitle: {
+    fontFamily: fonts.displayBold,
     fontSize: 16,
     fontWeight: '700',
-    color: '#475569',
+    color: colors.textSecondary,
     marginTop: 12,
   },
   emptySub: {
     fontSize: 13,
-    color: '#94A3B8',
+    color: colors.textMuted,
     marginTop: 4,
   },
 });

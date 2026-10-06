@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { UBD_COLORS } from '../constants/theme';
+import { colors, fonts, radius, shadows, spacing } from '@/theme';
 
 export interface BarChartItem {
   label: string;
@@ -22,7 +22,7 @@ export function BarChart({ data, title }: BarChartProps) {
       <View style={styles.chartContainer}>
         {data.map((item, index) => {
           const percentage = Math.round((item.count / max) * 100);
-          const barColor = item.color || UBD_COLORS.PRIMARY;
+          const barColor = item.color || colors.primary;
 
           return (
             <View key={index} style={styles.row}>
@@ -53,18 +53,19 @@ export function BarChart({ data, title }: BarChartProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    padding: 16,
-    marginVertical: 8,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    marginVertical: spacing.xs,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
+    boxShadow: shadows.card,
   },
   title: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 14,
+    color: colors.textPrimary,
+    marginBottom: spacing.sm + 4,
   },
   chartContainer: {
     gap: 10,
@@ -72,32 +73,34 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: spacing.sm,
   },
   labelContainer: {
     width: 100,
   },
   label: {
     fontSize: 12,
-    color: '#475569',
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   track: {
     flex: 1,
     height: 16,
-    backgroundColor: '#F1F5F9',
-    borderRadius: 8,
+    backgroundColor: colors.surfaceSubtle,
+    borderRadius: radius.sm,
     overflow: 'hidden',
   },
   bar: {
     height: '100%',
-    borderRadius: 8,
+    borderRadius: radius.sm,
   },
   countText: {
-    width: 28,
-    fontSize: 12,
+    width: 32,
+    fontFamily: fonts.displayBold,
+    fontSize: 13,
     fontWeight: '700',
-    color: '#0F172A',
+    color: colors.textPrimary,
     textAlign: 'right',
+    fontVariant: ['tabular-nums'],
   },
 });

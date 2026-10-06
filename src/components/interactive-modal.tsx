@@ -10,7 +10,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { Mahasiswa } from '@/types/mahasiswa';
 import { PhotoAvatar } from './photo-avatar';
-import { colors, radius, shadows, spacing } from '@/theme';
+import { colors, fonts, radius, shadows, spacing } from '@/theme';
 
 interface MahasiswaClickModalProps {
   visible: boolean;
@@ -184,7 +184,7 @@ export function DeleteConfirmationModal({
               accessibilityLabel="Konfirmasi Hapus"
             >
               {isDeleting ? (
-                <ActivityIndicator color="#FFFFFF" size="small" />
+                <ActivityIndicator color={colors.textOnPrimary} size="small" />
               ) : (
                 <Text style={styles.confirmDeleteButtonText}>Hapus</Text>
               )}
@@ -199,7 +199,7 @@ export function DeleteConfirmationModal({
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.55)',
+    backgroundColor: 'rgba(28, 25, 23, 0.6)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: spacing.lg,
@@ -231,6 +231,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
   },
   studentHeaderName: {
+    fontFamily: fonts.displayBold,
     fontSize: 16,
     fontWeight: '800',
     color: colors.textPrimary,
@@ -248,7 +249,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: colors.primaryBorder,
     gap: 3,
   },
   clickLabel: {
@@ -320,7 +321,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     backgroundColor: colors.dangerLight,
     borderWidth: 1,
-    borderColor: '#FECACA',
+    borderColor: colors.dangerBorder,
   },
   deleteButtonText: {
     fontSize: 13,
@@ -357,6 +358,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   deleteCardTitle: {
+    fontFamily: fonts.displayBold,
     fontSize: 17,
     fontWeight: '800',
     color: colors.textPrimary,
@@ -398,6 +400,6 @@ const styles = StyleSheet.create({
   confirmDeleteButtonText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.textOnPrimary,
   },
 });

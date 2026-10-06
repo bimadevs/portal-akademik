@@ -34,20 +34,20 @@ const FILTER_FACULTIES: ('Semua' | Fakultas)[] = [
 
 const FACULTY_BADGE_COLORS: Record<Fakultas, { text: string; bg: string }> = {
   'Sains dan Teknologi': {
-    text: '#0284C7',
-    bg: '#E0F2FE',
+    text: colors.faculty.saintek,
+    bg: colors.faculty.saintekLight,
   },
   'Bisnis': {
-    text: '#0D9488',
-    bg: '#CCFBF1',
+    text: colors.faculty.bisnis,
+    bg: colors.faculty.bisnisLight,
   },
   'Ilmu Komunikasi dan Desain': {
-    text: '#7C3AED',
-    bg: '#EDE9FE',
+    text: colors.faculty.komunikasi,
+    bg: colors.faculty.komunikasiLight,
   },
   'Sosial dan Humaniora': {
-    text: '#C2410C',
-    bg: '#FFEDD5',
+    text: colors.faculty.soshum,
+    bg: colors.faculty.soshumLight,
   },
 };
 
@@ -429,7 +429,7 @@ const styles = StyleSheet.create({
   },
   filterChipActive: {
     backgroundColor: colors.primaryLight,
-    borderColor: '#BFDBFE',
+    borderColor: colors.primaryBorder,
   },
   filterChipText: {
     fontSize: 11,
@@ -447,7 +447,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
   },
   countBadgeActive: {
-    backgroundColor: '#BFDBFE',
+    backgroundColor: colors.primaryBorder,
   },
   countBadgeText: {
     fontSize: 9,
@@ -487,7 +487,7 @@ const styles = StyleSheet.create({
   },
   studentCardSelected: {
     borderColor: colors.primary,
-    backgroundColor: '#FAFCFF',
+    backgroundColor: colors.primaryLight,
   },
   cardPressed: {
     opacity: 0.88,

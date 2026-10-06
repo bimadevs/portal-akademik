@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { colors, radius, shadows, spacing } from '@/theme';
+import { colors, fonts, radius, shadows, spacing } from '@/theme';
 
 interface AcademicMenuItem {
   id: string;
@@ -34,8 +34,8 @@ export function AcademicGrid() {
           title: 'Data Mahasiswa',
           subtitle: 'Registrasi & profil mahasiswa',
           iconName: 'school',
-          iconBg: '#EFF6FF',
-          iconColor: '#1E3A8A',
+          iconBg: colors.section.masterBg,
+          iconColor: colors.section.master,
           isPrimary: true,
           badge: 'UTAMA',
           onPress: () => router.push('/(tabs)/mahasiswa'),
@@ -45,8 +45,8 @@ export function AcademicGrid() {
           title: 'Data Dosen',
           subtitle: 'Tenaga pengajar & NIDN',
           iconName: 'person-circle-outline',
-          iconBg: '#E0F2FE',
-          iconColor: '#0284C7',
+          iconBg: colors.section.masterBg,
+          iconColor: colors.section.master,
           onPress: () => router.push('/dosen'),
         },
         {
@@ -54,8 +54,8 @@ export function AcademicGrid() {
           title: 'Mata Kuliah',
           subtitle: 'Kurikulum, silabus & SKS',
           iconName: 'book-outline',
-          iconBg: '#EEF2FF',
-          iconColor: '#4F46E5',
+          iconBg: colors.section.masterBg,
+          iconColor: colors.section.master,
           onPress: () => router.push('/mata-kuliah'),
         },
       ],
@@ -69,8 +69,8 @@ export function AcademicGrid() {
           title: 'Jadwal Kuliah',
           subtitle: 'Alokasi ruang & sesi',
           iconName: 'calendar-outline',
-          iconBg: '#CCFBF1',
-          iconColor: '#0D9488',
+          iconBg: colors.section.operasionalBg,
+          iconColor: colors.section.operasional,
           onPress: () => router.push('/jadwal'),
         },
         {
@@ -78,8 +78,8 @@ export function AcademicGrid() {
           title: 'KRS Mahasiswa',
           subtitle: 'Rencana studi semester',
           iconName: 'document-text-outline',
-          iconBg: '#FEF3C7',
-          iconColor: '#D97706',
+          iconBg: colors.section.operasionalBg,
+          iconColor: colors.section.operasional,
           onPress: () => router.push('/krs'),
         },
         {
@@ -87,8 +87,8 @@ export function AcademicGrid() {
           title: 'Presensi Kelas',
           subtitle: 'Catatan kehadiran harian',
           iconName: 'checkbox-outline',
-          iconBg: '#FFE4E6',
-          iconColor: '#E11D48',
+          iconBg: colors.section.operasionalBg,
+          iconColor: colors.section.operasional,
           onPress: () => router.push('/presensi'),
         },
       ],
@@ -102,8 +102,8 @@ export function AcademicGrid() {
           title: 'Prestasi & Nilai',
           subtitle: 'Input nilai & kalkulasi IPK',
           iconName: 'trophy-outline',
-          iconBg: '#E0F2FE',
-          iconColor: '#0369A1',
+          iconBg: colors.section.penilaianBg,
+          iconColor: colors.section.penilaian,
           onPress: () => router.push('/nilai'),
         },
         {
@@ -111,8 +111,8 @@ export function AcademicGrid() {
           title: 'Kartu Mahasiswa',
           subtitle: 'Digital KTM & QR verifikasi',
           iconName: 'id-card-outline',
-          iconBg: '#EDE9FE',
-          iconColor: '#7C3AED',
+          iconBg: colors.section.penilaianBg,
+          iconColor: colors.section.penilaian,
           onPress: () => router.push('/kartu'),
         },
         {
@@ -120,8 +120,8 @@ export function AcademicGrid() {
           title: 'Statistik & Laporan',
           subtitle: 'Grafik agregasi akademik',
           iconName: 'bar-chart-outline',
-          iconBg: '#FFEDD5',
-          iconColor: '#EA580C',
+          iconBg: colors.section.penilaianBg,
+          iconColor: colors.section.penilaian,
           onPress: () => router.push('/laporan'),
         },
         {
@@ -129,8 +129,8 @@ export function AcademicGrid() {
           title: 'Pengaturan Sistem',
           subtitle: 'Semester, backup & audit',
           iconName: 'settings-outline',
-          iconBg: '#F1F5F9',
-          iconColor: '#475569',
+          iconBg: colors.surfaceSubtle,
+          iconColor: colors.textSecondary,
           onPress: () => router.push('/pengaturan'),
         },
       ],
@@ -220,8 +220,9 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   sectionTitle: {
+    fontFamily: fonts.displayBold,
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '700',
     color: colors.textPrimary,
     letterSpacing: -0.2,
   },
@@ -258,8 +259,8 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   cardPrimary: {
-    borderColor: '#BFDBFE',
-    backgroundColor: '#FAFCFF',
+    borderColor: colors.primaryBorder,
+    backgroundColor: colors.primaryLight,
   },
   cardPressed: {
     opacity: 0.88,
@@ -278,17 +279,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   primaryBadge: {
-    backgroundColor: colors.primaryLight,
+    backgroundColor: colors.primary,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: radius.xs,
-    borderWidth: 1,
-    borderColor: '#BFDBFE',
   },
   primaryBadgeText: {
     fontSize: 9,
     fontWeight: '800',
-    color: colors.primary,
+    color: colors.textOnPrimary,
     letterSpacing: 0.5,
   },
   cardContent: {

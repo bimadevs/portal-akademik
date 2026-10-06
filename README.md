@@ -8,7 +8,7 @@
 [![Database](https://img.shields.io/badge/Database-SQLite_(expo--sqlite)-003B57.svg?logo=sqlite&logoColor=white)](https://docs.expo.dev/versions/latest/sdk/sqlite/)
 [![Offline First](https://img.shields.io/badge/Architecture-100%25_Offline--First-10B981.svg)]()
 [![Platform](https://img.shields.io/badge/Platform-Android_%7C_iOS_%7C_Web-F97316.svg)]()
-[![Version](https://img.shields.io/badge/Release_Version-v3.1.2_(Enterprise)-8B5CF6.svg)]()
+[![Version](https://img.shields.io/badge/Release_Version-v3.2.0_(Enterprise)-8B5CF6.svg)]()
 
 > *"Kreativitas Membangkitkan Inovasi"*  
 > — **Motto Resmi Universitas Buddhi Dharma**
@@ -29,7 +29,7 @@ Dokumentasi ini disusun untuk memenuhi tugas besar mata kuliah **Pemrograman Mob
 | **Mata Kuliah** | Pemrograman Mobile (*Mobile Programming*) |
 | **Dosen Pengampu** | Dosen Pengampu Pemrograman Mobile, M.Kom. *(Contoh / Dummy)* |
 | **Tahun Akademik** | Semester Ganjil 2023/2024 *(Dapat diubah via Pengaturan)* |
-| **Status Rilis Aplikasi** | **Versi 3.1.2 (Tahap 3 - Enterprise & Academic Excellence)** |
+| **Status Rilis Aplikasi** | **Versi 3.2.0 (Tahap 3 - Enterprise Brand Redesign & Official Identity)** |
 
 ---
 
@@ -93,7 +93,7 @@ Aplikasi Portal Akademik UBD dibangun secara bertahap dan terencana melalui **ti
 | **Kartu Mahasiswa** | Dialog "Sedang dikembangkan" | Kartu statis + QR NIM | KTM Digital + QR Verifikasi + Lembar Share Sheet |
 | **Ketahanan Data** | Penyimpanan lokal sederhana | Reset data ke kondisi awal | Pencadangan JSON Portabel & Pemulihan Atomik |
 | **Audit & Akuntabilitas** | Tidak ada | Tidak ada | Append-Only Audit Logging sistem |
-| **Status Versi** | `v1.0.0` | `v2.0.0` | `v3.1.2 (Enterprise Academic System)` |
+| **Status Versi** | `v1.0.0` | `v2.0.0` | `v3.2.0 (Enterprise Brand Redesign)` |
 
 ---
 
@@ -130,8 +130,8 @@ Aplikasi Portal Akademik UBD dibangun secara bertahap dan terencana melalui **ti
 
 ---
 
-### 🟣 Versi 3 (V3 - Enterprise & Academic Excellence / v3.0.0 – v3.1.2)
-**Fokus**: Mengangkat derajat sistem menjadi **Sistem Informasi Akademik Tingkat Enterprise** yang memenuhi standar regulasi Dikti, memiliki mesin cetak berkas PDF resmi ber-kop UBD, ketahanan data tinggi, auditabilitas administratif, serta kualitas kode tingkat lanjut.
+### 🟣 Versi 3 (V3 - Enterprise & Academic Excellence / v3.0.0 – v3.2.0)
+**Fokus**: Mengangkat derajat sistem menjadi **Sistem Informasi Akademik Tingkat Enterprise** yang memenuhi standar regulasi Dikti, memiliki mesin cetak berkas PDF resmi ber-kop UBD, ketahanan data tinggi, auditabilitas administratif, serta kualitas desain autentik berakar dari lambang resmi UBD.
 
 - **Fitur & Perubahan yang Diperkenalkan**:
   1. **Mesin Penerbitan Dokumen Resmi (Offline PDF Engine)**:
@@ -149,10 +149,17 @@ Aplikasi Portal Akademik UBD dibangun secara bertahap dan terencana melalui **ti
      - Pemulihan atomik (*Atomic Restore*) dengan transaksi SQL tunggal dan *automatic rollback* jika terjadi eror skema.
   4. **Akuntabilitas Administratif (Append-Only Audit Log)**:
      - Tabel `audit_logs` dan layar peninjau khusus di Pengaturan untuk merekam kronologis mutasi berisiko tinggi (perubahan nilai ujian, dispensasi kuota SKS, mutasi status mahasiswa, pemulihan database).
-  5. **Penyempurnaan Rilis v3.1.2 (Current Release)**:
+  5. **Penyempurnaan Rilis v3.1.2**:
      - **Branding Total Icon UBD**: Seluruh icon aplikasi (Universal 1024x1024, Android Adaptive Foreground/Background/Monochrome, Splash Screen, Web Favicon) diperbarui menggunakan lambang resmi Universitas Buddhi Dharma (`ubd-logo.webp`).
      - **Pembersihan Total Ikon Starter**: Menghapus seluruh ikon dan simbol bawaan Expo dan React dari repositori untuk profesionalitas dan efisiensi bundle.
      - **Integrasi Automated E2E Suite & Clean Architecture**: Penambahan rangkaian pengujian otomatis end-to-end dan eliminasi peringatan runtime.
+  6. **Penyempurnaan Rilis v3.2.0 (Official UBD Logo & Brand Identity Redesign - Current)**:
+     - **Harmonisasi Palet Logo UBD**: Menyelaraskan seluruh warna dasar aplikasi secara presisi dengan logo resmi Universitas Buddhi Dharma (`assets/images/ubd-logo.webp`), menggunakan **UBD Crimson Red (`#B3202A`)** sebagai warna utama (kelopak teratai & wordmark), **UBD Royal Blue (`#2556A8`)** sebagai warna sekunder (stupa Borobudur & buku terbuka), aksen **Saffron (`#EE8A25`)** / **Sun Gold (`#F5C518`)** (roda dharma cakram), dan **Warm Stone (`#FAF8F6`)** sebagai latar belakang permukaan modern.
+     - **Tipografi Bricolage Grotesque**: Mengintegrasikan `@expo-google-fonts/bricolage-grotesque` (700 Bold) untuk display hero, judul navigasi header, dan angka statistik tabular (`fontVariant: ['tabular-nums']`).
+     - **Pembersihan 100% Token Warna Hardcoded**: Mengeliminasi seluruh warna hardcoded hex di 25 layar dan komponen, menyatukannya ke sistem token desain sentral (`src/theme/`).
+     - **Motif Watermark Teratai (`LotusRing`)**: Menambahkan komponen ornamen vektor 12-kelopak teratai UBD pada splash login hero, kartu KTM digital, dan banner selamat datang kampus.
+     - **Pemisahan Semantik Bahaya vs Institusional**: Membedakan aksi destruktif dengan Vermilion (`#D7372A`) terpisah dari Crimson kampus untuk kejelasan UX.
+     - **Sinkronisasi Dokumen Resmi PDF**: Kop surat dan nomor registrasi dokumen resmi PDF diperbarui menggunakan Crimson UBD.
 
 ---
 
@@ -256,6 +263,7 @@ flowchart TD
 | **Ikon Grafis** | `@expo/vector-icons` | `^15.0.2` | Menyediakan ikon akademik lengkap (Ionicons). |
 | **Visualisasi Grafik** | `react-native-svg` | `15.15.4` | Komponen visualisasi murni untuk Bar Chart dan Pie Chart tanpa dependensi webview. |
 | **QR Code Engine** | `react-native-qrcode-svg` | `^6.3.26` | Generate QR code verifikasi untuk Kartu Mahasiswa dan Dokumen KRS/KHS. |
+| **Tipografi Display** | `@expo-google-fonts/bricolage-grotesque` | `^0.4.1` | Tipografi berwibawa untuk judul display hero, header navigasi, dan angka statistik tabular. |
 | **State & Context** | React Context API | `19.2.3` | Menyediakan state global untuk sesi autentikasi pengguna secara reaktif. |
 
 ---
@@ -419,7 +427,8 @@ portal-akademik/
 │   │   └── ...-service.ts     # Service modul (Mahasiswa, Dosen, Nilai, dll.)
 │   ├── theme/                 # Desain sistem & token warna resmi UBD
 │   └── types/                 # Definisi tipe TypeScript & data contracts
-├── app.json                   # Konfigurasi aplikasi Expo (v3.1.2)
+├── app.json                   # Konfigurasi aplikasi Expo (v3.2.0)
+├── DESIGN.md                  # Dokumentasi Desain Sistem & Branding Resmi UBD
 ├── package.json               # Konfigurasi dependensi dan skrip proyek
 └── README.md                  # Berkas dokumentasi utama proyek
 ```

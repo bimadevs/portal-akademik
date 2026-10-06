@@ -6,7 +6,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, radius, shadows, spacing } from '@/theme';
+import { LotusRing } from '@/components/lotus-ring';
+import { colors, fonts, radius, shadows, spacing } from '@/theme';
 
 export function CampusBanner() {
   return (
@@ -17,6 +18,16 @@ export function CampusBanner() {
         end={{ x: 1, y: 1 }}
         style={styles.gradientCard}
       >
+        {/* Lotus Motif Watermark in Background */}
+        <View style={styles.watermarkLayer}>
+          <LotusRing
+            size={180}
+            color="#FFFFFF"
+            opacity={0.14}
+            strokeWidth={1.2}
+          />
+        </View>
+
         {/* Top Institutional Header */}
         <View style={styles.topRow}>
           <View style={styles.categoryBadge}>
@@ -25,15 +36,15 @@ export function CampusBanner() {
           </View>
 
           <View style={styles.termChip}>
-            <Ionicons name="calendar-outline" size={12} color="#93C5FD" />
-            <Text style={styles.termChipText}>TA 2024/2025</Text>
+            <View style={styles.goldDot} />
+            <Text style={styles.termChipText}>TA 2025/2026</Text>
           </View>
         </View>
 
         {/* Center Presentation */}
         <View style={styles.bodyContent}>
           <View style={styles.iconEmblem}>
-            <Ionicons name="school" size={26} color="#FFFFFF" />
+            <Ionicons name="school" size={26} color={colors.highlight} />
           </View>
 
           <View style={styles.textColumn}>
@@ -49,14 +60,14 @@ export function CampusBanner() {
         {/* Bottom Metadata Footer */}
         <View style={styles.footerRow}>
           <View style={styles.metaItem}>
-            <Ionicons name="location-outline" size={13} color="#94A3B8" />
+            <Ionicons name="location-outline" size={13} color={colors.onPrimaryMuted} />
             <Text style={styles.metaText} numberOfLines={1}>
               Karawaci, Tangerang
             </Text>
           </View>
 
           <View style={styles.metaItem}>
-            <Ionicons name="server-outline" size={13} color="#6EE7B7" />
+            <Ionicons name="server-outline" size={13} color="#A7F3D0" />
             <Text style={styles.metaStatusText} numberOfLines={1}>
               Basis Data Offline Mandiri
             </Text>
@@ -72,62 +83,80 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: radius.xl,
     overflow: 'hidden',
-    boxShadow: shadows.card,
+    boxShadow: shadows.glow,
   },
   gradientCard: {
     padding: spacing.lg,
     borderRadius: radius.xl,
     borderWidth: 1,
-    borderColor: 'rgba(59, 130, 246, 0.2)',
+    borderColor: 'rgba(245, 197, 24, 0.25)',
     gap: spacing.md,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  watermarkLayer: {
+    position: 'absolute',
+    right: -30,
+    top: -20,
+    zIndex: 0,
   },
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    zIndex: 1,
   },
   categoryBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: radius.full,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: 'rgba(255, 255, 255, 0.18)',
   },
   categoryDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#38BDF8',
+    backgroundColor: colors.highlight,
   },
   categoryText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#E0F2FE',
+    color: '#FFFFFF',
     letterSpacing: 0.8,
   },
   termChip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: 'rgba(245, 197, 24, 0.15)',
     paddingHorizontal: 9,
     paddingVertical: 4,
     borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 197, 24, 0.35)',
+  },
+  goldDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: colors.highlight,
   },
   termChipText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#BFDBFE',
-    letterSpacing: 0.2,
+    fontSize: 10,
+    fontWeight: '800',
+    color: colors.highlight,
+    letterSpacing: 0.4,
   },
   bodyContent: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
+    zIndex: 1,
   },
   iconEmblem: {
     width: 48,
@@ -137,13 +166,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: 'rgba(245, 197, 24, 0.3)',
   },
   textColumn: {
     flex: 1,
     gap: 3,
   },
   campusName: {
+    fontFamily: fonts.displayBold,
     fontSize: 18,
     fontWeight: '800',
     color: '#FFFFFF',
@@ -152,7 +182,7 @@ const styles = StyleSheet.create({
   campusMotto: {
     fontSize: 12,
     fontStyle: 'italic',
-    color: '#CBD5E1',
+    color: colors.onPrimaryMuted,
   },
   footerRow: {
     flexDirection: 'row',
@@ -161,6 +191,7 @@ const styles = StyleSheet.create({
     paddingTop: spacing.sm,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.12)',
+    zIndex: 1,
   },
   metaItem: {
     flexDirection: 'row',
@@ -169,7 +200,7 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: 11,
-    color: '#94A3B8',
+    color: colors.onPrimaryMuted,
     fontWeight: '500',
   },
   metaStatusText: {

@@ -37,8 +37,9 @@ Penggunaan administratif di lingkungan kampus Universitas Buddhi Dharma (Karawac
 
 - Institusi: Universitas Buddhi Dharma (UBD)
 - Motto: “Kreativitas Membangkitkan Inovasi”
-- Warna Utama: Deep Academic Sapphire Blue (`#1E3A8A` / `#2563EB`)
-- Estetika: Modern Academic Swiss / Clean Collegiate Enterprise, bebas dari AI slop
+- Palet Resmi: UBD Crimson Red (`#B3202A`), UBD Royal Blue (`#2556A8`), Saffron (`#EE8A25`), Sun Gold (`#F5C518`), Warm Stone (`#FAF8F6`)
+- Tipografi: Bricolage Grotesque untuk Display/Headers/Tabular Stat + System Sans-Serif
+- Estetika: Authentic UBD Collegiate Identity, Modern Editorial Academic, bebas dari AI slop
 
 ## Evidence on Hand
 

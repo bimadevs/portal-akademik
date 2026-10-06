@@ -278,7 +278,7 @@ export default function InputMahasiswaScreen() {
                   <Ionicons
                     name="female"
                     size={17}
-                    color={jenisKelamin === 'WANITA' ? '#DB2777' : colors.textSecondary}
+                    color={jenisKelamin === 'WANITA' ? colors.faculties.komunikasi : colors.textSecondary}
                   />
                   <Text
                     style={[
@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginTop: 4,
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: colors.primarySoft,
   },
   photoBtnText: {
     fontSize: 11,

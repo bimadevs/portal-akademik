@@ -106,7 +106,7 @@ export function getDocumentStyles(): string {
       .logo-badge {
         width: 72px;
         height: 72px;
-        background: #2B52BA;
+        background: #B3202A;
         color: #FFFFFF;
         border-radius: 8px;
         display: flex;
@@ -126,7 +126,7 @@ export function getDocumentStyles(): string {
         margin: 0;
         font-size: 16pt;
         font-weight: 800;
-        color: #1E3A8A;
+        color: #B3202A;
         letter-spacing: 0.5px;
       }
       .univ-sub {
@@ -278,7 +278,7 @@ export function getDocumentStyles(): string {
         font-family: monospace;
         font-weight: 700;
         font-size: 7.5pt;
-        color: #1E3A8A;
+        color: #B3202A;
       }
       .badge-pass {
         background: #DCFCE7;
@@ -524,8 +524,8 @@ export const PDFService = {
             <span><strong>Total SKS Lulus:</strong> ${sksLulus} SKS</span>
           </div>
           <div class="summary-row" style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #D1D5DB;">
-            <span><strong>Indeks Prestasi Semester (IPS):</strong> <span style="color: #1E3A8A; font-size: 11pt; font-weight: 800;">${ips.toFixed(2)}</span></span>
-            <span><strong>Indeks Prestasi Kumulatif (IPK):</strong> <span style="color: #1E3A8A; font-size: 11pt; font-weight: 800;">${ipk.toFixed(2)}</span></span>
+            <span><strong>Indeks Prestasi Semester (IPS):</strong> <span style="color: #B3202A; font-size: 11pt; font-weight: 800;">${ips.toFixed(2)}</span></span>
+            <span><strong>Indeks Prestasi Kumulatif (IPK):</strong> <span style="color: #B3202A; font-size: 11pt; font-weight: 800;">${ipk.toFixed(2)}</span></span>
           </div>
         </div>
 

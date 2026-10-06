@@ -135,15 +135,15 @@ export default function PresensiRekapScreen() {
                   style={[
                     styles.pctBadge,
                     {
-                      backgroundColor: isSafe ? '#DCFCE7' : '#FEE2E2',
-                      borderColor: isSafe ? '#BBF7D0' : '#FECACA',
+                      backgroundColor: isSafe ? colors.successLight : colors.dangerLight,
+                      borderColor: isSafe ? colors.successBorder : colors.dangerBorder,
                     },
                   ]}
                 >
                   <Text
                     style={[
                       styles.pctText,
-                      { color: isSafe ? '#166534' : '#991B1B' },
+                      { color: isSafe ? colors.successDark : colors.dangerDark },
                     ]}
                   >
                     {item.persentase}% {isSafe ? 'Memenuhi' : '< 75%'}

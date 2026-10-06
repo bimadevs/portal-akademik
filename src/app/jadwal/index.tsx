@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   },
   chipActive: {
     backgroundColor: colors.primaryLight,
-    borderColor: '#BFDBFE',
+    borderColor: colors.primarySoft,
   },
   chipPressed: {
     opacity: 0.85,
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minWidth: 84,
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: colors.primarySoft,
     gap: 2,
   },
   hariText: {

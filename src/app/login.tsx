@@ -12,11 +12,13 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LotusRing } from '@/components/lotus-ring';
 import { useAuth } from '@/context/auth-context';
-import { colors, radius, shadows, spacing } from '@/theme';
+import { colors, fonts, radius, shadows, spacing } from '@/theme';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -63,7 +65,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom', 'left', 'right']}>
+    <View style={styles.container}>
       <KeyboardAvoidingView
         style={styles.keyboardAvoid}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -72,39 +74,68 @@ export default function LoginScreen() {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
+          bounces={false}
         >
-          {/* Institutional Academic Header */}
-          <View style={styles.brandHero}>
-            <View style={styles.logoContainer}>
-              <Image
-                source={require('../../assets/images/ubd-logo.png')}
-                style={styles.ubdLogo}
-                resizeMode="contain"
-                accessibilityLabel="Universitas Buddhi Dharma"
-              />
-            </View>
+          {/* Institutional Academic Hero */}
+          <LinearGradient
+            colors={colors.gradients.heroLogin}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.heroBackground}
+          >
+            <SafeAreaView edges={['top']} style={styles.heroSafeArea}>
+              <View style={styles.heroContent}>
+                {/* Lotus Motif Watermark behind Logo */}
+                <View style={styles.lotusContainer}>
+                  <LotusRing
+                    size={240}
+                    color="#FFFFFF"
+                    opacity={0.16}
+                    strokeWidth={1.3}
+                    showCenterGlow
+                  />
+                </View>
 
-            <View style={styles.heroTextContainer}>
-              <Text style={styles.portalCategory}>PORTAL AKADEMIK TERPADU</Text>
-              <Text style={styles.institutionName}>Universitas Buddhi Dharma</Text>
-              <Text style={styles.institutionMotto}>
-                “Kreativitas Membangkitkan Inovasi”
-              </Text>
-            </View>
-          </View>
+                {/* Circular Emblem Plate with Gold Ring */}
+                <View style={styles.emblemPlate}>
+                  <Image
+                    source={require('../../assets/images/ubd-logo.webp')}
+                    style={styles.logoEmblem}
+                    resizeMode="contain"
+                    accessibilityLabel="Logo Resmi Universitas Buddhi Dharma"
+                  />
+                </View>
 
-          {/* Form Container */}
-          <View style={styles.formContainer}>
+                {/* Institutional Brand Identity */}
+                <View style={styles.heroTextWrapper}>
+                  <Text style={styles.heroPortalTitle}>Portal Akademik</Text>
+                  <Text style={styles.heroInstitution}>UNIVERSITAS BUDDHI DHARMA</Text>
+                  <Text style={styles.heroMotto}>
+                    “Kreativitas Membangkitkan Inovasi”
+                  </Text>
+                </View>
+
+                {/* Subtle Gold Academic Year Chip */}
+                <View style={styles.academicYearChip}>
+                  <View style={styles.goldDot} />
+                  <Text style={styles.academicYearText}>TAHUN AKADEMIK 2025/2026</Text>
+                </View>
+              </View>
+            </SafeAreaView>
+          </LinearGradient>
+
+          {/* Overlapping Surface Form Container */}
+          <View style={styles.formSurface}>
             <View style={styles.cardHeader}>
               <Text style={styles.cardTitle}>Masuk Administrator</Text>
               <Text style={styles.cardSubtitle}>
-                Silakan masukkan kredensial akun administrator Anda
+                Silakan masukkan kredensial akun administrator Anda untuk melanjutkan
               </Text>
             </View>
 
             {/* Input: Username */}
             <View style={styles.inputGroup}>
-              <Text style={styles.fieldLabel}>Username / ID Admin</Text>
+              <Text style={styles.fieldLabel}>Nama Pengguna / ID Admin</Text>
               <View
                 style={[
                   styles.inputContainer,
@@ -191,7 +222,7 @@ export default function LoginScreen() {
               </View>
             </View>
 
-            {/* Primary Action Button */}
+            {/* Primary Action Button (Solid UBD Crimson) */}
             <Pressable
               onPress={handleLogin}
               disabled={isSubmitting}
@@ -201,14 +232,14 @@ export default function LoginScreen() {
                 isSubmitting && styles.loginButtonDisabled,
               ]}
               accessibilityRole="button"
-              accessibilityLabel="Tombol Login"
+              accessibilityLabel="Tombol Masuk ke Portal Akademik"
             >
               {isSubmitting ? (
                 <ActivityIndicator color={colors.textOnPrimary} />
               ) : (
                 <View style={styles.buttonInner}>
                   <Text style={styles.loginButtonText}>MASUK KE PORTAL</Text>
-                  <Ionicons name="arrow-forward" size={17} color="#FFFFFF" />
+                  <Ionicons name="arrow-forward" size={17} color={colors.textOnPrimary} />
                 </View>
               )}
             </Pressable>
@@ -224,34 +255,34 @@ export default function LoginScreen() {
               accessibilityLabel="Isi otomatis akun demo administrator"
             >
               <View style={styles.demoIconBox}>
-                <Ionicons name="key-outline" size={16} color={colors.primary} />
+                <Ionicons name="key-outline" size={16} color={colors.accent} />
               </View>
               <View style={styles.demoTextBox}>
                 <Text style={styles.demoTitle}>Mode Evaluasi / Penguji</Text>
                 <Text style={styles.demoSubtitle}>
-                  Sentuh untuk mengisi otomatis:{' '}
+                  Sentuh untuk isi otomatis:{' '}
                   <Text style={styles.demoCode}>admin / admin</Text>
                 </Text>
               </View>
-              <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+              <Ionicons name="chevron-forward" size={16} color={colors.accent} />
             </Pressable>
-          </View>
 
-          {/* Institutional Footer */}
-          <View style={styles.footerContainer}>
-            <Text style={styles.footerInstitution}>UNIVERSITAS BUDDHI DHARMA</Text>
-            <Text style={styles.footerCopyright}>
-              Sistem Informasi Akademik Mobile • 100% Offline-First
-            </Text>
+            {/* Institutional Subtext Footer */}
+            <View style={styles.footerContainer}>
+              <Text style={styles.footerVersion}>v3.2.0 • 100% Offline-First Relasional</Text>
+              <Text style={styles.footerCopyright}>
+                Universitas Buddhi Dharma • Karawaci, Tangerang
+              </Text>
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
     backgroundColor: colors.background,
   },
@@ -260,73 +291,121 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+  },
+  heroBackground: {
+    paddingBottom: spacing.xl + 18,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  heroSafeArea: {
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.xxl,
+  },
+  heroContent: {
+    alignItems: 'center',
+    paddingTop: spacing.md,
+    gap: spacing.sm,
+    position: 'relative',
+  },
+  lotusContainer: {
+    position: 'absolute',
+    top: -30,
+    alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.xl,
+    zIndex: 1,
   },
-  brandHero: {
+  emblemPlate: {
+    width: 84,
+    height: 84,
+    borderRadius: 42,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
-    gap: spacing.md,
+    justifyContent: 'center',
+    borderWidth: 2.5,
+    borderColor: colors.highlight,
+    boxShadow: shadows.glow,
+    zIndex: 2,
+    marginBottom: 4,
   },
-  logoContainer: {
-    backgroundColor: colors.surface,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    borderColor: colors.border,
-    boxShadow: shadows.subtle,
+  logoEmblem: {
+    width: 64,
+    height: 64,
   },
-  ubdLogo: {
-    width: 220,
-    height: 48,
-  },
-  heroTextContainer: {
+  heroTextWrapper: {
     alignItems: 'center',
-    gap: 4,
+    gap: 3,
+    zIndex: 2,
   },
-  portalCategory: {
-    fontSize: 11,
+  heroPortalTitle: {
+    fontFamily: fonts.displayExtraBold,
+    fontSize: 26,
     fontWeight: '800',
-    color: colors.primary,
+    color: '#FFFFFF',
+    letterSpacing: -0.5,
+  },
+  heroInstitution: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: colors.onPrimaryMuted,
     letterSpacing: 1.5,
   },
-  institutionName: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: colors.textPrimary,
-    letterSpacing: -0.3,
-  },
-  institutionMotto: {
+  heroMotto: {
     fontSize: 12,
     fontStyle: 'italic',
-    color: colors.textSecondary,
+    color: colors.primaryBorder,
+    marginTop: 2,
   },
-  formContainer: {
-    backgroundColor: colors.surface,
-    borderRadius: radius['2xl'],
-    padding: spacing.xl,
+  academicYearChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: radius.full,
     borderWidth: 1,
-    borderColor: colors.border,
-    boxShadow: shadows.card,
+    borderColor: 'rgba(245, 197, 24, 0.35)',
+    marginTop: 4,
+    zIndex: 2,
+  },
+  goldDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.highlight,
+  },
+  academicYearText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: colors.highlight,
+    letterSpacing: 0.8,
+  },
+  formSurface: {
+    flex: 1,
+    backgroundColor: colors.surface,
+    borderTopLeftRadius: radius['3xl'],
+    borderTopRightRadius: radius['3xl'],
+    marginTop: -20,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.xxl,
+    boxShadow: shadows.elevated,
     gap: spacing.lg,
   },
   cardHeader: {
     gap: 4,
     borderBottomWidth: 1,
-    borderBottomColor: colors.surfaceSubtle,
+    borderBottomColor: colors.borderSubtle,
     paddingBottom: spacing.sm,
   },
   cardTitle: {
-    fontSize: 18,
-    fontWeight: '800',
+    fontFamily: fonts.displayBold,
+    fontSize: 20,
+    fontWeight: '700',
     color: colors.textPrimary,
     letterSpacing: -0.2,
   },
   cardSubtitle: {
-    fontSize: 12,
+    fontSize: 13,
     color: colors.textSecondary,
     lineHeight: 18,
   },
@@ -346,12 +425,12 @@ const styles = StyleSheet.create({
   signUpLinkText: {
     fontSize: 12,
     fontWeight: '600',
-    color: colors.primary,
+    color: colors.accent,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceSubtle,
     borderWidth: 1.5,
     borderColor: colors.border,
     borderRadius: radius.lg,
@@ -381,7 +460,7 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: shadows.card,
+    boxShadow: shadows.glow,
     marginTop: spacing.xs,
   },
   loginButtonPressed: {
@@ -406,15 +485,14 @@ const styles = StyleSheet.create({
   demoAccountCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.primaryLight,
+    backgroundColor: colors.accentLight,
     borderRadius: radius.lg,
     padding: spacing.md,
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: colors.accentBorder,
     gap: spacing.sm,
   },
   demoAccountCardPressed: {
-    backgroundColor: '#DBEAFE',
     opacity: 0.85,
   },
   demoIconBox: {
@@ -425,7 +503,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: colors.accentBorder,
   },
   demoTextBox: {
     flex: 1,
@@ -434,7 +512,7 @@ const styles = StyleSheet.create({
   demoTitle: {
     fontSize: 12,
     fontWeight: '700',
-    color: colors.primary,
+    color: colors.accentDark,
   },
   demoSubtitle: {
     fontSize: 11,
@@ -442,7 +520,7 @@ const styles = StyleSheet.create({
   },
   demoCode: {
     fontWeight: '700',
-    color: colors.primaryDark,
+    color: colors.primary,
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
   footerContainer: {
@@ -450,11 +528,11 @@ const styles = StyleSheet.create({
     gap: 4,
     paddingTop: spacing.xs,
   },
-  footerInstitution: {
+  footerVersion: {
     fontSize: 11,
-    fontWeight: '800',
+    fontWeight: '700',
     color: colors.textSecondary,
-    letterSpacing: 1,
+    letterSpacing: 0.4,
   },
   footerCopyright: {
     fontSize: 11,

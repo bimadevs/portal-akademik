@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   Alert,
   Pressable,
@@ -18,7 +18,7 @@ import { PhotoAvatar } from '@/components/photo-avatar';
 import { useAuth } from '@/context/auth-context';
 import { StorageService } from '@/services/storage';
 import { Mahasiswa } from '@/types/mahasiswa';
-import { colors, radius, shadows, spacing } from '@/theme';
+import { colors, fonts, radius, shadows, spacing } from '@/theme';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -66,6 +66,15 @@ export default function HomeScreen() {
     );
   };
 
+  // Sapaan kontekstual berdasarkan waktu
+  const greetingText = useMemo(() => {
+    const hours = new Date().getHours();
+    if (hours < 11) return 'Selamat pagi';
+    if (hours < 15) return 'Selamat siang';
+    if (hours < 18) return 'Selamat sore';
+    return 'Selamat malam';
+  }, []);
+
   // 3 mahasiswa terbaru untuk preview spotlight
   const recentStudents = mahasiswaList.slice(0, 3);
 
@@ -94,16 +103,17 @@ export default function HomeScreen() {
         {/* Executive Welcome Section */}
         <View style={styles.welcomeSection}>
           <Text style={styles.greetingTitle}>
-            Halo, {userSession?.username ? userSession.username.toUpperCase() : 'ADMINISTRATOR'}
+            {greetingText},{' '}
+            {userSession?.username ? userSession.username.toUpperCase() : 'ADMIN'}
           </Text>
           <Text style={styles.greetingSubtitle}>
             Sistem Informasi Akademik Terpadu Universitas Buddhi Dharma
           </Text>
         </View>
 
-        {/* Quick Executive Stats */}
+        {/* Quick Executive Stats (Berakar dari Palet Resmi UBD) */}
         <View style={styles.statsRow}>
-          {/* Stat 1: Total Mahasiswa */}
+          {/* Stat 1: Total Mahasiswa (Biru UBD / Master Data) */}
           <Pressable
             onPress={() => router.push('/(tabs)/report')}
             style={({ pressed }) => [
@@ -111,8 +121,8 @@ export default function HomeScreen() {
               pressed && styles.cardPressed,
             ]}
           >
-            <View style={[styles.statIconBadge, { backgroundColor: '#EFF6FF' }]}>
-              <Ionicons name="people" size={17} color="#1E3A8A" />
+            <View style={[styles.statIconBadge, { backgroundColor: colors.section.masterBg }]}>
+              <Ionicons name="people" size={17} color={colors.section.master} />
             </View>
             <Text style={styles.statNumber} numberOfLines={1}>
               {mahasiswaList.length}
@@ -122,10 +132,10 @@ export default function HomeScreen() {
             </Text>
           </Pressable>
 
-          {/* Stat 2: Total Fakultas */}
+          {/* Stat 2: Total Fakultas (Saffron UBD / Operasional) */}
           <View style={styles.statCard}>
-            <View style={[styles.statIconBadge, { backgroundColor: '#F0FDF4' }]}>
-              <Ionicons name="business" size={17} color="#059669" />
+            <View style={[styles.statIconBadge, { backgroundColor: colors.section.operasionalBg }]}>
+              <Ionicons name="business" size={17} color={colors.section.operasional} />
             </View>
             <Text style={styles.statNumber} numberOfLines={1}>
               4
@@ -135,10 +145,10 @@ export default function HomeScreen() {
             </Text>
           </View>
 
-          {/* Stat 3: Mode Offline-First */}
+          {/* Stat 3: Mode Offline-First (Crimson UBD / Keandalan) */}
           <View style={styles.statCard}>
-            <View style={[styles.statIconBadge, { backgroundColor: '#FAF5FF' }]}>
-              <Ionicons name="server" size={17} color="#7C3AED" />
+            <View style={[styles.statIconBadge, { backgroundColor: colors.section.penilaianBg }]}>
+              <Ionicons name="server" size={17} color={colors.section.penilaian} />
             </View>
             <Text style={styles.statNumber} numberOfLines={1}>
               100%
@@ -243,10 +253,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
   },
   greetingTitle: {
-    fontSize: 20,
+    fontFamily: fonts.displayBold,
+    fontSize: 21,
     fontWeight: '800',
     color: colors.textPrimary,
-    letterSpacing: -0.2,
+    letterSpacing: -0.3,
   },
   greetingSubtitle: {
     fontSize: 12,
@@ -281,10 +292,12 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   statNumber: {
-    fontSize: 16,
+    fontFamily: fonts.displayBold,
+    fontSize: 18,
     fontWeight: '800',
     color: colors.textPrimary,
     textAlign: 'center',
+    fontVariant: ['tabular-nums'],
   },
   statLabel: {
     fontSize: 10,
@@ -310,8 +323,9 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   spotlightTitle: {
+    fontFamily: fonts.displayBold,
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '700',
     color: colors.textPrimary,
     letterSpacing: -0.2,
   },
@@ -328,10 +342,10 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: radius.full,
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: colors.primaryBorder,
   },
   viewAllButtonPressed: {
-    backgroundColor: '#DBEAFE',
+    backgroundColor: colors.primaryBorder,
   },
   viewAllText: {
     fontSize: 11,

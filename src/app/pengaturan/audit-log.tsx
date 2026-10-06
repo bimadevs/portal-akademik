@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { AuditService } from '../../services/audit-service';
 import { AuditLog } from '../../types/mahasiswa';
 import { SearchBar } from '../../components/search-bar';
-import { UBD_COLORS } from '../../constants/theme';
+import { colors, fonts, radius, shadows, spacing } from '@/theme';
 
 const FILTER_CHIPS = ['Semua', 'Nilai', 'KRS', 'Mahasiswa', 'Database'];
 
@@ -40,53 +40,53 @@ function getActionMeta(action: string) {
     return {
       label: 'Nilai',
       icon: 'ribbon-outline' as const,
-      color: '#2563EB',
-      bgColor: '#EFF6FF',
-      borderColor: '#BFDBFE',
+      color: colors.primary,
+      bgColor: colors.primaryLight,
+      borderColor: colors.primaryBorder,
     };
   }
   if (norm.includes('KRS') || norm.includes('DISPENSASI')) {
     return {
       label: 'Dispensasi KRS',
       icon: 'shield-checkmark-outline' as const,
-      color: '#D97706',
-      bgColor: '#FEF3C7',
-      borderColor: '#FDE68A',
+      color: colors.warning,
+      bgColor: colors.warningLight,
+      borderColor: colors.warningBorder,
     };
   }
   if (norm.includes('MAHASISWA') || norm.includes('STATUS')) {
     return {
       label: 'Status Mhs',
       icon: 'person-outline' as const,
-      color: '#059669',
-      bgColor: '#ECFDF5',
-      borderColor: '#A7F3D0',
+      color: colors.success,
+      bgColor: colors.successLight,
+      borderColor: colors.successBorder,
     };
   }
   if (norm.includes('RESTORE')) {
     return {
       label: 'Restore DB',
       icon: 'refresh-circle-outline' as const,
-      color: '#7C3AED',
-      bgColor: '#F5F3FF',
-      borderColor: '#DDD6FE',
+      color: colors.accent,
+      bgColor: colors.accentLight,
+      borderColor: colors.accentBorder,
     };
   }
   if (norm.includes('DELETE')) {
     return {
       label: 'Hapus Data',
       icon: 'trash-outline' as const,
-      color: '#DC2626',
-      bgColor: '#FEF2F2',
-      borderColor: '#FECACA',
+      color: colors.danger,
+      bgColor: colors.dangerLight,
+      borderColor: colors.dangerBorder,
     };
   }
   return {
     label: action,
     icon: 'time-outline' as const,
-    color: '#4B5563',
-    bgColor: '#F3F4F6',
-    borderColor: '#E5E7EB',
+    color: colors.textSecondary,
+    bgColor: colors.surfaceSubtle,
+    borderColor: colors.border,
   };
 }
 
@@ -142,7 +142,6 @@ export default function AuditLogScreen() {
               key={chip}
               style={[styles.chip, isSelected && styles.chipActive]}
               onPress={() => setActiveChip(chip)}
-              activeOpacity={0.7}
             >
               <Text style={[styles.chipText, isSelected && styles.chipTextActive]}>
                 {chip}
@@ -152,10 +151,10 @@ export default function AuditLogScreen() {
         })}
       </View>
 
-      {/* Audit Logs List */}
+      {/* List Content */}
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : (
         <FlatList
@@ -164,10 +163,10 @@ export default function AuditLogScreen() {
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Ionicons name="file-tray-outline" size={48} color="#94A3B8" />
-              <Text style={styles.emptyTitle}>Tidak Ada Rekam Jejak</Text>
+              <Ionicons name="document-text-outline" size={56} color={colors.textMuted} />
+              <Text style={styles.emptyTitle}>Belum Ada Catatan Audit</Text>
               <Text style={styles.emptySub}>
-                Belum ada aktivitas administratif yang sesuai dengan filter ini.
+                Aktivitas sistem yang tercatat akan ditampilkan di halaman ini.
               </Text>
             </View>
           }
@@ -176,27 +175,37 @@ export default function AuditLogScreen() {
             return (
               <View style={styles.card}>
                 <View style={styles.cardHeader}>
-                  <View style={[styles.actionBadge, { backgroundColor: meta.bgColor, borderColor: meta.borderColor }]}>
-                    <Ionicons name={meta.icon} size={14} color={meta.color} />
+                  <View
+                    style={[
+                      styles.actionBadge,
+                      {
+                        backgroundColor: meta.bgColor,
+                        borderColor: meta.borderColor,
+                      },
+                    ]}
+                  >
+                    <Ionicons name={meta.icon} size={13} color={meta.color} />
                     <Text style={[styles.actionBadgeText, { color: meta.color }]}>
                       {meta.label}
                     </Text>
                   </View>
+
                   <Text style={styles.timestampText}>
                     {formatIndonesianTimestamp(item.timestamp)}
                   </Text>
                 </View>
 
-                <Text style={styles.detailsText}>{item.details || 'Aktivitas mutasi data tercatat'}</Text>
+                <Text style={styles.detailsText}>{item.details}</Text>
 
                 <View style={styles.cardFooter}>
                   <View style={styles.entityTag}>
                     <Text style={styles.entityTagText}>
-                      {item.entity} {item.entityId ? `#${item.entityId}` : ''}
+                      Entitas: {item.entity} (ID: {item.entityId})
                     </Text>
                   </View>
+
                   <View style={styles.actorRow}>
-                    <Ionicons name="person-circle-outline" size={14} color="#64748B" />
+                    <Ionicons name="person-circle-outline" size={14} color={colors.textSecondary} />
                     <Text style={styles.actorText}>Admin: {item.actor}</Text>
                   </View>
                 </View>
@@ -212,65 +221,61 @@ export default function AuditLogScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   searchSection: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 6,
-    backgroundColor: '#FFFFFF',
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.xs,
+    backgroundColor: colors.surface,
   },
   chipRow: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    backgroundColor: '#FFFFFF',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-    gap: 8,
+    borderBottomColor: colors.border,
+    gap: spacing.sm,
   },
   chip: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 16,
-    backgroundColor: '#F1F5F9',
+    borderRadius: radius.full,
+    backgroundColor: colors.surfaceSubtle,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
   },
   chipActive: {
-    backgroundColor: UBD_COLORS.PRIMARY,
-    borderColor: UBD_COLORS.PRIMARY,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   chipText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#475569',
+    color: colors.textSecondary,
   },
   chipTextActive: {
-    color: '#FFFFFF',
+    color: colors.textOnPrimary,
     fontWeight: '700',
   },
   listContent: {
-    padding: 16,
+    padding: spacing.md,
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 10,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    marginBottom: spacing.sm + 2,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    elevation: 1,
+    borderColor: colors.border,
+    boxShadow: shadows.card,
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   actionBadge: {
     flexDirection: 'row',
@@ -278,7 +283,7 @@ const styles = StyleSheet.create({
     gap: 5,
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 6,
+    borderRadius: radius.xs,
     borderWidth: 1,
   },
   actionBadgeText: {
@@ -287,33 +292,33 @@ const styles = StyleSheet.create({
   },
   timestampText: {
     fontSize: 11,
-    color: '#64748B',
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   detailsText: {
     fontSize: 13,
-    color: '#1E293B',
+    color: colors.textPrimary,
     lineHeight: 18,
-    marginBottom: 10,
+    marginBottom: spacing.sm + 2,
   },
   cardFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 8,
+    paddingTop: spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
+    borderTopColor: colors.borderSubtle,
   },
   entityTag: {
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceSubtle,
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 4,
+    borderRadius: radius.xxs,
   },
   entityTagText: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#475569',
+    color: colors.textSecondary,
   },
   actorRow: {
     flexDirection: 'row',
@@ -322,7 +327,7 @@ const styles = StyleSheet.create({
   },
   actorText: {
     fontSize: 11,
-    color: '#64748B',
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   center: {
@@ -336,14 +341,15 @@ const styles = StyleSheet.create({
     paddingTop: 80,
   },
   emptyTitle: {
+    fontFamily: fonts.displayBold,
     fontSize: 15,
     fontWeight: '700',
-    color: '#475569',
+    color: colors.textSecondary,
     marginTop: 12,
   },
   emptySub: {
     fontSize: 12,
-    color: '#94A3B8',
+    color: colors.textMuted,
     marginTop: 4,
     textAlign: 'center',
     paddingHorizontal: 32,
