@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
+  Image,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
@@ -397,6 +398,18 @@ export default function PengaturanScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionHeading}>Informasi Aplikasi</Text>
           <View style={styles.card}>
+            <View style={styles.appBrandingHeader}>
+              <Image
+                source={require('@/assets/images/ubd-logo.webp')}
+                style={styles.appLogoEmblem}
+                resizeMode="contain"
+              />
+              <View style={styles.appBrandingTextCol}>
+                <Text style={styles.appBrandingTitle}>Universitas Buddhi Dharma</Text>
+                <Text style={styles.appBrandingMotto}>Kreativitas Membangkitkan Inovasi</Text>
+              </View>
+            </View>
+            <View style={styles.divider} />
             <View style={styles.infoRow}>
               <Text style={styles.infoKey}>Nama Aplikasi</Text>
               <Text style={styles.infoVal}>Portal Akademik UBD</Text>
@@ -405,7 +418,7 @@ export default function PengaturanScreen() {
             <View style={styles.infoRow}>
               <Text style={styles.infoKey}>Versi Sistem</Text>
               <View style={styles.versionBadge}>
-                <Text style={styles.versionBadgeText}>v3.1.1 (Enterprise)</Text>
+                <Text style={styles.versionBadgeText}>v3.1.2 (Enterprise)</Text>
               </View>
             </View>
             <View style={styles.divider} />
@@ -751,6 +764,32 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#1D4ED8',
     letterSpacing: 0.5,
+  },
+  appBrandingHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingBottom: 4,
+  },
+  appLogoEmblem: {
+    width: 48,
+    height: 48,
+  },
+  appBrandingTextCol: {
+    flex: 1,
+    gap: 2,
+  },
+  appBrandingTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#0F172A',
+    letterSpacing: -0.2,
+  },
+  appBrandingMotto: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#2563EB',
+    fontStyle: 'italic',
   },
   infoRow: {
     flexDirection: 'row',

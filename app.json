@@ -2,19 +2,19 @@
   "expo": {
     "name": "portal-akademik",
     "slug": "portal-akademik",
-    "version": "3.1.1",
+    "version": "3.1.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "portalakademik",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
-      "buildNumber": "3.1.1"
+      "icon": "./assets/images/icon.png",
+      "buildNumber": "3.1.2"
     },
     "android": {
-      "versionCode": 6,
+      "versionCode": 7,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -30,9 +30,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#FFFFFF",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 150
         }
       ],
       "expo-sqlite",

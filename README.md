@@ -8,7 +8,7 @@
 [![Database](https://img.shields.io/badge/Database-SQLite_(expo--sqlite)-003B57.svg?logo=sqlite&logoColor=white)](https://docs.expo.dev/versions/latest/sdk/sqlite/)
 [![Offline First](https://img.shields.io/badge/Architecture-100%25_Offline--First-10B981.svg)]()
 [![Platform](https://img.shields.io/badge/Platform-Android_%7C_iOS_%7C_Web-F97316.svg)]()
-[![Version](https://img.shields.io/badge/Release_Version-v3.1.1_(Enterprise)-8B5CF6.svg)]()
+[![Version](https://img.shields.io/badge/Release_Version-v3.1.2_(Enterprise)-8B5CF6.svg)]()
 
 > *"Kreativitas Membangkitkan Inovasi"*  
 > — **Motto Resmi Universitas Buddhi Dharma**
@@ -29,7 +29,7 @@ Dokumentasi ini disusun untuk memenuhi tugas besar mata kuliah **Pemrograman Mob
 | **Mata Kuliah** | Pemrograman Mobile (*Mobile Programming*) |
 | **Dosen Pengampu** | Dosen Pengampu Pemrograman Mobile, M.Kom. *(Contoh / Dummy)* |
 | **Tahun Akademik** | Semester Ganjil 2023/2024 *(Dapat diubah via Pengaturan)* |
-| **Status Rilis Aplikasi** | **Versi 3.1.1 (Tahap 3 - Enterprise & Academic Excellence)** |
+| **Status Rilis Aplikasi** | **Versi 3.1.2 (Tahap 3 - Enterprise & Academic Excellence)** |
 
 ---
 
@@ -93,7 +93,7 @@ Aplikasi Portal Akademik UBD dibangun secara bertahap dan terencana melalui **ti
 | **Kartu Mahasiswa** | Dialog "Sedang dikembangkan" | Kartu statis + QR NIM | KTM Digital + QR Verifikasi + Lembar Share Sheet |
 | **Ketahanan Data** | Penyimpanan lokal sederhana | Reset data ke kondisi awal | Pencadangan JSON Portabel & Pemulihan Atomik |
 | **Audit & Akuntabilitas** | Tidak ada | Tidak ada | Append-Only Audit Logging sistem |
-| **Status Versi** | `v1.0.0` | `v2.0.0` | `v3.1.1 (Enterprise Academic System)` |
+| **Status Versi** | `v1.0.0` | `v2.0.0` | `v3.1.2 (Enterprise Academic System)` |
 
 ---
 
@@ -130,7 +130,7 @@ Aplikasi Portal Akademik UBD dibangun secara bertahap dan terencana melalui **ti
 
 ---
 
-### 🟣 Versi 3 (V3 - Enterprise & Academic Excellence / v3.0.0 – v3.1.1)
+### 🟣 Versi 3 (V3 - Enterprise & Academic Excellence / v3.0.0 – v3.1.2)
 **Fokus**: Mengangkat derajat sistem menjadi **Sistem Informasi Akademik Tingkat Enterprise** yang memenuhi standar regulasi Dikti, memiliki mesin cetak berkas PDF resmi ber-kop UBD, ketahanan data tinggi, auditabilitas administratif, serta kualitas kode tingkat lanjut.
 
 - **Fitur & Perubahan yang Diperkenalkan**:
@@ -149,10 +149,10 @@ Aplikasi Portal Akademik UBD dibangun secara bertahap dan terencana melalui **ti
      - Pemulihan atomik (*Atomic Restore*) dengan transaksi SQL tunggal dan *automatic rollback* jika terjadi eror skema.
   4. **Akuntabilitas Administratif (Append-Only Audit Log)**:
      - Tabel `audit_logs` dan layar peninjau khusus di Pengaturan untuk merekam kronologis mutasi berisiko tinggi (perubahan nilai ujian, dispensasi kuota SKS, mutasi status mahasiswa, pemulihan database).
-  5. **Penyempurnaan Rilis v3.1.1 (Current Release)**:
-     - Modernisasi desain antarmuka (*Clean Academic Enterprise*) dan tipografi responsif.
-     - Eliminasi peringatan deprecation react-native lean core via patch script otomatis.
-     - Penambahan konfigurasi dan rangkaian uji otomatis End-to-End (E2E Suite).
+  5. **Penyempurnaan Rilis v3.1.2 (Current Release)**:
+     - **Branding Total Icon UBD**: Seluruh icon aplikasi (Universal 1024x1024, Android Adaptive Foreground/Background/Monochrome, Splash Screen, Web Favicon) diperbarui menggunakan lambang resmi Universitas Buddhi Dharma (`ubd-logo.webp`).
+     - **Pembersihan Total Ikon Starter**: Menghapus seluruh ikon dan simbol bawaan Expo dan React dari repositori untuk profesionalitas dan efisiensi bundle.
+     - **Integrasi Automated E2E Suite & Clean Architecture**: Penambahan rangkaian pengujian otomatis end-to-end dan eliminasi peringatan runtime.
 
 ---
 
@@ -419,7 +419,7 @@ portal-akademik/
 │   │   └── ...-service.ts     # Service modul (Mahasiswa, Dosen, Nilai, dll.)
 │   ├── theme/                 # Desain sistem & token warna resmi UBD
 │   └── types/                 # Definisi tipe TypeScript & data contracts
-├── app.json                   # Konfigurasi aplikasi Expo (v3.1.1)
+├── app.json                   # Konfigurasi aplikasi Expo (v3.1.2)
 ├── package.json               # Konfigurasi dependensi dan skrip proyek
 └── README.md                  # Berkas dokumentasi utama proyek
 ```
@@ -529,7 +529,7 @@ Aplikasi memiliki **14 rute layar utama** yang saling terintegrasi secara modula
   - **Pencadangan Data (Backup JSON)**: Mengekspor seluruh database ke file JSON siap kirim/simpan.
   - **Pemulihan Data (Restore JSON)**: Membaca berkas backup JSON dan menyuntikkannya kembali ke database secara atomik.
   - **Reset Data**: Opsi mengembalikan database ke *Seed Data Awal* dosen dengan konfirmasi ganda.
-  - **Informasi Sistem & Versi**: Menampilkan versi aplikasi `v3.1.1 (Enterprise)` dan profil administrator.
+  - **Informasi Sistem & Versi**: Menampilkan versi aplikasi `v3.1.2 (Enterprise)` dan profil administrator.
 
 ### 14. Peninjau Audit Log (`src/app/pengaturan/audit-log.tsx`)
 - **Tujuan**: Menjamin akuntabilitas administratif data akademik.
