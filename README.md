@@ -37,17 +37,18 @@ Dokumentasi ini disusun untuk memenuhi tugas besar mata kuliah **Pemrograman Mob
 
 1. [Latar Belakang & Ringkasan Proyek](#-1-latar-belakang--ringkasan-proyek)
 2. [Kesesuaian Mockup & Spesifikasi Acuan Dosen](#-2-kesesuaian-mockup--spesifikasi-acuan-dosen)
-3. [Fitur Unggulan Sistem (Key Highlights)](#-3-fitur-unggulan-sistem-key-highlights)
-4. [Arsitektur Sistem & Matriks Teknologi](#-4-arsitektur-sistem--matriks-teknologi)
-5. [Skema Basis Data Relasional SQLite](#-5-skema-basis-data-relasional-sqlite)
-6. [Struktur Direktori Proyek](#-6-struktur-direktori-proyek)
-7. [Overview Mendalam Tiap-Tiap Halaman (14 Layar)](#-7-overview-mendalam-tiap-tiap-halaman)
-8. [Alur Kerja Sistem (System Workflows)](#-8-alur-kerja-sistem-system-workflows)
-9. [Panduan Setup & Instalasi](#-9-panduan-setup--instalasi)
-10. [Panduan Skenario Demo Pengujian untuk Dosen](#-10-panduan-skenario-demo-pengujian-untuk-dosen)
-11. [Kepatuhan Rubrik Evaluasi Akademik](#-11-kepatuhan-rubrik-evaluasi-akademik)
-12. [Perintah Pengujian & Quality Assurance (QA)](#-12-perintah-pengujian--quality-assurance-qa)
-13. [Lisensi & Hak Cipta](#-13-lisensi--hak-cipta)
+3. [Perjalanan Rilis & Evolusi Fitur (V1, V2, V3)](#-3-perjalanan-rilis--evolusi-fitur-v1-v2-v3)
+4. [Fitur Unggulan Sistem (Key Highlights)](#-4-fitur-unggulan-sistem-key-highlights)
+5. [Arsitektur Sistem & Matriks Teknologi](#-5-arsitektur-sistem--matriks-teknologi)
+6. [Skema Basis Data Relasional SQLite](#-6-skema-basis-data-relasional-sqlite)
+7. [Struktur Direktori Proyek](#-7-struktur-direktori-proyek)
+8. [Overview Mendalam Tiap-Tiap Halaman (14 Layar)](#-8-overview-mendalam-tiap-tiap-halaman-14-layar)
+9. [Alur Kerja Sistem (System Workflows)](#-9-alur-kerja-sistem-system-workflows)
+10. [Panduan Setup & Instalasi](#-10-panduan-setup--instalasi)
+11. [Panduan Skenario Demo Pengujian untuk Dosen](#-11-panduan-skenario-demo-pengujian-untuk-dosen)
+12. [Kepatuhan Rubrik Evaluasi Akademik](#-12-kepatuhan-rubrik-evaluasi-akademik)
+13. [Perintah Pengujian & Quality Assurance (QA)](#-13-perintah-pengujian--quality-assurance-qa)
+14. [Lisensi & Hak Cipta](#-14-lisensi--hak-cipta)
 
 ---
 
@@ -75,9 +76,89 @@ Sistem ini merealisasikan **100% tata letak dan alur fungsional** yang tercantum
 
 ---
 
-## 🚀 3. Fitur Unggulan Sistem (Key Highlights)
+## 🚀 3. Perjalanan Rilis & Evolusi Fitur (V1, V2, V3)
 
-Sistem telah berkembang melalui 3 tahapan evolusi besar (V1, V2, hingga V3):
+Aplikasi Portal Akademik UBD dibangun secara bertahap dan terencana melalui **tiga fase rilis besar (V1 $\rightarrow$ V2 $\rightarrow$ V3)**. Setiap versi menandai lonjakan kapabilitas teknis yang signifikan dari antarmuka dasar menjadi sistem berskala enterprise:
+
+### 📊 Matriks Perbandingan & Evolusi Versi
+
+| Dimensi Kemampuan | Versi 1 (V1) - Baseline | Versi 2 (V2) - Expansion | Versi 3 (V3) - Enterprise (Saat Ini) |
+|---|---|---|---|
+| **Tujuan Utama** | Kesesuaian 100% Mockup Dosen | Penyelesaian Modul Akademik Inti | Standar Regulasi Dikti & Dokumen Resmi |
+| **Media Persistensi** | `@react-native-async-storage/async-storage` | `expo-sqlite` (Relasional Lokal) | `expo-sqlite` (WAL Mode, Indexes, FK On) |
+| **Entitas Basis Data** | Mahasiswa & Sesi Admin | 8 Entitas Relasional | 9 Entitas + Audit Logs + Checksums |
+| **Cakupan Menu Grid** | Data Mahasiswa aktif (5 placeholder) | Seluruh 6 Menu Grid aktif | 10 Menu Grid Terstruktur (3 Kategori) |
+| **Penerbitan Dokumen** | Tidak ada | Layar pratinjau teks/tabel | Ekspor Berkas Fisik PDF Resmi (KRS, KHS, Presensi) |
+| **Regulasi Akademik** | Validasi input form dasar | Validasi bentrok jam/ruang | Academic Rules Engine (SKS Dikti & Presensi 75%) |
+| **Kartu Mahasiswa** | Dialog "Sedang dikembangkan" | Kartu statis + QR NIM | KTM Digital + QR Verifikasi + Lembar Share Sheet |
+| **Ketahanan Data** | Penyimpanan lokal sederhana | Reset data ke kondisi awal | Pencadangan JSON Portabel & Pemulihan Atomik |
+| **Audit & Akuntabilitas** | Tidak ada | Tidak ada | Append-Only Audit Logging sistem |
+| **Status Versi** | `v1.0.0` | `v2.0.0` | `v3.1.1 (Enterprise Academic System)` |
+
+---
+
+### 🟢 Versi 1 (V1 - Baseline & Mockup Fidelity)
+**Fokus**: Merealisasikan 100% tata letak dan alur fungsional pada dokumen gambar referensi dosen (`login.jpeg`, `menu-utama.jpeg`, `input data mahasiwa & display data mahasiswa.jpeg`).
+
+- **Fitur & Perubahan yang Diperkenalkan**:
+  1. **Autentikasi Administrator Dasar**: Form login admin dengan input User & Password, tombol LOGIN kredensial `admin`/`admin`, serta modal dialog informasi pendaftaran *Sign-up*.
+  2. **Header Identitas UBD**: Komponen header resmi kampus berlogo Universitas Buddhi Dharma dan motto *"Kreativitas Membangkitkan Inovasi"*.
+  3. **Dashboard Menu Utama (Mockup)**: Banner animasi kampus, 6 grid menu akademik (Data Mahasiswa aktif; Jadwal, KRS, Kartu, Presensi, dan Prestasi berupa dialog placeholder pengembangan), serta Bottom Navigation Bar 3 Tab (*Home*, *Data Mahasiswa*, *Report*).
+  4. **Formulir Input Mahasiswa**: Input Kode Mahasiswa (NIM), Nama Mahasiswa, Radio Button `PRIA` / `WANITA`, Dropdown Picker 4 Fakultas resmi UBD, serta tombol `SAVE`.
+  5. **Layar Report & Interaksi Baris**: Tampilan radio list format `[Nama] [NIM]`, titik hitam radio `(•)` aktif saat baris disentuh, dan pop-up interaktif spesifik dosen:
+     > `Yang anda Klik : [Nama Mahasiswa] [NIM]`  
+     dilengkapi opsi konfirmasi hapus data.
+  6. **Penyimpanan Lokal Awal**: Menggunakan `@react-native-async-storage/async-storage` dengan injeksi data bawaan awal (*Seed Data*: Dewi, Komarudin, Jaka, Melati, Mawar, Riska, Yanti).
+
+---
+
+### 🟡 Versi 2 (V2 - Expansion & Relational Academic System)
+**Fokus**: Mengembangkan seluruh modul akademik yang sebelumnya berstatus placeholder menjadi sistem akademik relasional yang lengkap, dinamis, dan saling terhubung.
+
+- **Fitur & Perubahan yang Diperkenalkan**:
+  1. **Migrasi Persistensi ke SQLite Lokal (`expo-sqlite`)**: Menggantikan AsyncStorage dengan basis data SQL relasional murni (`portal_akademik_ubd.db`), skema 9 tabel, dan penegakan *Foreign Key Constraints*.
+  2. **Modul Enhanced Mahasiswa**: Penambahan atribut status mahasiswa (*Aktif*, *Cuti*, *Tidak Aktif*, *Lulus*), fitur pencarian instan (search bar), filter chip status pada layar rekap, dan layar profil detail mahasiswa.
+  3. **Modul Master Data Dosen**: CRUD lengkap data pengajar (NIDN unik, gelar, prodi, fakultas, kontak telepon/email), pencarian dosen, serta relasi ke kurikulum.
+  4. **Modul Kurikulum Mata Kuliah**: Pengelolaan katalog kurikulum (Kode MK unik, nama, pembobotan 1–6 SKS, penawaran semester, dan penugasan dosen pengampu).
+  5. **Modul Penjadwalan Perkuliahan**: Alokasi sesi kuliah per hari (Senin–Sabtu), rentang jam perkuliahan, ruangan kelas, serta **algoritma deteksi bentrok jadwal** (mencegah tabrakan ruangan dan jam).
+  6. **Modul Kartu Rencana Studi (KRS)**: Alur pengambilan mata kuliah per mahasiswa di semester aktif, penghitungan akumulasi SKS, dan riwayat semester.
+  7. **Modul Presensi Kelas**: Lembar absensi per pertemuan kuliah dengan 4 status kehadiran (*Hadir*, *Izin*, *Sakit*, *Alpha*) dan rekapitulasi persentase absensi kelas.
+  8. **Modul Prestasi & IPK**: Formulir input nilai mutu huruf (A, B+, B, C+, C, D, E), konversi bobot (4.0 s.d. 0.0), perhitungan otomatis Indeks Prestasi Semester (IPS) dan Indeks Prestasi Kumulatif (IPK), serta lembar transkrip nilai.
+  9. **Modul Kartu Mahasiswa (KTM) Digital**: Pembuatan ID card digital dengan avatar nama, data identitas, branding kampus, dan integrasi QR Code via `react-native-qrcode-svg`.
+  10. **Modul Statistik & Visualisasi Dasar**: Dasbor grafik SVG (Bar Chart mahasiswa per fakultas dan Pie Chart distribusi gender).
+  11. **Modul Pengaturan Sistem**: Fitur pergantian semester operasional aktif dan opsi reset database.
+
+---
+
+### 🟣 Versi 3 (V3 - Enterprise & Academic Excellence / v3.0.0 – v3.1.1)
+**Fokus**: Mengangkat derajat sistem menjadi **Sistem Informasi Akademik Tingkat Enterprise** yang memenuhi standar regulasi Dikti, memiliki mesin cetak berkas PDF resmi ber-kop UBD, ketahanan data tinggi, auditabilitas administratif, serta kualitas kode tingkat lanjut.
+
+- **Fitur & Perubahan yang Diperkenalkan**:
+  1. **Mesin Penerbitan Dokumen Resmi (Offline PDF Engine)**:
+     - Integrasi `expo-print` dan `expo-sharing` untuk mengompilasi berkas PDF fisik beresolusi vektor tajam secara 100% luring (*offline*).
+     - **Cetak KRS PDF**: Lembar resmi ber-kop surat Universitas Buddhi Dharma, tabel mata kuliah terdaftar, total SKS, kolom tanda tangan Mahasiswa & Dosen PA, dan QR verifikasi.
+     - **Cetak KHS / Transkrip Nilai PDF**: Lembar Kartu Hasil Studi lengkap dengan rincian nilai, bobot mutu, SKS, IPS, IPK, dan tanda tangan digital Kepala BAAK UBD.
+     - **Cetak Rekap Presensi PDF**: Berita acara absensi kelas resmi per mata kuliah.
+     - **Fitur Bagikan KTM Digital**: Ekspor langsung kartu identitas mahasiswa ke lembar dialog sistem (*Share Sheet*).
+  2. **Mesin Penegakan Regulasi Akademik (Academic Rules Engine)**:
+     - **Pembatasan Beban SKS Dikti**: Pembatasan otomatis kuota SKS berdasarkan IPS semester sebelumnya (IPS $\ge 3.00$: 24 SKS; 2.50–2.99: 21 SKS; 2.00–2.49: 18 SKS; < 2.00: 15 SKS; Semester 1: default 20 SKS). Tombol simpan terkunci otomatis jika over-kuota.
+     - **Mekanisme Dispensasi SKS Dekanat**: Toggle izin resmi beban berlebih yang mewajibkan input nomor surat/alasan dispensasi.
+     - **Pengawasan Kehadiran Minimum 75%**: Muncul lencana peringatan visual (*Warning Badge*) saat penginputan nilai akhir jika kehadiran mahasiswa $< 75\%$, disertai hak override administratif.
+  3. **Ketahanan Data & Portabilitas (Backup & Restore)**:
+     - Ekspor cadangan seluruh tabel database SQLite ke berkas arsip `.json` terstruktur dengan stempel waktu dan checksum validasi.
+     - Pemulihan atomik (*Atomic Restore*) dengan transaksi SQL tunggal dan *automatic rollback* jika terjadi eror skema.
+  4. **Akuntabilitas Administratif (Append-Only Audit Log)**:
+     - Tabel `audit_logs` dan layar peninjau khusus di Pengaturan untuk merekam kronologis mutasi berisiko tinggi (perubahan nilai ujian, dispensasi kuota SKS, mutasi status mahasiswa, pemulihan database).
+  5. **Penyempurnaan Rilis v3.1.1 (Current Release)**:
+     - Modernisasi desain antarmuka (*Clean Academic Enterprise*) dan tipografi responsif.
+     - Eliminasi peringatan deprecation react-native lean core via patch script otomatis.
+     - Penambahan konfigurasi dan rangkaian uji otomatis End-to-End (E2E Suite).
+
+---
+
+## 🌟 4. Fitur Unggulan Sistem (Key Highlights)
+
+Berikut adalah rangkuman kapabilitas menyeluruh sistem pada versi saat ini:
 
 ### 🛡️ A. Autentikasi & Manajemen Sesi Administrator
 - **Persistent Session Guard**: Sesi login tersimpan di tabel SQLite. Saat aplikasi ditutup dan dibuka kembali, pengguna langsung masuk ke dashboard (*auto-login*).
@@ -122,7 +203,7 @@ Sistem telah berkembang melalui 3 tahapan evolusi besar (V1, V2, hingga V3):
 
 ---
 
-## 🏗️ 4. Arsitektur Sistem & Matriks Teknologi
+## 🏗️ 5. Arsitektur Sistem & Matriks Teknologi
 
 ### Pola Arsitektur Berlapis (Layered Client Architecture)
 
@@ -179,7 +260,7 @@ flowchart TD
 
 ---
 
-## 🗄️ 5. Skema Basis Data Relasional SQLite
+## 🗄️ 6. Skema Basis Data Relasional SQLite
 
 Basis data lokal disimpan dengan nama berkas `portal_akademik_ubd.db`. Setiap relasi diikat dengan *Foreign Key constraints* untuk menjaga integritas data.
 
@@ -281,7 +362,7 @@ erDiagram
 
 ---
 
-## 📂 6. Struktur Direktori Proyek
+## 📂 7. Struktur Direktori Proyek
 
 Proyek ini disusun mengikuti arsitektur modular yang rapi:
 
@@ -345,7 +426,7 @@ portal-akademik/
 
 ---
 
-## 📱 7. Overview Mendalam Tiap-Tiap Halaman
+## 📱 8. Overview Mendalam Tiap-Tiap Halaman (14 Layar)
 
 Aplikasi memiliki **14 rute layar utama** yang saling terintegrasi secara modular:
 
@@ -456,7 +537,7 @@ Aplikasi memiliki **14 rute layar utama** yang saling terintegrasi secara modula
 
 ---
 
-## 🔄 8. Alur Kerja Sistem (System Workflows)
+## 🔄 9. Alur Kerja Sistem (System Workflows)
 
 ### A. Alur Kerja Siklus Akademik Berkelanjutan
 
@@ -519,7 +600,7 @@ flowchart TD
 
 ---
 
-## 🛠️ 9. Panduan Setup & Instalasi
+## 🛠️ 10. Panduan Setup & Instalasi
 
 ### Prasyarat Sistem (Prerequisites)
 Sebelum menjalankan proyek, pastikan perangkat komputer telah terpasang:
@@ -536,7 +617,7 @@ Sebelum menjalankan proyek, pastikan perangkat komputer telah terpasang:
 
 #### 1. Clone Repositori Proyek
 ```bash
-git clone https://github.com/username/portal-akademik.git
+git clone https://github.com/bimadevs/portal-akademik.git
 cd portal-akademik
 ```
 
@@ -580,7 +661,7 @@ Terminal akan menampilkan **QR Code interaktif** beserta daftar tombol pintasan 
 
 ---
 
-## 🧪 10. Panduan Skenario Demo Pengujian untuk Dosen
+## 🧪 11. Panduan Skenario Demo Pengujian untuk Dosen
 
 Berikut adalah **10 skenario terstruktur** yang disiapkan agar Anda dapat memandu jalannya presentasi secara meyakinkan dan profesional di depan Dosen Penguji:
 
@@ -653,7 +734,7 @@ Berikut adalah **10 skenario terstruktur** yang disiapkan agar Anda dapat memand
 
 ---
 
-## 📊 11. Kepatuhan Rubrik Evaluasi Akademik
+## 📊 12. Kepatuhan Rubrik Evaluasi Akademik
 
 | No | Kriteria Penilaian Akademik | Implementasi pada Sistem | Status |
 |:---:|---|---|:---:|
@@ -669,7 +750,7 @@ Berikut adalah **10 skenario terstruktur** yang disiapkan agar Anda dapat memand
 
 ---
 
-## 🔍 12. Perintah Pengujian & Quality Assurance (QA)
+## 🔍 13. Perintah Pengujian & Quality Assurance (QA)
 
 Aplikasi telah divalidasi dan memenuhi standar pengujian ketat sebelum dikumpulkan:
 
@@ -693,7 +774,7 @@ bun run test:e2e
 
 ---
 
-## 📄 13. Lisensi & Hak Cipta
+## 📄 14. Lisensi & Hak Cipta
 
 Proyek aplikasi mobile **Portal Akademik Universitas Buddhi Dharma** ini dikembangkan sebagai karya tugas akademik mahasiswa di lingkungan:
 
