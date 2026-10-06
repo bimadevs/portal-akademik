@@ -3,7 +3,7 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ActivityIndicator,
   Alert,
@@ -16,7 +16,7 @@ import { KRSService } from '../../services/krs-service';
 import { Mahasiswa, Semester } from '../../types/mahasiswa';
 import { SearchBar } from '../../components/search-bar';
 import { PhotoAvatar } from '../../components/photo-avatar';
-import { UBD_COLORS } from '../../constants/theme';
+import { colors, radius, shadows, spacing } from '@/theme';
 
 export default function KRSListScreen() {
   const router = useRouter();
@@ -57,11 +57,15 @@ export default function KRSListScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Active Semester Banner */}
       <View style={styles.semBanner}>
-        <Ionicons name="information-circle-outline" size={20} color={UBD_COLORS.PRIMARY} />
-        <Text style={styles.semText}>
-          Semester Aktif: <Text style={styles.semBold}>{activeSemester?.nama || '-'}</Text>
-        </Text>
+        <View style={styles.semIconBox}>
+          <Ionicons name="calendar" size={16} color={colors.primary} />
+        </View>
+        <View style={styles.semTextCol}>
+          <Text style={styles.semLabel}>SEMESTER OPERASIONAL AKTIF</Text>
+          <Text style={styles.semBold}>{activeSemester?.nama || 'Belum diatur'}</Text>
+        </View>
       </View>
 
       <View style={styles.header}>
@@ -69,31 +73,50 @@ export default function KRSListScreen() {
           value={search}
           onChangeText={setSearch}
           placeholder="Cari NIM atau nama mahasiswa..."
+          onClear={() => setSearch('')}
         />
       </View>
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loadingText}>Memuat data rencana studi...</Text>
         </View>
       ) : (
         <FlatList
           data={mahasiswaList}
           keyExtractor={(item) => String(item.id)}
           contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryText}>
+                Pilih mahasiswa untuk mengelola kartu rencana studi (KRS)
+              </Text>
+            </View>
+          }
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Ionicons name="school-outline" size={48} color="#94A3B8" />
-              <Text style={styles.emptyText}>Tidak ada mahasiswa</Text>
+              <View style={styles.emptyIconCircle}>
+                <Ionicons name="school-outline" size={32} color={colors.textMuted} />
+              </View>
+              <Text style={styles.emptyTitle}>Mahasiswa Tidak Ditemukan</Text>
+              <Text style={styles.emptyText}>
+                {search ? 'Coba gunakan kata kunci pencarian yang lain.' : 'Belum ada data mahasiswa.'}
+              </Text>
             </View>
           }
           renderItem={({ item }) => {
             const sks = krsStats[String(item.id)] || 0;
             return (
-              <TouchableOpacity
-                style={styles.card}
+              <Pressable
+                style={({ pressed }) => [
+                  styles.card,
+                  pressed && styles.cardPressed,
+                ]}
                 onPress={() => router.push(`/krs/${item.id}`)}
-                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel={`KRS ${item.nama}`}
               >
                 <PhotoAvatar
                   uri={item.fotoUrl || (item as any).foto_url}
@@ -102,16 +125,18 @@ export default function KRSListScreen() {
                   shape="rounded"
                 />
                 <View style={styles.info}>
-                  <Text style={styles.nama}>{item.nama}</Text>
+                  <Text style={styles.nama} numberOfLines={1}>{item.nama}</Text>
                   <Text style={styles.nim}>NIM: {item.nim}</Text>
-                  <Text style={styles.fakultas}>{item.prodi || item.fakultas}</Text>
+                  <Text style={styles.fakultas} numberOfLines={1}>
+                    {item.prodi || item.fakultas}
+                  </Text>
                 </View>
                 <View style={styles.sksBox}>
                   <Text style={styles.sksNumber}>{sks}</Text>
-                  <Text style={styles.sksLabel}>SKS Diambil</Text>
+                  <Text style={styles.sksLabel}>SKS</Text>
                 </View>
-                <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
-              </TouchableOpacity>
+                <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+              </Pressable>
             );
           }}
         />
@@ -123,98 +148,148 @@ export default function KRSListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   semBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#E0F2FE',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    gap: 8,
+    backgroundColor: colors.surface,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    gap: spacing.sm,
   },
-  semText: {
-    fontSize: 13,
-    color: '#0369A1',
+  semIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: radius.md,
+    backgroundColor: colors.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
+  },
+  semTextCol: {
+    gap: 2,
+  },
+  semLabel: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: colors.primary,
+    letterSpacing: 0.8,
   },
   semBold: {
+    fontSize: 14,
     fontWeight: '700',
+    color: colors.textPrimary,
   },
   header: {
-    padding: 16,
-    backgroundColor: '#FFFFFF',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderColor: '#E2E8F0',
+    borderBottomColor: colors.border,
   },
   listContent: {
-    padding: 16,
+    padding: spacing.lg,
+    paddingBottom: 40,
+    gap: spacing.sm,
+  },
+  summaryRow: {
+    marginBottom: spacing.xs,
+  },
+  summaryText: {
+    fontSize: 11,
+    color: colors.textSecondary,
   },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 10,
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
+    boxShadow: shadows.subtle,
+    gap: spacing.md,
   },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#E6F0F7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
+  cardPressed: {
+    opacity: 0.88,
+    transform: [{ scale: 0.98 }],
   },
   info: {
     flex: 1,
+    gap: 2,
   },
   nama: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   nim: {
     fontSize: 12,
-    color: '#64748B',
-    marginTop: 2,
+    color: colors.textSecondary,
   },
   fakultas: {
-    fontSize: 12,
-    color: UBD_COLORS.ACCENT_DARK,
-    fontWeight: '500',
-    marginTop: 2,
+    fontSize: 11,
+    color: colors.textMuted,
   },
   sksBox: {
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: radius.md,
     alignItems: 'center',
-    paddingHorizontal: 8,
-    marginRight: 8,
+    justifyContent: 'center',
+    minWidth: 48,
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
   },
   sksNumber: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '800',
-    color: UBD_COLORS.PRIMARY,
+    color: colors.primary,
   },
   sksLabel: {
-    fontSize: 10,
-    color: '#64748B',
-    fontWeight: '600',
+    fontSize: 9,
+    fontWeight: '700',
+    color: colors.primary,
+    marginTop: -2,
   },
   center: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: spacing.sm,
+  },
+  loadingText: {
+    fontSize: 13,
+    color: colors.textSecondary,
   },
   empty: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 60,
+    paddingTop: 50,
+    gap: 4,
+  },
+  emptyIconCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: colors.surfaceSubtle,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.xs,
+  },
+  emptyTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   emptyText: {
-    fontSize: 14,
-    color: '#64748B',
-    marginTop: 8,
+    fontSize: 12,
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
 });

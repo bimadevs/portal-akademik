@@ -3,7 +3,7 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
+  Pressable,
   ScrollView,
   StyleSheet,
   Alert,
@@ -13,7 +13,7 @@ import { useRouter } from 'expo-router';
 import { JadwalService } from '../../services/jadwal-service';
 import { MataKuliahService } from '../../services/mata-kuliah-service';
 import { MataKuliah, Hari, HARI_OPTIONS } from '../../types/mahasiswa';
-import { UBD_COLORS } from '../../constants/theme';
+import { colors, radius, spacing } from '@/theme';
 
 export default function JadwalFormScreen() {
   const router = useRouter();
@@ -88,44 +88,50 @@ export default function JadwalFormScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Tambah Jadwal Kuliah</Text>
-
+    <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <Text style={styles.label}>Pilih Mata Kuliah *</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipScroll}>
         <View style={styles.chipGroup}>
           {mataKuliahList.map((m) => (
-            <TouchableOpacity
+            <Pressable
               key={String(m.id)}
-              style={[styles.chip, selectedMatkulId === m.id && styles.chipActive]}
+              style={({ pressed }) => [
+                styles.chip,
+                selectedMatkulId === m.id && styles.chipActive,
+                pressed && styles.btnPressed,
+              ]}
               onPress={() => setSelectedMatkulId(m.id)}
             >
               <Text style={[styles.chipText, selectedMatkulId === m.id && styles.chipTextActive]}>
                 {m.kode} - {m.nama}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           ))}
         </View>
       </ScrollView>
 
-      <Text style={styles.label}>Hari *</Text>
+      <Text style={styles.label}>Hari Perkuliahan *</Text>
       <View style={styles.daysRow}>
         {HARI_OPTIONS.map((h) => (
-          <TouchableOpacity
+          <Pressable
             key={h}
-            style={[styles.dayChip, hari === h && styles.dayChipActive]}
+            style={({ pressed }) => [
+              styles.dayChip,
+              hari === h && styles.dayChipActive,
+              pressed && styles.btnPressed,
+            ]}
             onPress={() => setHari(h)}
           >
             <Text style={[styles.dayChipText, hari === h && styles.dayChipTextActive]}>
               {h}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </View>
 
@@ -137,7 +143,7 @@ export default function JadwalFormScreen() {
             value={jamMulai}
             onChangeText={setJamMulai}
             placeholder="08:00"
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor={colors.textTertiary}
           />
         </View>
         <View style={styles.half}>
@@ -147,7 +153,7 @@ export default function JadwalFormScreen() {
             value={jamSelesai}
             onChangeText={setJamSelesai}
             placeholder="10:30"
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor={colors.textTertiary}
           />
         </View>
       </View>
@@ -158,20 +164,24 @@ export default function JadwalFormScreen() {
         value={ruangan}
         onChangeText={setRuangan}
         placeholder="Contoh: Lab Komputer 1, R. 4.2.1"
-        placeholderTextColor="#94A3B8"
+        placeholderTextColor={colors.textTertiary}
       />
 
-      <TouchableOpacity
-        style={[styles.submitBtn, saving && styles.submitBtnDisabled]}
+      <Pressable
+        style={({ pressed }) => [
+          styles.submitBtn,
+          saving && styles.submitBtnDisabled,
+          pressed && styles.btnPressed,
+        ]}
         onPress={handleSubmit}
         disabled={saving}
       >
         {saving ? (
           <ActivityIndicator color="#FFFFFF" />
         ) : (
-          <Text style={styles.submitText}>Simpan Jadwal</Text>
+          <Text style={styles.submitText}>Simpan Jadwal Perkuliahan</Text>
         )}
-      </TouchableOpacity>
+      </Pressable>
     </ScrollView>
   );
 }
@@ -179,92 +189,94 @@ export default function JadwalFormScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   content: {
-    padding: 20,
+    padding: spacing.lg,
     paddingBottom: 40,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#0F172A',
-    marginBottom: 20,
   },
   label: {
     fontSize: 13,
-    fontWeight: '600',
-    color: '#334155',
+    fontWeight: '700',
+    color: colors.textPrimary,
     marginBottom: 6,
-    marginTop: 12,
+    marginTop: 14,
   },
   chipScroll: {
-    marginBottom: 6,
+    marginBottom: 4,
   },
   chipGroup: {
     flexDirection: 'row',
-    gap: 8,
+    gap: spacing.sm,
   },
   chip: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 16,
-    backgroundColor: '#E2E8F0',
+    borderRadius: radius.md,
+    backgroundColor: colors.surfaceSubtle,
+    borderWidth: 1,
+    borderColor: colors.borderSubtle,
   },
   chipActive: {
-    backgroundColor: UBD_COLORS.PRIMARY,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   chipText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#475569',
+    color: colors.textSecondary,
   },
   chipTextActive: {
     color: '#FFFFFF',
+    fontWeight: '700',
   },
   daysRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 6,
+    gap: spacing.sm,
+    marginBottom: 4,
   },
   dayChip: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: '#E2E8F0',
+    borderRadius: radius.sm,
+    backgroundColor: colors.surfaceSubtle,
+    borderWidth: 1,
+    borderColor: colors.borderSubtle,
   },
   dayChipActive: {
-    backgroundColor: UBD_COLORS.PRIMARY,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   dayChipText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
-    color: '#475569',
+    color: colors.textSecondary,
   },
   dayChipTextActive: {
     color: '#FFFFFF',
+    fontWeight: '700',
   },
   row: {
     flexDirection: 'row',
-    gap: 12,
+    gap: spacing.md,
   },
   half: {
     flex: 1,
   },
   input: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    borderColor: colors.borderSubtle,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   submitBtn: {
-    backgroundColor: UBD_COLORS.PRIMARY,
-    borderRadius: 10,
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
@@ -277,6 +289,10 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '700',
+  },
+  btnPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.99 }],
   },
   center: {
     flex: 1,

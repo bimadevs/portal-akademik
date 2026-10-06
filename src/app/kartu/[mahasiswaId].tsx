@@ -78,17 +78,6 @@ export default function KartuMahasiswaDetailScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header Bar */}
-      <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.topBtn}>
-          <Ionicons name="arrow-back" size={24} color="#0F172A" />
-        </TouchableOpacity>
-        <Text style={styles.topTitle}>Kartu Mahasiswa</Text>
-        <TouchableOpacity onPress={handleShare} style={styles.topBtn}>
-          <Ionicons name="share-social-outline" size={22} color="#0F172A" />
-        </TouchableOpacity>
-      </View>
-
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Digital Student Card Container */}
         <View style={styles.cardContainer}>
@@ -207,25 +196,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F1F5F9',
-  },
-  topBar: {
-    backgroundColor: '#FFFFFF',
-    paddingTop: 54,
-    paddingHorizontal: 20,
-    paddingBottom: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-  },
-  topBtn: {
-    padding: 6,
-  },
-  topTitle: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: '#0F172A',
   },
   scrollContent: {
     padding: 20,

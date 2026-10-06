@@ -5,7 +5,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { colors, radius, shadows, spacing } from '@/theme';
@@ -15,190 +14,189 @@ interface AcademicMenuItem {
   title: string;
   subtitle: string;
   iconName: keyof typeof Ionicons.glyphMap;
-  gradientColors: readonly [string, string];
+  iconBg: string;
+  iconColor: string;
   isPrimary?: boolean;
   badge?: string;
-  onPress?: () => void;
+  onPress: () => void;
 }
 
 export function AcademicGrid() {
   const router = useRouter();
 
-  const menuItems: AcademicMenuItem[] = [
+  const menuSections: { title: string; subtitle: string; items: AcademicMenuItem[] }[] = [
     {
-      id: 'mahasiswa',
-      title: 'Data Mahasiswa',
-      subtitle: 'Kelola data mahasiswa',
-      iconName: 'school',
-      gradientColors: ['#2563EB', '#1D4ED8'],
-      isPrimary: true,
-      badge: 'UTAMA',
-      onPress: () => {
-        router.push('/(tabs)/mahasiswa');
-      },
+      title: 'Master Data Akademik',
+      subtitle: 'Entri dan registrasi data pokok universitas',
+      items: [
+        {
+          id: 'mahasiswa',
+          title: 'Data Mahasiswa',
+          subtitle: 'Registrasi & profil mahasiswa',
+          iconName: 'school',
+          iconBg: '#EFF6FF',
+          iconColor: '#1E3A8A',
+          isPrimary: true,
+          badge: 'UTAMA',
+          onPress: () => router.push('/(tabs)/mahasiswa'),
+        },
+        {
+          id: 'dosen',
+          title: 'Data Dosen',
+          subtitle: 'Tenaga pengajar & NIDN',
+          iconName: 'person-circle-outline',
+          iconBg: '#E0F2FE',
+          iconColor: '#0284C7',
+          onPress: () => router.push('/dosen'),
+        },
+        {
+          id: 'matkul',
+          title: 'Mata Kuliah',
+          subtitle: 'Kurikulum, silabus & SKS',
+          iconName: 'book-outline',
+          iconBg: '#EEF2FF',
+          iconColor: '#4F46E5',
+          onPress: () => router.push('/mata-kuliah'),
+        },
+      ],
     },
     {
-      id: 'dosen',
-      title: 'Data Dosen',
-      subtitle: 'Dosen pengampu UBD',
-      iconName: 'person-circle',
-      gradientColors: ['#059669', '#047857'],
-      onPress: () => {
-        router.push('/dosen');
-      },
+      title: 'Operasional Perkuliahan',
+      subtitle: 'Siklus perkuliahan semester aktif',
+      items: [
+        {
+          id: 'jadwal',
+          title: 'Jadwal Kuliah',
+          subtitle: 'Alokasi ruang & sesi',
+          iconName: 'calendar-outline',
+          iconBg: '#CCFBF1',
+          iconColor: '#0D9488',
+          onPress: () => router.push('/jadwal'),
+        },
+        {
+          id: 'krs',
+          title: 'KRS Mahasiswa',
+          subtitle: 'Rencana studi semester',
+          iconName: 'document-text-outline',
+          iconBg: '#FEF3C7',
+          iconColor: '#D97706',
+          onPress: () => router.push('/krs'),
+        },
+        {
+          id: 'presensi',
+          title: 'Presensi Kelas',
+          subtitle: 'Catatan kehadiran harian',
+          iconName: 'checkbox-outline',
+          iconBg: '#FFE4E6',
+          iconColor: '#E11D48',
+          onPress: () => router.push('/presensi'),
+        },
+      ],
     },
     {
-      id: 'matkul',
-      title: 'Mata Kuliah',
-      subtitle: 'Kurikulum & SKS',
-      iconName: 'book',
-      gradientColors: ['#4F46E5', '#4338CA'],
-      onPress: () => {
-        router.push('/mata-kuliah');
-      },
-    },
-    {
-      id: 'jadwal',
-      title: 'Jadwal Kuliah',
-      subtitle: 'Jadwal kelas & ruangan',
-      iconName: 'calendar',
-      gradientColors: ['#0D9488', '#0F766E'],
-      onPress: () => {
-        router.push('/jadwal');
-      },
-    },
-    {
-      id: 'krs',
-      title: 'KRS Mahasiswa',
-      subtitle: 'Rencana studi semester',
-      iconName: 'document-text',
-      gradientColors: ['#D97706', '#B45309'],
-      onPress: () => {
-        router.push('/krs');
-      },
-    },
-    {
-      id: 'presensi',
-      title: 'Presensi Kelas',
-      subtitle: 'Catatan kehadiran',
-      iconName: 'checkbox',
-      gradientColors: ['#E11D48', '#BE123C'],
-      onPress: () => {
-        router.push('/presensi');
-      },
-    },
-    {
-      id: 'prestasi',
-      title: 'Prestasi & Nilai',
-      subtitle: 'Input nilai & hitung IPK',
-      iconName: 'trophy',
-      gradientColors: ['#0284C7', '#0369A1'],
-      onPress: () => {
-        router.push('/nilai');
-      },
-    },
-    {
-      id: 'kartu',
-      title: 'Kartu Mahasiswa',
-      subtitle: 'Digital Student ID & QR',
-      iconName: 'id-card',
-      gradientColors: ['#7C3AED', '#6D28D9'],
-      onPress: () => {
-        router.push('/kartu');
-      },
-    },
-    {
-      id: 'laporan',
-      title: 'Statistik & Rekap',
-      subtitle: 'Grafik & agregasi data',
-      iconName: 'bar-chart',
-      gradientColors: ['#EA580C', '#C2410C'],
-      onPress: () => {
-        router.push('/laporan');
-      },
-    },
-    {
-      id: 'pengaturan',
-      title: 'Pengaturan Sistem',
-      subtitle: 'Semester & konfigurasi',
-      iconName: 'settings',
-      gradientColors: ['#475569', '#334155'],
-      onPress: () => {
-        router.push('/pengaturan');
-      },
+      title: 'Penilaian & Administrasi',
+      subtitle: 'Rekapitulasi capaian dan tata kelola sistem',
+      items: [
+        {
+          id: 'prestasi',
+          title: 'Prestasi & Nilai',
+          subtitle: 'Input nilai & kalkulasi IPK',
+          iconName: 'trophy-outline',
+          iconBg: '#E0F2FE',
+          iconColor: '#0369A1',
+          onPress: () => router.push('/nilai'),
+        },
+        {
+          id: 'kartu',
+          title: 'Kartu Mahasiswa',
+          subtitle: 'Digital KTM & QR verifikasi',
+          iconName: 'id-card-outline',
+          iconBg: '#EDE9FE',
+          iconColor: '#7C3AED',
+          onPress: () => router.push('/kartu'),
+        },
+        {
+          id: 'laporan',
+          title: 'Statistik & Laporan',
+          subtitle: 'Grafik agregasi akademik',
+          iconName: 'bar-chart-outline',
+          iconBg: '#FFEDD5',
+          iconColor: '#EA580C',
+          onPress: () => router.push('/laporan'),
+        },
+        {
+          id: 'pengaturan',
+          title: 'Pengaturan Sistem',
+          subtitle: 'Semester, backup & audit',
+          iconName: 'settings-outline',
+          iconBg: '#F1F5F9',
+          iconColor: '#475569',
+          onPress: () => router.push('/pengaturan'),
+        },
+      ],
     },
   ];
 
   return (
     <View style={styles.container}>
-      <View style={styles.sectionHeader}>
-        <View>
-          <Text style={styles.sectionTitle}>Layanan Akademik</Text>
-          <Text style={styles.sectionSubtitle}>Akses modul terintegrasi kampus UBD</Text>
-        </View>
-        <View style={styles.servicePill}>
-          <Text style={styles.servicePillText}>{menuItems.length} Modul</Text>
-        </View>
-      </View>
-
-      <View style={styles.gridContainer}>
-        {Array.from({ length: Math.ceil(menuItems.length / 2) }, (_, i) => i * 2).map((startIndex) => {
-          const rowItems = menuItems.slice(startIndex, startIndex + 2);
-          return (
-            <View key={startIndex} style={styles.gridRow}>
-              {rowItems.map((item) => (
-                <Pressable
-                  key={item.id}
-                  onPress={item.onPress}
-                  style={({ pressed }) => [
-                    styles.menuCard,
-                    item.isPrimary && styles.menuCardPrimary,
-                    pressed && styles.menuCardPressed,
-                  ]}
-                  accessibilityRole="button"
-                  accessibilityLabel={item.title}
-                >
-                  {/* Top row with Icon and Optional Badge */}
-                  <View style={styles.cardTopRow}>
-                    <LinearGradient
-                      colors={item.gradientColors}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={styles.iconGradientBox}
-                    >
-                      <Ionicons name={item.iconName} size={22} color="#FFFFFF" />
-                    </LinearGradient>
-
-                    {item.badge ? (
-                      <View style={styles.primaryBadge}>
-                        <Text style={styles.primaryBadgeText}>{item.badge}</Text>
-                      </View>
-                    ) : (
-                      <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
-                    )}
-                  </View>
-
-                  {/* Title & Subtitle */}
-                  <View style={styles.cardTextContainer}>
-                    <Text
-                      style={[
-                        styles.menuTitle,
-                        item.isPrimary && styles.menuTitlePrimary,
-                      ]}
-                      numberOfLines={1}
-                    >
-                      {item.title}
-                    </Text>
-                    <Text style={styles.menuSubtitle} numberOfLines={1}>
-                      {item.subtitle}
-                    </Text>
-                  </View>
-                </Pressable>
-              ))}
+      {menuSections.map((section, sIdx) => (
+        <View key={sIdx} style={styles.sectionBlock}>
+          <View style={styles.sectionHeader}>
+            <View style={styles.sectionTextCol}>
+              <Text style={styles.sectionTitle}>{section.title}</Text>
+              <Text style={styles.sectionSubtitle}>{section.subtitle}</Text>
             </View>
-          );
-        })}
-      </View>
+            <View style={styles.badgePill}>
+              <Text style={styles.badgeText}>{section.items.length} Menu</Text>
+            </View>
+          </View>
+
+          <View style={styles.grid}>
+            {section.items.map((item) => (
+              <Pressable
+                key={item.id}
+                onPress={item.onPress}
+                style={({ pressed }) => [
+                  styles.card,
+                  item.isPrimary && styles.cardPrimary,
+                  pressed && styles.cardPressed,
+                ]}
+                accessibilityRole="button"
+                accessibilityLabel={item.title}
+              >
+                <View style={styles.cardTopRow}>
+                  <View style={[styles.iconBox, { backgroundColor: item.iconBg }]}>
+                    <Ionicons name={item.iconName} size={20} color={item.iconColor} />
+                  </View>
+
+                  {item.badge ? (
+                    <View style={styles.primaryBadge}>
+                      <Text style={styles.primaryBadgeText}>{item.badge}</Text>
+                    </View>
+                  ) : (
+                    <Ionicons name="chevron-forward" size={15} color={colors.textMuted} />
+                  )}
+                </View>
+
+                <View style={styles.cardContent}>
+                  <Text
+                    style={[
+                      styles.cardTitle,
+                      item.isPrimary && styles.cardTitlePrimary,
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {item.title}
+                  </Text>
+                  <Text style={styles.cardSubtitle} numberOfLines={1}>
+                    {item.subtitle}
+                  </Text>
+                </View>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      ))}
     </View>
   );
 }
@@ -206,80 +204,81 @@ export function AcademicGrid() {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    gap: spacing.md,
+    gap: spacing.xl,
+  },
+  sectionBlock: {
+    gap: spacing.sm,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 2,
+    marginBottom: 4,
+  },
+  sectionTextCol: {
+    gap: 2,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '800',
     color: colors.textPrimary,
-    letterSpacing: -0.3,
+    letterSpacing: -0.2,
   },
   sectionSubtitle: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  servicePill: {
-    backgroundColor: colors.primaryLight,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: radius.full,
-  },
-  servicePillText: {
     fontSize: 11,
+    color: colors.textSecondary,
+  },
+  badgePill: {
+    backgroundColor: colors.surfaceSubtle,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  badgeText: {
+    fontSize: 10,
     fontWeight: '700',
-    color: colors.primary,
+    color: colors.textSecondary,
   },
-  gridContainer: {
-    gap: spacing.md,
-    width: '100%',
-  },
-  gridRow: {
+  grid: {
     flexDirection: 'row',
-    alignItems: 'stretch',
-    gap: spacing.md,
-    width: '100%',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
   },
-  menuCard: {
-    flex: 1,
+  card: {
+    width: '48.5%',
     backgroundColor: colors.surface,
-    borderRadius: radius.xl,
+    borderRadius: radius.lg,
     padding: spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(226, 232, 240, 0.8)',
+    borderColor: colors.border,
     boxShadow: shadows.card,
     gap: spacing.sm,
   },
-  menuCardPrimary: {
-    borderColor: '#93C5FD',
-    backgroundColor: '#F8FAFC',
-    boxShadow: shadows.raised,
+  cardPrimary: {
+    borderColor: '#BFDBFE',
+    backgroundColor: '#FAFCFF',
   },
-  menuCardPressed: {
-    transform: [{ scale: 0.96 }],
+  cardPressed: {
     opacity: 0.88,
+    transform: [{ scale: 0.98 }],
   },
   cardTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  iconGradientBox: {
-    width: 44,
-    height: 44,
+  iconBox: {
+    width: 38,
+    height: 38,
     borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: shadows.subtle,
   },
   primaryBadge: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.primaryLight,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: radius.xs,
@@ -292,23 +291,20 @@ const styles = StyleSheet.create({
     color: colors.primary,
     letterSpacing: 0.5,
   },
-  cardTextContainer: {
-    marginTop: 2,
+  cardContent: {
     gap: 2,
   },
-  menuTitle: {
-    fontSize: 14,
+  cardTitle: {
+    fontSize: 13,
     fontWeight: '700',
     color: colors.textPrimary,
-    letterSpacing: -0.2,
+    letterSpacing: -0.1,
   },
-  menuTitlePrimary: {
+  cardTitlePrimary: {
     color: colors.primary,
   },
-  menuSubtitle: {
+  cardSubtitle: {
     fontSize: 11,
     color: colors.textSecondary,
-    fontWeight: '400',
   },
 });
-

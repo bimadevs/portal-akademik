@@ -6,7 +6,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
-  TouchableOpacity,
+  Pressable,
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,7 +15,7 @@ import { SemesterService } from '../../services/semester-service';
 import { MataKuliahService } from '../../services/mata-kuliah-service';
 import { PDFService } from '../../services/pdf-service';
 import { Semester, MataKuliah } from '../../types/mahasiswa';
-import { UBD_COLORS } from '../../constants/theme';
+import { colors, radius, spacing, shadows } from '@/theme';
 
 export default function PresensiRekapScreen() {
   const { mataKuliahId, nama } = useLocalSearchParams<{
@@ -80,7 +80,7 @@ export default function PresensiRekapScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -93,11 +93,13 @@ export default function PresensiRekapScreen() {
           <Text style={styles.sub}>{mataKuliah?.nama || nama} ({mataKuliah?.kode || 'MK'})</Text>
           <Text style={styles.semText}>Semester: {semester?.nama || 'Semester Aktif'}</Text>
         </View>
-        <TouchableOpacity
-          style={styles.exportBtn}
+        <Pressable
+          style={({ pressed }) => [
+            styles.exportBtn,
+            pressed && styles.btnPressed,
+          ]}
           onPress={handleExportPDF}
           disabled={printing}
-          activeOpacity={0.7}
         >
           {printing ? (
             <ActivityIndicator size="small" color="#FFFFFF" />
@@ -107,7 +109,7 @@ export default function PresensiRekapScreen() {
               <Text style={styles.exportBtnText}>Ekspor PDF</Text>
             </>
           )}
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <FlatList
@@ -116,6 +118,7 @@ export default function PresensiRekapScreen() {
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <View style={styles.empty}>
+            <Ionicons name="clipboard-outline" size={48} color={colors.textTertiary} />
             <Text style={styles.emptyText}>Belum ada data rekap presensi</Text>
           </View>
         }
@@ -131,7 +134,10 @@ export default function PresensiRekapScreen() {
                 <View
                   style={[
                     styles.pctBadge,
-                    { backgroundColor: isSafe ? '#DCFCE7' : '#FEE2E2' },
+                    {
+                      backgroundColor: isSafe ? '#DCFCE7' : '#FEE2E2',
+                      borderColor: isSafe ? '#BBF7D0' : '#FECACA',
+                    },
                   ]}
                 >
                   <Text
@@ -140,7 +146,7 @@ export default function PresensiRekapScreen() {
                       { color: isSafe ? '#166534' : '#991B1B' },
                     ]}
                   >
-                    {item.persentase}% {isSafe ? '(Memenuhi)' : '(< 75%)'}
+                    {item.persentase}% {isSafe ? 'Memenuhi' : '< 75%'}
                   </Text>
                 </View>
               </View>
@@ -178,96 +184,102 @@ export default function PresensiRekapScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   header: {
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderColor: '#E2E8F0',
+    backgroundColor: colors.surface,
+    padding: spacing.lg,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.borderSubtle,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   headerTitleCol: {
     flex: 1,
-    paddingRight: 12,
+    paddingRight: spacing.md,
+    gap: 2,
   },
   title: {
     fontSize: 16,
-    fontWeight: '800',
-    color: '#0F172A',
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   sub: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#334155',
-    marginTop: 2,
+    color: colors.textSecondary,
   },
   semText: {
     fontSize: 11,
-    color: UBD_COLORS.ACCENT_DARK,
-    marginTop: 2,
+    color: colors.primary,
+    fontWeight: '600',
   },
   exportBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: UBD_COLORS.PRIMARY,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
+    backgroundColor: colors.primary,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: radius.md,
   },
   exportBtnText: {
     color: '#FFFFFF',
     fontSize: 12,
     fontWeight: '700',
   },
+  btnPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.98 }],
+  },
   listContent: {
-    padding: 16,
+    padding: spacing.lg,
+    gap: spacing.sm,
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 10,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    padding: spacing.md,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.borderSubtle,
+    ...shadows.sm,
   },
   cardTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   studentInfo: {
     flex: 1,
+    gap: 2,
   },
   studentNama: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   studentNim: {
     fontSize: 12,
-    color: '#64748B',
-    marginTop: 2,
+    color: colors.textSecondary,
   },
   pctBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: radius.xs,
+    borderWidth: 1,
   },
   pctText: {
     fontSize: 11,
-    fontWeight: '800',
+    fontWeight: '700',
   },
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#F8FAFC',
-    borderRadius: 8,
-    padding: 10,
+    backgroundColor: colors.surfaceSubtle,
+    borderRadius: radius.sm,
+    padding: spacing.sm,
   },
   statBox: {
     alignItems: 'center',
@@ -276,11 +288,11 @@ const styles = StyleSheet.create({
   statVal: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   statLabel: {
     fontSize: 10,
-    color: '#64748B',
+    color: colors.textSecondary,
     marginTop: 2,
   },
   center: {
@@ -295,6 +307,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 14,
-    color: '#64748B',
+    color: colors.textSecondary,
+    marginTop: 8,
   },
 });

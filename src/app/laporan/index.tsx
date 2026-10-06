@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LaporanService, DashboardStats } from '../../services/laporan-service';
 import { BarChart } from '../../components/bar-chart';
 import { PieChart } from '../../components/pie-chart';
-import { UBD_COLORS } from '../../constants/theme';
+import { colors, radius, spacing, shadows } from '@/theme';
 
 export default function LaporanScreen() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -38,7 +38,7 @@ export default function LaporanScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -47,62 +47,62 @@ export default function LaporanScreen() {
     {
       label: 'Laki-Laki',
       count: stats?.genderBreakdown.find((g) => g.jenisKelamin === 'PRIA')?.count || 0,
-      color: '#0284C7',
+      color: colors.primary,
     },
     {
       label: 'Perempuan',
       count: stats?.genderBreakdown.find((g) => g.jenisKelamin === 'WANITA')?.count || 0,
-      color: '#EC4899',
+      color: colors.accentDark,
     },
   ];
 
   const fakultasBarData = (stats?.fakultasBreakdown || []).map((f) => ({
     label: f.fakultas.replace('Fakultas ', ''),
     count: f.count,
-    color: UBD_COLORS.PRIMARY,
+    color: colors.primary,
   }));
 
   const gradePieData = [
-    { label: 'A', count: stats?.gradeDistribution?.['A'] || 0, color: '#16A34A' },
-    { label: 'B', count: stats?.gradeDistribution?.['B'] || 0, color: '#0284C7' },
-    { label: 'C', count: stats?.gradeDistribution?.['C'] || 0, color: '#E5A823' },
-    { label: 'D', count: stats?.gradeDistribution?.['D'] || 0, color: '#F97316' },
-    { label: 'E', count: stats?.gradeDistribution?.['E'] || 0, color: '#DC2626' },
+    { label: 'A', count: stats?.gradeDistribution?.['A'] || 0, color: colors.success },
+    { label: 'B', count: stats?.gradeDistribution?.['B'] || 0, color: colors.info },
+    { label: 'C', count: stats?.gradeDistribution?.['C'] || 0, color: colors.warning },
+    { label: 'D', count: stats?.gradeDistribution?.['D'] || 0, color: '#EA580C' },
+    { label: 'E', count: stats?.gradeDistribution?.['E'] || 0, color: colors.danger },
   ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <View style={styles.kpiGrid}>
         <View style={styles.kpiCard}>
-          <View style={[styles.kpiIcon, { backgroundColor: '#E0F2FE' }]}>
-            <Ionicons name="people" size={20} color="#0284C7" />
+          <View style={[styles.kpiIcon, { backgroundColor: '#EFF6FF' }]}>
+            <Ionicons name="people" size={18} color={colors.primary} />
           </View>
           <Text style={styles.kpiNum}>{stats?.totalMahasiswa || 0}</Text>
-          <Text style={styles.kpiLabel}>Mahasiswa</Text>
+          <Text style={styles.kpiLabel}>Total Mahasiswa</Text>
         </View>
 
         <View style={styles.kpiCard}>
           <View style={[styles.kpiIcon, { backgroundColor: '#FEF3C7' }]}>
-            <Ionicons name="person" size={20} color="#D97706" />
+            <Ionicons name="person" size={18} color="#D97706" />
           </View>
           <Text style={styles.kpiNum}>{stats?.totalDosen || 0}</Text>
-          <Text style={styles.kpiLabel}>Dosen</Text>
+          <Text style={styles.kpiLabel}>Dosen Pengajar</Text>
         </View>
 
         <View style={styles.kpiCard}>
-          <View style={[styles.kpiIcon, { backgroundColor: '#DCFCE7' }]}>
-            <Ionicons name="book" size={20} color="#16A34A" />
+          <View style={[styles.kpiIcon, { backgroundColor: '#ECFDF5' }]}>
+            <Ionicons name="book" size={18} color="#059669" />
           </View>
           <Text style={styles.kpiNum}>{stats?.totalMataKuliah || 0}</Text>
-          <Text style={styles.kpiLabel}>Mata Kuliah</Text>
+          <Text style={styles.kpiLabel}>Mata Kuliah Aktif</Text>
         </View>
 
         <View style={styles.kpiCard}>
-          <View style={[styles.kpiIcon, { backgroundColor: '#F3E8FF' }]}>
-            <Ionicons name="calendar" size={20} color="#9333EA" />
+          <View style={[styles.kpiIcon, { backgroundColor: '#F5F3FF' }]}>
+            <Ionicons name="calendar" size={18} color="#7C3AED" />
           </View>
           <Text style={styles.kpiNum}>{stats?.totalJadwal || 0}</Text>
-          <Text style={styles.kpiLabel}>Sesi Kuliah</Text>
+          <Text style={styles.kpiLabel}>Sesi Perkuliahan</Text>
         </View>
       </View>
 
@@ -118,44 +118,46 @@ export default function LaporanScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   content: {
-    padding: 16,
+    padding: spacing.lg,
     paddingBottom: 40,
+    gap: spacing.lg,
   },
   kpiGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 10,
+    gap: spacing.md,
   },
   kpiCard: {
     flex: 1,
     minWidth: '47%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    padding: 14,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.borderSubtle,
+    ...shadows.sm,
   },
   kpiIcon: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   kpiNum: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '800',
-    color: '#0F172A',
+    color: colors.textPrimary,
+    letterSpacing: -0.5,
   },
   kpiLabel: {
     fontSize: 12,
-    color: '#64748B',
-    fontWeight: '500',
+    color: colors.textSecondary,
+    fontWeight: '600',
     marginTop: 2,
   },
   center: {

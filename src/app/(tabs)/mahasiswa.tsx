@@ -11,7 +11,6 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -96,7 +95,7 @@ export default function InputMahasiswaScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       {/* Header Resmi UBD */}
-      <UBDHeader subtitle="Modul Input Data Mahasiswa" variant="elevated" />
+      <UBDHeader subtitle="Registrasi Data Mahasiswa" variant="elevated" />
 
       <KeyboardAvoidingView
         style={styles.keyboardAvoid}
@@ -107,66 +106,51 @@ export default function InputMahasiswaScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Header Banner Form */}
-          <LinearGradient
-            colors={['#0F172A', '#1E3A8A']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.formHeroCard}
-          >
-            <View style={styles.heroRow}>
-              <View style={styles.heroTextCol}>
-                <View style={styles.heroBadge}>
-                  <View style={styles.heroBadgeDot} />
-                  <Text style={styles.heroBadgeText}>REGISTRASI MAHASISWA</Text>
-                </View>
-                <Text style={styles.heroTitle}>Input Data Mahasiswa</Text>
-                <Text style={styles.heroSubtitle}>
-                  Tambahkan entri data mahasiswa baru ke basis data universitas
-                </Text>
-              </View>
+          {/* Section Introduction */}
+          <View style={styles.introHeader}>
+            <Text style={styles.introTitle}>Formulir Registrasi Mahasiswa</Text>
+            <Text style={styles.introSubtitle}>
+              Lengkapi data identitas dan penempatan fakultas mahasiswa baru
+            </Text>
+          </View>
 
-              <View style={styles.heroIconBox}>
-                <Ionicons name="person-add" size={26} color="#FFFFFF" />
-              </View>
-            </View>
-          </LinearGradient>
-
-          {/* Form Fields Card Container */}
+          {/* Form Card */}
           <View style={styles.formCard}>
-            {/* Foto Mahasiswa */}
-            <View style={styles.photoUploadRow}>
+            {/* Profil & Foto */}
+            <View style={styles.photoSection}>
               <PhotoAvatar
                 uri={fotoUrl}
-                size={84}
+                size={80}
                 name={nama}
                 editable
                 onPress={handlePickPhoto}
               />
-              <View style={styles.photoUploadInfo}>
-                <Text style={styles.photoUploadTitle}>Foto Mahasiswa</Text>
-                <Text style={styles.photoUploadSubtitle}>
-                  {fotoUrl ? 'Foto telah dipilih' : 'Tambahkan foto dari kamera atau galeri'}
+              <View style={styles.photoInfoCol}>
+                <Text style={styles.photoTitle}>Pasfoto Mahasiswa</Text>
+                <Text style={styles.photoSubtitle}>
+                  {fotoUrl ? 'Foto profil terunggah' : 'Format pasfoto resmi (Opsional)'}
                 </Text>
                 <Pressable
                   onPress={handlePickPhoto}
-                  style={styles.photoUploadButton}
+                  style={styles.photoBtn}
                   accessibilityRole="button"
-                  accessibilityLabel="Pilih Foto Mahasiswa"
+                  accessibilityLabel="Unggah atau ganti foto mahasiswa"
                 >
-                  <Ionicons name="camera-outline" size={15} color={colors.primary} />
-                  <Text style={styles.photoUploadButtonText}>
-                    {fotoUrl ? 'Ganti Foto' : 'Unggah Foto'}
+                  <Ionicons name="camera-outline" size={14} color={colors.primary} />
+                  <Text style={styles.photoBtnText}>
+                    {fotoUrl ? 'Ganti Foto' : 'Pilih Foto'}
                   </Text>
                 </Pressable>
               </View>
             </View>
 
-            {/* Field 1: Kode Mahasiswa / NIM */}
+            <View style={styles.divider} />
+
+            {/* Field 1: NIM / Kode Mahasiswa */}
             <View style={styles.inputGroup}>
               <View style={styles.labelRow}>
                 <Text style={styles.fieldLabel}>Kode Mahasiswa (NIM)</Text>
-                <Text style={styles.requiredTag}>*Wajib</Text>
+                <Text style={styles.requiredPill}>Wajib</Text>
               </View>
               <View
                 style={[
@@ -176,7 +160,7 @@ export default function InputMahasiswaScreen() {
               >
                 <Ionicons
                   name="id-card-outline"
-                  size={20}
+                  size={18}
                   color={focusedInput === 'nim' ? colors.primary : colors.textSecondary}
                   style={styles.leadingIcon}
                 />
@@ -193,19 +177,19 @@ export default function InputMahasiswaScreen() {
                   accessibilityLabel="Input Kode Mahasiswa / NIM"
                 />
                 {nim.length > 0 && (
-                  <Pressable onPress={() => setNim('')} hitSlop={6}>
+                  <Pressable onPress={() => setNim('')} hitSlop={8}>
                     <Ionicons name="close-circle" size={16} color={colors.textMuted} />
                   </Pressable>
                 )}
               </View>
-              <Text style={styles.helperText}>Nomor Induk Mahasiswa resmi yang unik</Text>
+              <Text style={styles.helperText}>Nomor unik identitas mahasiswa di basis data</Text>
             </View>
 
             {/* Field 2: Nama Mahasiswa */}
             <View style={styles.inputGroup}>
               <View style={styles.labelRow}>
-                <Text style={styles.fieldLabel}>Nama Mahasiswa</Text>
-                <Text style={styles.requiredTag}>*Wajib</Text>
+                <Text style={styles.fieldLabel}>Nama Lengkap Mahasiswa</Text>
+                <Text style={styles.requiredPill}>Wajib</Text>
               </View>
               <View
                 style={[
@@ -215,7 +199,7 @@ export default function InputMahasiswaScreen() {
               >
                 <Ionicons
                   name="person-outline"
-                  size={20}
+                  size={18}
                   color={focusedInput === 'nama' ? colors.primary : colors.textSecondary}
                   style={styles.leadingIcon}
                 />
@@ -224,13 +208,13 @@ export default function InputMahasiswaScreen() {
                   onChangeText={setNama}
                   onFocus={() => setFocusedInput('nama')}
                   onBlur={() => setFocusedInput(null)}
-                  placeholder="Masukkan nama lengkap mahasiswa"
+                  placeholder="Masukkan nama lengkap sesuai ijazah"
                   placeholderTextColor={colors.textMuted}
                   style={styles.textInput}
                   accessibilityLabel="Input Nama Mahasiswa"
                 />
                 {nama.length > 0 && (
-                  <Pressable onPress={() => setNama('')} hitSlop={6}>
+                  <Pressable onPress={() => setNama('')} hitSlop={8}>
                     <Ionicons name="close-circle" size={16} color={colors.textMuted} />
                   </Pressable>
                 )}
@@ -238,17 +222,17 @@ export default function InputMahasiswaScreen() {
               <Text style={styles.helperText}>Sesuai identitas resmi KTP / Ijazah</Text>
             </View>
 
-            {/* Field 3: Jenis Kelamin (Modern Segmented Interactive Cards) */}
+            {/* Field 3: Jenis Kelamin */}
             <View style={styles.inputGroup}>
               <Text style={styles.fieldLabel}>Jenis Kelamin</Text>
-              <View style={styles.genderGrid}>
+              <View style={styles.genderRow}>
                 {/* Opsi PRIA */}
                 <Pressable
                   onPress={() => setJenisKelamin('PRIA')}
                   style={({ pressed }) => [
-                    styles.genderCard,
-                    jenisKelamin === 'PRIA' && styles.genderCardPriaSelected,
-                    pressed && styles.cardPressed,
+                    styles.genderOption,
+                    jenisKelamin === 'PRIA' && styles.genderOptionSelected,
+                    pressed && styles.optionPressed,
                   ]}
                   accessibilityRole="radio"
                   accessibilityState={{ selected: jenisKelamin === 'PRIA' }}
@@ -257,19 +241,18 @@ export default function InputMahasiswaScreen() {
                   <RadioButton
                     selected={jenisKelamin === 'PRIA'}
                     onPress={() => setJenisKelamin('PRIA')}
-                    size={18}
+                    size={17}
                   />
                   <Ionicons
                     name="male"
-                    size={18}
-                    color={jenisKelamin === 'PRIA' ? '#2563EB' : colors.textSecondary}
+                    size={17}
+                    color={jenisKelamin === 'PRIA' ? colors.primary : colors.textSecondary}
                   />
                   <Text
                     style={[
                       styles.genderLabel,
-                      jenisKelamin === 'PRIA' && styles.genderLabelPriaSelected,
+                      jenisKelamin === 'PRIA' && styles.genderLabelSelected,
                     ]}
-                    numberOfLines={1}
                   >
                     PRIA
                   </Text>
@@ -279,9 +262,9 @@ export default function InputMahasiswaScreen() {
                 <Pressable
                   onPress={() => setJenisKelamin('WANITA')}
                   style={({ pressed }) => [
-                    styles.genderCard,
-                    jenisKelamin === 'WANITA' && styles.genderCardWanitaSelected,
-                    pressed && styles.cardPressed,
+                    styles.genderOption,
+                    jenisKelamin === 'WANITA' && styles.genderOptionSelected,
+                    pressed && styles.optionPressed,
                   ]}
                   accessibilityRole="radio"
                   accessibilityState={{ selected: jenisKelamin === 'WANITA' }}
@@ -290,19 +273,18 @@ export default function InputMahasiswaScreen() {
                   <RadioButton
                     selected={jenisKelamin === 'WANITA'}
                     onPress={() => setJenisKelamin('WANITA')}
-                    size={18}
+                    size={17}
                   />
                   <Ionicons
                     name="female"
-                    size={18}
+                    size={17}
                     color={jenisKelamin === 'WANITA' ? '#DB2777' : colors.textSecondary}
                   />
                   <Text
                     style={[
                       styles.genderLabel,
-                      jenisKelamin === 'WANITA' && styles.genderLabelWanitaSelected,
+                      jenisKelamin === 'WANITA' && styles.genderLabelSelected,
                     ]}
-                    numberOfLines={1}
                   >
                     WANITA
                   </Text>
@@ -310,50 +292,45 @@ export default function InputMahasiswaScreen() {
               </View>
             </View>
 
-            {/* Field 4: Dropdown Fakultas */}
+            {/* Field 4: Fakultas Picker */}
             <View style={styles.inputGroup}>
               <FacultyPicker value={fakultas} onChange={setFakultas} />
             </View>
 
-            {/* Actions: SAVE Button & Reset */}
-            <View style={styles.actionBlock}>
+            {/* Action Buttons */}
+            <View style={styles.actionsContainer}>
               <Pressable
                 onPress={handleSave}
                 disabled={isSaving}
                 style={({ pressed }) => [
-                  styles.saveButtonWrapper,
+                  styles.saveButton,
                   pressed && styles.saveButtonPressed,
                   isSaving && styles.saveButtonDisabled,
                 ]}
                 accessibilityRole="button"
-                accessibilityLabel="Tombol Simpan Data Mahasiswa"
+                accessibilityLabel="Simpan Data Mahasiswa"
               >
-                <LinearGradient
-                  colors={['#2563EB', '#1D4ED8']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.saveButtonGradient}
-                >
-                  {isSaving ? (
-                    <ActivityIndicator color={colors.textOnPrimary} />
-                  ) : (
-                    <View style={styles.buttonInner}>
-                      <Ionicons name="checkmark-circle" size={20} color="#FFFFFF" />
-                      <Text style={styles.saveButtonText}>SAVE / SIMPAN DATA</Text>
-                    </View>
-                  )}
-                </LinearGradient>
+                {isSaving ? (
+                  <ActivityIndicator color={colors.textOnPrimary} />
+                ) : (
+                  <View style={styles.buttonInner}>
+                    <Ionicons name="checkmark-circle-outline" size={18} color="#FFFFFF" />
+                    <Text style={styles.saveButtonText}>SIMPAN DATA MAHASISWA</Text>
+                  </View>
+                )}
               </Pressable>
 
               <Pressable
                 onPress={handleReset}
                 disabled={isSaving}
-                style={styles.resetButton}
+                style={({ pressed }) => [
+                  styles.resetButton,
+                  pressed && styles.resetButtonPressed,
+                ]}
                 accessibilityRole="button"
-                accessibilityLabel="Reset Formulir"
+                accessibilityLabel="Bersihkan Form Input"
               >
-                <Ionicons name="refresh-outline" size={16} color={colors.textSecondary} />
-                <Text style={styles.resetButtonText}>Reset Form</Text>
+                <Text style={styles.resetButtonText}>Bersihkan Formulir</Text>
               </Pressable>
             </View>
           </View>
@@ -366,125 +343,79 @@ export default function InputMahasiswaScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   keyboardAvoid: {
     flex: 1,
   },
   scrollContent: {
     padding: spacing.lg,
-    paddingBottom: spacing.xxl + 20,
+    paddingBottom: spacing.xxl + 24,
     gap: spacing.lg,
   },
-  formHeroCard: {
-    borderRadius: radius['2xl'],
-    padding: spacing.lg,
-    boxShadow: shadows.cardElevated,
+  introHeader: {
+    gap: 3,
+    paddingHorizontal: 2,
   },
-  heroRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.md,
-  },
-  heroTextCol: {
-    flex: 1,
-    gap: 4,
-  },
-  heroBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: radius.full,
-    alignSelf: 'flex-start',
-    marginBottom: 2,
-  },
-  heroBadgeDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#38BDF8',
-  },
-  heroBadgeText: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: '#E0F2FE',
-    letterSpacing: 0.8,
-  },
-  heroTitle: {
+  introTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: colors.textPrimary,
     letterSpacing: -0.2,
   },
-  heroSubtitle: {
+  introSubtitle: {
     fontSize: 12,
-    color: '#CBD5E1',
-    lineHeight: 16,
-  },
-  heroIconBox: {
-    width: 48,
-    height: 48,
-    borderRadius: radius.xl,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.25)',
+    color: colors.textSecondary,
+    lineHeight: 18,
   },
   formCard: {
     backgroundColor: colors.surface,
-    borderRadius: radius['2xl'],
+    borderRadius: radius.xl,
     padding: spacing.xl,
     borderWidth: 1,
-    borderColor: 'rgba(226, 232, 240, 0.8)',
+    borderColor: colors.border,
     boxShadow: shadows.card,
     gap: spacing.lg,
   },
-  photoUploadRow: {
+  photoSection: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    padding: spacing.md,
-    backgroundColor: '#F8FAFC',
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
   },
-  photoUploadInfo: {
+  photoInfoCol: {
     flex: 1,
-    gap: 4,
+    gap: 3,
   },
-  photoUploadTitle: {
+  photoTitle: {
     fontSize: 14,
     fontWeight: '700',
     color: colors.textPrimary,
   },
-  photoUploadSubtitle: {
+  photoSubtitle: {
     fontSize: 11,
     color: colors.textSecondary,
-    lineHeight: 15,
   },
-  photoUploadButton: {
+  photoBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    backgroundColor: colors.surface,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: radius.full,
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: radius.md,
+    alignSelf: 'flex-start',
+    marginTop: 4,
     borderWidth: 1,
     borderColor: '#BFDBFE',
-    alignSelf: 'flex-start',
-    marginTop: 2,
   },
-  photoUploadButtonText: {
-    fontSize: 12,
+  photoBtnText: {
+    fontSize: 11,
     fontWeight: '700',
     color: colors.primary,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.surfaceSubtle,
   },
   inputGroup: {
     gap: 6,
@@ -499,29 +430,28 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.textPrimary,
   },
-  requiredTag: {
-    fontSize: 11,
-    fontWeight: '600',
+  requiredPill: {
+    fontSize: 10,
+    fontWeight: '700',
     color: colors.primary,
-  },
-  helperText: {
-    fontSize: 11,
-    color: colors.textSecondary,
-    marginTop: 2,
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: radius.xs,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.surface,
     borderWidth: 1.5,
-    borderColor: '#E2E8F0',
-    borderRadius: radius.md,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
     paddingHorizontal: spacing.md,
     height: 48,
   },
   inputContainerFocused: {
     borderColor: colors.primary,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     boxShadow: shadows.subtle,
   },
   leadingIcon: {
@@ -533,72 +463,62 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     height: '100%',
   },
-  genderGrid: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginTop: 2,
+  helperText: {
+    fontSize: 11,
+    color: colors.textMuted,
   },
-  genderCard: {
+  genderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  genderOption: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1.5,
-    borderColor: '#E2E8F0',
-    borderRadius: radius.xl,
-    paddingVertical: 12,
-    paddingHorizontal: spacing.sm,
     gap: 8,
+    backgroundColor: colors.surface,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    paddingVertical: 12,
   },
-  genderCardPriaSelected: {
-    borderColor: '#3B82F6',
-    backgroundColor: '#EFF6FF',
-    boxShadow: shadows.subtle,
+  genderOptionSelected: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryLight,
   },
-  genderCardWanitaSelected: {
-    borderColor: '#EC4899',
-    backgroundColor: '#FDF2F8',
-    boxShadow: shadows.subtle,
-  },
-  cardPressed: {
+  optionPressed: {
     opacity: 0.85,
     transform: [{ scale: 0.98 }],
   },
   genderLabel: {
     fontSize: 13,
     fontWeight: '700',
-    color: colors.textPrimary,
-    letterSpacing: 0.3,
+    color: colors.textSecondary,
   },
-  genderLabelPriaSelected: {
-    fontWeight: '800',
-    color: '#1D4ED8',
+  genderLabelSelected: {
+    color: colors.primary,
   },
-  genderLabelWanitaSelected: {
-    fontWeight: '800',
-    color: '#BE185D',
-  },
-  actionBlock: {
+  actionsContainer: {
     gap: spacing.sm,
-    marginTop: spacing.sm,
+    marginTop: spacing.xs,
   },
-  saveButtonWrapper: {
-    borderRadius: radius.xl,
-    overflow: 'hidden',
-    boxShadow: shadows.glow,
+  saveButton: {
+    backgroundColor: colors.primary,
+    borderRadius: radius.lg,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: shadows.card,
   },
   saveButtonPressed: {
-    opacity: 0.9,
+    backgroundColor: colors.primaryHover,
+    opacity: 0.92,
     transform: [{ scale: 0.98 }],
   },
   saveButtonDisabled: {
     opacity: 0.6,
-  },
-  saveButtonGradient: {
-    paddingVertical: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   buttonInner: {
     flexDirection: 'row',
@@ -606,22 +526,26 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   saveButtonText: {
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: '800',
     color: colors.textOnPrimary,
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
   },
   resetButton: {
-    flexDirection: 'row',
+    height: 42,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    paddingVertical: spacing.sm,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
+  resetButtonPressed: {
+    backgroundColor: colors.surfaceSubtle,
   },
   resetButtonText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600',
     color: colors.textSecondary,
   },
 });
-

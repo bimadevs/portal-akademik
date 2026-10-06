@@ -3,7 +3,7 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ActivityIndicator,
   Alert,
@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { MataKuliahService } from '../../services/mata-kuliah-service';
 import { SemesterService } from '../../services/semester-service';
 import { MataKuliah, Semester } from '../../types/mahasiswa';
-import { UBD_COLORS } from '../../constants/theme';
+import { colors, radius, spacing, shadows } from '@/theme';
 
 export default function PresensiMatkulListScreen() {
   const router = useRouter();
@@ -43,7 +43,7 @@ export default function PresensiMatkulListScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.banner}>
-        <Ionicons name="information-circle-outline" size={20} color={UBD_COLORS.PRIMARY} />
+        <Ionicons name="calendar-outline" size={18} color={colors.primary} />
         <Text style={styles.bannerText}>
           Pilih Mata Kuliah untuk Input Presensi ({semester?.nama || 'Semester Aktif'})
         </Text>
@@ -51,7 +51,7 @@ export default function PresensiMatkulListScreen() {
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : (
         <FlatList
@@ -62,15 +62,26 @@ export default function PresensiMatkulListScreen() {
             <View style={styles.card}>
               <View style={styles.info}>
                 <View style={styles.tagRow}>
-                  <Text style={styles.kodeTag}>{item.kode}</Text>
-                  <Text style={styles.sksTag}>{item.sks} SKS</Text>
+                  <View style={styles.kodeBadge}>
+                    <Text style={styles.kodeTag}>{item.kode}</Text>
+                  </View>
+                  <View style={styles.sksBadge}>
+                    <Text style={styles.sksTag}>{item.sks} SKS</Text>
+                  </View>
                 </View>
                 <Text style={styles.nama}>{item.nama}</Text>
-                <Text style={styles.dosen}>Dosen: {item.dosen_nama || '-'}</Text>
+                <View style={styles.dosenRow}>
+                  <Ionicons name="person-outline" size={14} color={colors.textTertiary} />
+                  <Text style={styles.dosen}>{item.dosen_nama || 'Dosen Belum Ditugaskan'}</Text>
+                </View>
               </View>
+
               <View style={styles.actions}>
-                <TouchableOpacity
-                  style={styles.actionBtnPrimary}
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.actionBtnPrimary,
+                    pressed && styles.btnPressed,
+                  ]}
                   onPress={() =>
                     router.push({
                       pathname: '/presensi/checklist',
@@ -79,11 +90,14 @@ export default function PresensiMatkulListScreen() {
                   }
                 >
                   <Ionicons name="checkbox-outline" size={16} color="#FFFFFF" />
-                  <Text style={styles.actionBtnTextPrimary}>Presensi</Text>
-                </TouchableOpacity>
+                  <Text style={styles.actionBtnTextPrimary}>Catat Presensi</Text>
+                </Pressable>
 
-                <TouchableOpacity
-                  style={styles.actionBtnOutline}
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.actionBtnOutline,
+                    pressed && styles.btnPressed,
+                  ]}
                   onPress={() =>
                     router.push({
                       pathname: '/presensi/rekap',
@@ -91,9 +105,9 @@ export default function PresensiMatkulListScreen() {
                     })
                   }
                 >
-                  <Ionicons name="stats-chart-outline" size={16} color={UBD_COLORS.PRIMARY} />
-                  <Text style={styles.actionBtnTextOutline}>Rekap</Text>
-                </TouchableOpacity>
+                  <Ionicons name="stats-chart-outline" size={16} color={colors.primary} />
+                  <Text style={styles.actionBtnTextOutline}>Rekap Kehadiran</Text>
+                </Pressable>
               </View>
             </View>
           )}
@@ -106,81 +120,100 @@ export default function PresensiMatkulListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   banner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#E0F2FE',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    gap: 8,
+    backgroundColor: colors.surfaceSubtle,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    gap: spacing.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.borderSubtle,
   },
   bannerText: {
     fontSize: 13,
-    color: '#0369A1',
-    fontWeight: '600',
+    color: colors.primary,
+    fontWeight: '700',
   },
   listContent: {
-    padding: 16,
+    padding: spacing.lg,
+    gap: spacing.md,
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 10,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.borderSubtle,
+    ...shadows.sm,
   },
   info: {
-    marginBottom: 12,
+    marginBottom: spacing.md,
+    gap: 4,
   },
   tagRow: {
     flexDirection: 'row',
-    gap: 6,
+    gap: spacing.sm,
     marginBottom: 4,
+  },
+  kodeBadge: {
+    backgroundColor: colors.surfaceSubtle,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: radius.xs,
+    borderWidth: 1,
+    borderColor: colors.borderSubtle,
   },
   kodeTag: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#0284C7',
-    backgroundColor: '#E0F2FE',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
+    color: colors.primary,
+  },
+  sksBadge: {
+    backgroundColor: colors.borderSubtle,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: radius.xs,
   },
   sksTag: {
     fontSize: 11,
-    color: '#64748B',
-    paddingVertical: 2,
+    color: colors.textSecondary,
+    fontWeight: '600',
   },
   nama: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '700',
-    color: '#0F172A',
+    color: colors.textPrimary,
+  },
+  dosenRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 2,
   },
   dosen: {
-    fontSize: 12,
-    color: '#64748B',
-    marginTop: 2,
+    fontSize: 13,
+    color: colors.textSecondary,
   },
   actions: {
     flexDirection: 'row',
-    gap: 10,
+    gap: spacing.sm,
   },
   actionBtnPrimary: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: UBD_COLORS.PRIMARY,
-    paddingVertical: 8,
-    borderRadius: 8,
+    backgroundColor: colors.primary,
+    paddingVertical: 10,
+    borderRadius: radius.md,
     gap: 6,
   },
   actionBtnTextPrimary: {
     color: '#FFFFFF',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
   },
   actionBtnOutline: {
@@ -188,17 +221,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#CBD5E1',
-    paddingVertical: 8,
-    borderRadius: 8,
+    borderColor: colors.borderDefault,
+    paddingVertical: 10,
+    borderRadius: radius.md,
     gap: 6,
   },
   actionBtnTextOutline: {
-    color: UBD_COLORS.PRIMARY,
-    fontSize: 12,
+    color: colors.primary,
+    fontSize: 13,
     fontWeight: '700',
+  },
+  btnPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.99 }],
   },
   center: {
     flex: 1,

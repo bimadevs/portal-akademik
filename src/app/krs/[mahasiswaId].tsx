@@ -3,7 +3,7 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ActivityIndicator,
   Alert,
@@ -19,7 +19,7 @@ import { KRSService } from '../../services/krs-service';
 import { AcademicRulesService } from '../../services/academic-rules-service';
 import { PDFService } from '../../services/pdf-service';
 import { Mahasiswa, Semester, MataKuliah, SksQuotaInfo, KRS } from '../../types/mahasiswa';
-import { UBD_COLORS } from '../../constants/theme';
+import { colors, radius, spacing, shadows } from '@/theme';
 
 export default function KRSEnrollScreen() {
   const router = useRouter();
@@ -192,7 +192,7 @@ export default function KRSEnrollScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -217,21 +217,23 @@ export default function KRSEnrollScreen() {
           <Text style={styles.nim}>NIM: {mahasiswa.nim} • {mahasiswa.fakultas}</Text>
           <Text style={styles.semLabel}>Semester: {semester?.nama}</Text>
         </View>
-        <TouchableOpacity
-          style={styles.printHeaderBtn}
+        <Pressable
+          style={({ pressed }) => [
+            styles.printHeaderBtn,
+            pressed && styles.btnPressed,
+          ]}
           onPress={handlePrintPDF}
           disabled={printing}
-          activeOpacity={0.7}
         >
           {printing ? (
-            <ActivityIndicator size="small" color={UBD_COLORS.PRIMARY} />
+            <ActivityIndicator size="small" color={colors.primary} />
           ) : (
             <>
-              <Ionicons name="print-outline" size={18} color={UBD_COLORS.PRIMARY} />
+              <Ionicons name="print-outline" size={16} color={colors.primary} />
               <Text style={styles.printHeaderBtnText}>Cetak PDF</Text>
             </>
           )}
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* V3 Academic Rules: Quota Card */}
@@ -264,7 +266,7 @@ export default function KRSEnrollScreen() {
         {/* Warning Banner if Over Quota */}
         {isDanger && (
           <View style={styles.warningBox}>
-            <Ionicons name="warning" size={18} color="#DC2626" />
+            <Ionicons name="warning" size={18} color={colors.danger} />
             <Text style={styles.warningText}>
               Beban SKS ({totalSks}) melebihi kuota maksimal ({sksQuota.kuotaMaksimal} SKS)!
             </Text>
@@ -284,8 +286,8 @@ export default function KRSEnrollScreen() {
               <Switch
                 value={useDispensasi}
                 onValueChange={setUseDispensasi}
-                trackColor={{ false: '#CBD5E1', true: '#BFDBFE' }}
-                thumbColor={useDispensasi ? UBD_COLORS.PRIMARY : '#F1F5F9'}
+                trackColor={{ false: colors.borderDefault, true: colors.primaryLight }}
+                thumbColor={useDispensasi ? colors.primary : colors.surface}
               />
             </View>
 
@@ -299,7 +301,7 @@ export default function KRSEnrollScreen() {
                   placeholder="Contoh: SK-DEKAN-082/UBD/2026"
                   value={nomorDispensasi}
                   onChangeText={setNomorDispensasi}
-                  placeholderTextColor="#94A3B8"
+                  placeholderTextColor={colors.textTertiary}
                 />
               </View>
             )}
@@ -315,21 +317,26 @@ export default function KRSEnrollScreen() {
         renderItem={({ item }) => {
           const isChecked = selectedCourseIds.includes(item.id);
           return (
-            <TouchableOpacity
-              style={[styles.courseCard, isChecked && styles.courseCardActive]}
+            <Pressable
+              style={({ pressed }) => [
+                styles.courseCard,
+                isChecked && styles.courseCardActive,
+                pressed && styles.btnPressed,
+              ]}
               onPress={() => toggleCourse(item.id)}
-              activeOpacity={0.7}
             >
               <View style={styles.checkbox}>
                 <Ionicons
                   name={isChecked ? 'checkbox' : 'square-outline'}
-                  size={24}
-                  color={isChecked ? UBD_COLORS.PRIMARY : '#94A3B8'}
+                  size={22}
+                  color={isChecked ? colors.primary : colors.textTertiary}
                 />
               </View>
               <View style={styles.courseInfo}>
                 <View style={styles.tagRow}>
-                  <Text style={styles.kodeTag}>{item.kode}</Text>
+                  <View style={styles.kodeBadge}>
+                    <Text style={styles.kodeTag}>{item.kode}</Text>
+                  </View>
                   <Text style={styles.semTag}>Semester {item.semester || 1}</Text>
                 </View>
                 <Text style={styles.courseName}>{item.nama}</Text>
@@ -340,15 +347,19 @@ export default function KRSEnrollScreen() {
               <View style={styles.sksPill}>
                 <Text style={styles.sksPillText}>{item.sks} SKS</Text>
               </View>
-            </TouchableOpacity>
+            </Pressable>
           );
         }}
       />
 
       {/* Bottom Save Footer */}
       <View style={styles.footer}>
-        <TouchableOpacity
-          style={[styles.saveBtn, isSaveDisabled && styles.saveBtnDisabled]}
+        <Pressable
+          style={({ pressed }) => [
+            styles.saveBtn,
+            isSaveDisabled && styles.saveBtnDisabled,
+            pressed && styles.btnPressed,
+          ]}
           onPress={handleSave}
           disabled={isSaveDisabled}
         >
@@ -361,7 +372,7 @@ export default function KRSEnrollScreen() {
                 : 'Simpan Kartu Rencana Studi'}
             </Text>
           )}
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );
@@ -370,7 +381,7 @@ export default function KRSEnrollScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   center: {
     flex: 1,
@@ -379,67 +390,63 @@ const styles = StyleSheet.create({
   },
   notFound: {
     fontSize: 15,
-    color: '#64748B',
+    color: colors.textSecondary,
     fontWeight: '600',
   },
   profileBanner: {
-    backgroundColor: '#FFFFFF',
-    padding: 14,
-    borderBottomWidth: 1,
-    borderColor: '#E2E8F0',
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.borderSubtle,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   profileTextCol: {
     flex: 1,
+    gap: 2,
   },
   nama: {
     fontSize: 16,
-    fontWeight: '800',
-    color: '#0F172A',
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   nim: {
     fontSize: 12,
-    color: '#64748B',
-    marginTop: 2,
+    color: colors.textSecondary,
   },
   semLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: UBD_COLORS.ACCENT_DARK,
-    marginTop: 3,
+    color: colors.primary,
+    marginTop: 2,
   },
   printHeaderBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 5,
     paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: '#EFF6FF',
+    paddingVertical: 7,
+    borderRadius: radius.md,
+    backgroundColor: colors.surfaceSubtle,
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: colors.borderSubtle,
   },
   printHeaderBtnText: {
     fontSize: 12,
     fontWeight: '700',
-    color: UBD_COLORS.PRIMARY,
+    color: colors.primary,
   },
   quotaCard: {
-    backgroundColor: '#FFFFFF',
-    marginHorizontal: 14,
-    marginTop: 12,
+    backgroundColor: colors.surface,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.sm,
     marginBottom: 4,
-    padding: 14,
-    borderRadius: 12,
+    padding: spacing.md,
+    borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 1,
+    borderColor: colors.borderSubtle,
+    ...shadows.sm,
   },
   quotaHeaderRow: {
     flexDirection: 'row',
@@ -449,49 +456,49 @@ const styles = StyleSheet.create({
   quotaTitle: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#1E293B',
+    color: colors.textPrimary,
   },
   quotaSubtitle: {
     fontSize: 11,
-    color: '#64748B',
+    color: colors.textSecondary,
     marginTop: 2,
   },
   quotaBadge: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.surfaceSubtle,
     paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 8,
+    paddingVertical: 4,
+    borderRadius: radius.xs,
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: colors.borderSubtle,
   },
   quotaBadgeDanger: {
     backgroundColor: '#FEE2E2',
     borderColor: '#FECACA',
   },
   quotaBadgeText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '800',
-    color: UBD_COLORS.PRIMARY,
+    color: colors.primary,
   },
   quotaBadgeTextDanger: {
-    color: '#DC2626',
+    color: colors.danger,
   },
   progressBarTrack: {
-    height: 8,
-    backgroundColor: '#E2E8F0',
-    borderRadius: 4,
-    marginTop: 10,
+    height: 7,
+    backgroundColor: colors.borderSubtle,
+    borderRadius: radius.full,
+    marginTop: spacing.sm,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    borderRadius: 4,
+    borderRadius: radius.full,
   },
   progressBarFillSafe: {
-    backgroundColor: '#10B981',
+    backgroundColor: colors.success,
   },
   progressBarFillDanger: {
-    backgroundColor: '#EF4444',
+    backgroundColor: colors.danger,
   },
   warningBox: {
     flexDirection: 'row',
@@ -500,21 +507,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#FEF2F2',
     borderWidth: 1,
     borderColor: '#FCA5A5',
-    borderRadius: 8,
+    borderRadius: radius.sm,
     padding: 10,
-    marginTop: 10,
+    marginTop: spacing.sm,
   },
   warningText: {
     flex: 1,
     fontSize: 11,
     fontWeight: '600',
-    color: '#B91C1C',
+    color: colors.danger,
   },
   dispensasiContainer: {
-    marginTop: 10,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
+    marginTop: spacing.sm,
+    paddingTop: spacing.sm,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.borderSubtle,
   },
   dispensasiToggleRow: {
     flexDirection: 'row',
@@ -528,124 +535,136 @@ const styles = StyleSheet.create({
   dispensasiTitle: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   dispensasiDesc: {
-    fontSize: 10,
-    color: '#64748B',
+    fontSize: 11,
+    color: colors.textSecondary,
     marginTop: 1,
   },
   dispensasiInputBox: {
-    marginTop: 10,
+    marginTop: spacing.sm,
   },
   dispensasiInputLabel: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#334155',
+    color: colors.textPrimary,
     marginBottom: 4,
   },
   requiredAsterisk: {
-    color: '#DC2626',
+    color: colors.danger,
   },
   dispensasiInput: {
     height: 38,
     borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 8,
+    borderColor: colors.borderSubtle,
+    borderRadius: radius.sm,
     paddingHorizontal: 10,
     fontSize: 12,
-    color: '#0F172A',
-    backgroundColor: '#F8FAFC',
+    color: colors.textPrimary,
+    backgroundColor: colors.surfaceSubtle,
   },
   listContent: {
-    padding: 14,
+    padding: spacing.md,
     paddingBottom: 90,
+    gap: spacing.sm,
   },
   courseCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 10,
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.borderSubtle,
+    ...shadows.sm,
   },
   courseCardActive: {
-    borderColor: UBD_COLORS.PRIMARY,
-    backgroundColor: '#F0F9FF',
+    borderColor: colors.primary,
+    backgroundColor: colors.surfaceSubtle,
   },
   checkbox: {
     marginRight: 10,
   },
   courseInfo: {
     flex: 1,
+    gap: 2,
   },
   tagRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginBottom: 4,
+    marginBottom: 2,
+  },
+  kodeBadge: {
+    backgroundColor: colors.surfaceSubtle,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: radius.xs,
+    borderWidth: 1,
+    borderColor: colors.borderSubtle,
   },
   kodeTag: {
     fontSize: 10,
     fontWeight: '800',
-    color: UBD_COLORS.PRIMARY,
-    backgroundColor: '#DBEAFE',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
+    color: colors.primary,
   },
   semTag: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#64748B',
+    color: colors.textSecondary,
   },
   courseName: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   courseDosen: {
     fontSize: 11,
-    color: '#64748B',
-    marginTop: 2,
+    color: colors.textSecondary,
   },
   sksPill: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.surfaceSubtle,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: radius.xs,
     marginLeft: 8,
+    borderWidth: 1,
+    borderColor: colors.borderSubtle,
   },
   sksPillText: {
     fontSize: 12,
     fontWeight: '700',
-    color: UBD_COLORS.PRIMARY,
+    color: colors.primary,
   },
   footer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#FFFFFF',
-    padding: 14,
-    borderTopWidth: 1,
-    borderColor: '#E2E8F0',
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.borderSubtle,
+    ...shadows.md,
   },
   saveBtn: {
-    backgroundColor: UBD_COLORS.PRIMARY,
+    backgroundColor: colors.primary,
     paddingVertical: 14,
-    borderRadius: 10,
+    borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
   saveBtnDisabled: {
-    backgroundColor: '#94A3B8',
+    backgroundColor: colors.textTertiary,
   },
   saveBtnText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '800',
+    fontWeight: '700',
+  },
+  btnPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.99 }],
   },
 });

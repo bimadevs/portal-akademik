@@ -32,26 +32,22 @@ const FILTER_FACULTIES: ('Semua' | Fakultas)[] = [
   'Sosial dan Humaniora',
 ];
 
-const FACULTY_COLORS: Record<Fakultas, { gradient: readonly [string, string]; text: string; bg: string }> = {
+const FACULTY_BADGE_COLORS: Record<Fakultas, { text: string; bg: string }> = {
   'Sains dan Teknologi': {
-    gradient: ['#0284C7', '#0EA5E9'],
-    text: '#0369A1',
+    text: '#0284C7',
     bg: '#E0F2FE',
   },
   'Bisnis': {
-    gradient: ['#0D9488', '#14B8A6'],
-    text: '#0F766E',
+    text: '#0D9488',
     bg: '#CCFBF1',
   },
   'Ilmu Komunikasi dan Desain': {
-    gradient: ['#7C3AED', '#8B5CF6'],
-    text: '#6D28D9',
+    text: '#7C3AED',
     bg: '#EDE9FE',
   },
   'Sosial dan Humaniora': {
-    gradient: ['#D97706', '#F59E0B'],
-    text: '#B45309',
-    bg: '#FEF3C7',
+    text: '#C2410C',
+    bg: '#FFEDD5',
   },
 };
 
@@ -157,8 +153,7 @@ export default function ReportScreen() {
 
   const renderItem = ({ item }: { item: Mahasiswa }) => {
     const isSelected = selectedNim === item.nim;
-    const facultyStyle = FACULTY_COLORS[item.fakultas] ?? {
-      gradient: ['#2563EB', '#1D4ED8'],
+    const facultyStyle = FACULTY_BADGE_COLORS[item.fakultas] ?? {
       text: colors.primary,
       bg: colors.primaryLight,
     };
@@ -179,63 +174,47 @@ export default function ReportScreen() {
           <RadioButton
             selected={isSelected}
             onPress={() => handleRowClick(item)}
-            size={22}
+            size={18}
           />
         </View>
 
-        {/* Squircle Avatar with Photo or Initial */}
+        {/* Foto / Avatar */}
         <PhotoAvatar
           uri={item.fotoUrl || (item as any).foto_url}
-          size={44}
-          shape="rounded"
+          size={42}
           name={item.nama}
+          shape="rounded"
         />
 
-        {/* Content Column: Nama Mahasiswa & NIM */}
-        <View style={styles.contentCol}>
-          <View style={styles.nameHeaderRow}>
+        {/* Info Mahasiswa Format Resmi: [Nama Mahasiswa] [NIM] */}
+        <View style={styles.studentInfoCol}>
+          <View style={styles.primaryRow}>
             <Text
-              style={[
-                styles.studentName,
-                isSelected && styles.studentNameSelected,
-              ]}
+              style={[styles.studentFormatText, isSelected && styles.studentFormatTextSelected]}
               numberOfLines={1}
             >
-              {item.nama}
+              {item.nama} <Text style={styles.nimHighlight}>{item.nim}</Text>
             </Text>
-            <View style={styles.genderTag}>
-              <Text style={styles.genderTagText}>
-                {item.jenisKelamin === 'PRIA' ? '👨 PRIA' : '👩 WANITA'}
-              </Text>
-            </View>
           </View>
 
           <View style={styles.metaRow}>
-            <View style={styles.nimBadge}>
-              <Ionicons name="card-outline" size={11} color={colors.textSecondary} />
-              <Text style={styles.nimText}>{item.nim}</Text>
-            </View>
-
-            <View style={[styles.facultyChip, { backgroundColor: facultyStyle.bg }]}>
-              <Text
-                style={[styles.facultyChipText, { color: facultyStyle.text }]}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
+            <View style={[styles.facultyBadge, { backgroundColor: facultyStyle.bg }]}>
+              <Text style={[styles.facultyBadgeText, { color: facultyStyle.text }]} numberOfLines={1}>
                 {item.fakultas}
               </Text>
             </View>
+
+            <Text style={styles.genderTag}>
+              {item.jenisKelamin === 'PRIA' ? 'L' : 'P'}
+            </Text>
           </View>
         </View>
 
-        {/* Chevron Indicator */}
-        <View style={styles.chevronBox}>
-          <Ionicons
-            name="chevron-forward"
-            size={18}
-            color={isSelected ? colors.primary : colors.textMuted}
-          />
-        </View>
+        <Ionicons
+          name="chevron-forward"
+          size={16}
+          color={isSelected ? colors.primary : colors.textMuted}
+        />
       </Pressable>
     );
   };
@@ -243,126 +222,144 @@ export default function ReportScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       {/* Header Resmi UBD */}
-      <UBDHeader subtitle="Pusat Data & Rekapitulasi" variant="elevated" />
+      <UBDHeader subtitle="Direktori & Rekapitulasi Data" variant="elevated" />
 
-      <View style={styles.container}>
-        {/* Top Summary Banner */}
-        <View style={styles.topSummaryCard}>
-          <View style={styles.summaryLeft}>
-            <View style={styles.activePill}>
-              <View style={styles.activePillDot} />
-              <Text style={styles.activePillText}>DISPLAY DATA MAHASISWA</Text>
-            </View>
-            <Text style={styles.summaryTitle}>Rekapitulasi Mahasiswa</Text>
-            <Text style={styles.summarySubtitle}>
-              Sentuh baris data untuk melihat detail dan menghapus data
-            </Text>
-          </View>
-
-          <View style={styles.countBadge}>
-            <Text style={styles.countNumber}>{mahasiswaList.length}</Text>
-            <Text style={styles.countLabel}>Total Mahasiswa</Text>
-          </View>
-        </View>
-
-        {/* Search Bar Input */}
-        <View style={styles.searchContainer}>
-          <Ionicons name="search" size={18} color={colors.textSecondary} style={styles.searchIcon} />
+      {/* Search & Filter Header Container */}
+      <View style={styles.searchFilterContainer}>
+        {/* Search Bar */}
+        <View style={styles.searchBarWrapper}>
+          <Ionicons name="search-outline" size={17} color={colors.textSecondary} />
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Cari berdasarkan nama atau NIM..."
+            placeholder="Cari nama atau NIM..."
             placeholderTextColor={colors.textMuted}
             style={styles.searchInput}
+            autoCorrect={false}
+            accessibilityLabel="Pencarian Mahasiswa"
           />
           {searchQuery.length > 0 && (
-            <Pressable onPress={() => setSearchQuery('')} hitSlop={6}>
-              <Ionicons name="close-circle" size={18} color={colors.textSecondary} />
+            <Pressable onPress={() => setSearchQuery('')} hitSlop={8}>
+              <Ionicons name="close-circle" size={16} color={colors.textMuted} />
             </Pressable>
           )}
         </View>
 
-        {/* Faculty Filter Horizontal Chips */}
-        <View style={styles.filterScrollWrapper}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.filterChipRow}
-          >
-            {FILTER_FACULTIES.map((faculty) => {
-              const isActive = selectedFaculty === faculty;
-              return (
-                <Pressable
-                  key={faculty}
-                  onPress={() => setSelectedFaculty(faculty)}
+        {/* Horizontal Faculty Filters */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filterChipList}
+        >
+          {FILTER_FACULTIES.map((fac) => {
+            const isFilterActive = selectedFaculty === fac;
+            const count =
+              fac === 'Semua'
+                ? mahasiswaList.length
+                : mahasiswaList.filter((m) => m.fakultas === fac).length;
+
+            return (
+              <Pressable
+                key={fac}
+                onPress={() => setSelectedFaculty(fac)}
+                style={({ pressed }) => [
+                  styles.filterChip,
+                  isFilterActive && styles.filterChipActive,
+                  pressed && styles.cardPressed,
+                ]}
+                accessibilityRole="button"
+                accessibilityLabel={`Filter ${fac}`}
+              >
+                <Text
                   style={[
-                    styles.filterChip,
-                    isActive && styles.filterChipActive,
+                    styles.filterChipText,
+                    isFilterActive && styles.filterChipTextActive,
+                  ]}
+                >
+                  {fac}
+                </Text>
+                <View
+                  style={[
+                    styles.countBadge,
+                    isFilterActive && styles.countBadgeActive,
                   ]}
                 >
                   <Text
                     style={[
-                      styles.filterChipText,
-                      isActive && styles.filterChipTextActive,
+                      styles.countBadgeText,
+                      isFilterActive && styles.countBadgeTextActive,
                     ]}
                   >
-                    {faculty}
+                    {count}
                   </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        </View>
-
-        {/* List Mahasiswa Section */}
-        {isLoading ? (
-          <View style={styles.loadingBox}>
-            <ActivityIndicator size="large" color={colors.primary} />
-            <Text style={styles.loadingText}>Memuat data mahasiswa...</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={filteredList}
-            keyExtractor={(item) => item.nim}
-            renderItem={renderItem}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-            refreshControl={
-              <RefreshControl
-                refreshing={isRefreshing}
-                onRefresh={handleRefresh}
-                colors={[colors.primary]}
-              />
-            }
-            ListEmptyComponent={
-              <View style={styles.emptyContainer}>
-                <View style={styles.emptyIconBox}>
-                  <Ionicons name="search-outline" size={32} color={colors.textMuted} />
                 </View>
-                <Text style={styles.emptyTitle}>
-                  {searchQuery
-                    ? 'Mahasiswa Tidak Ditemukan'
-                    : 'Belum Ada Data Mahasiswa'}
-                </Text>
-                <Text style={styles.emptyText}>
-                  {searchQuery
-                    ? `Tidak ada hasil untuk pencarian "${searchQuery}". Coba kata kunci lain.`
-                    : 'Pangkalan data belum memuat mahasiswa. Silakan input data baru.'}
-                </Text>
-                <Pressable
-                  onPress={() => router.push('/(tabs)/mahasiswa')}
-                  style={styles.emptyAddButton}
-                >
-                  <Ionicons name="add" size={18} color="#FFFFFF" />
-                  <Text style={styles.emptyAddButtonText}>+ Tambah Mahasiswa</Text>
-                </Pressable>
-              </View>
-            }
-          />
-        )}
+              </Pressable>
+            );
+          })}
+        </ScrollView>
       </View>
 
-      {/* Modal Dialog: "Yang anda Klik : [Nama] [NIM]" sesuai FR-13 */}
+      {/* Main List Area */}
+      {isLoading ? (
+        <View style={styles.loadingCenter}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loadingText}>Memuat data mahasiswa...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredList}
+          keyExtractor={(item) => item.nim}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              colors={[colors.primary]}
+            />
+          }
+          ListHeaderComponent={
+            <View style={styles.listHeaderRow}>
+              <Text style={styles.listCountSummary}>
+                Menampilkan <Text style={styles.boldText}>{filteredList.length}</Text> dari{' '}
+                {mahasiswaList.length} mahasiswa
+              </Text>
+            </View>
+          }
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <View style={styles.emptyIconCircle}>
+                <Ionicons name="people-outline" size={32} color={colors.textMuted} />
+              </View>
+              <Text style={styles.emptyTitle}>Data Tidak Ditemukan</Text>
+              <Text style={styles.emptySubtitle}>
+                {searchQuery
+                  ? 'Tidak ada mahasiswa yang cocok dengan pencarian.'
+                  : 'Belum ada data mahasiswa terdaftar.'}
+              </Text>
+              {searchQuery ? (
+                <Pressable
+                  onPress={() => setSearchQuery('')}
+                  style={styles.resetSearchBtn}
+                >
+                  <Text style={styles.resetSearchText}>Hapus Filter Pencarian</Text>
+                </Pressable>
+              ) : (
+                <Pressable
+                  onPress={() => router.push('/(tabs)/mahasiswa')}
+                  style={styles.addStudentBtn}
+                >
+                  <Ionicons name="add" size={16} color="#FFFFFF" />
+                  <Text style={styles.addStudentBtnText}>Tambah Mahasiswa Baru</Text>
+                </Pressable>
+              )}
+            </View>
+          }
+        />
+      )}
+
+      {/* Modal Interaktif Saat Baris Mahasiswa Disentuh */}
       <MahasiswaClickModal
         visible={showClickModal}
         mahasiswa={activeMahasiswa}
@@ -370,7 +367,7 @@ export default function ReportScreen() {
         onRequestDelete={handleRequestDelete}
       />
 
-      {/* Modal Dialog: Konfirmasi Hapus Data Mahasiswa sesuai FR-14 */}
+      {/* Modal Konfirmasi Hapus Data Mahasiswa */}
       <DeleteConfirmationModal
         visible={showDeleteModal}
         mahasiswa={activeMahasiswa}
@@ -385,91 +382,27 @@ export default function ReportScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
-  container: {
-    flex: 1,
+  searchFilterContainer: {
+    backgroundColor: colors.surface,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
-    gap: spacing.md,
+    paddingBottom: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    gap: spacing.sm,
   },
-  topSummaryCard: {
+  searchBarWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.surface,
-    padding: spacing.md,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    borderColor: 'rgba(226, 232, 240, 0.8)',
-    boxShadow: shadows.card,
-  },
-  summaryLeft: {
-    flex: 1,
-    gap: 2,
-  },
-  activePill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    marginBottom: 2,
-  },
-  activePillDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.primary,
-  },
-  activePillText: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: colors.primary,
-    letterSpacing: 0.8,
-  },
-  summaryTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: colors.textPrimary,
-    letterSpacing: -0.2,
-  },
-  summarySubtitle: {
-    fontSize: 11,
-    color: colors.textSecondary,
-  },
-  countBadge: {
-    backgroundColor: colors.primaryLight,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    backgroundColor: colors.surfaceSubtle,
     borderRadius: radius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#BFDBFE',
-    marginLeft: spacing.sm,
-  },
-  countNumber: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: colors.primary,
-  },
-  countLabel: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: colors.primary,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderWidth: 1.5,
-    borderColor: '#E2E8F0',
-    borderRadius: radius.xl,
     paddingHorizontal: spacing.md,
-    height: 46,
-    boxShadow: shadows.subtle,
-  },
-  searchIcon: {
-    marginRight: spacing.sm,
+    height: 42,
+    borderWidth: 1,
+    borderColor: colors.border,
+    gap: spacing.xs,
   },
   searchInput: {
     flex: 1,
@@ -477,141 +410,133 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     height: '100%',
   },
-  filterScrollWrapper: {
-    marginBottom: 2,
-  },
-  filterChipRow: {
+  filterChipList: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.xs,
+    paddingVertical: 2,
   },
   filterChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: radius.full,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceSubtle,
     borderWidth: 1,
-    borderColor: 'transparent',
+    borderColor: colors.border,
   },
   filterChipActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: colors.primaryLight,
+    borderColor: '#BFDBFE',
   },
   filterChipText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
     color: colors.textSecondary,
   },
   filterChipTextActive: {
-    color: '#FFFFFF',
+    color: colors.primary,
     fontWeight: '700',
   },
+  countBadge: {
+    backgroundColor: colors.border,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    borderRadius: radius.full,
+  },
+  countBadgeActive: {
+    backgroundColor: '#BFDBFE',
+  },
+  countBadgeText: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: colors.textSecondary,
+  },
+  countBadgeTextActive: {
+    color: colors.primary,
+  },
   listContent: {
+    padding: spacing.lg,
+    paddingBottom: spacing.xxl + 24,
     gap: spacing.sm,
-    paddingBottom: spacing.xxl + 20,
+  },
+  listHeaderRow: {
+    marginBottom: spacing.xs,
+  },
+  listCountSummary: {
+    fontSize: 11,
+    color: colors.textSecondary,
+  },
+  boldText: {
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   studentCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.surface,
-    borderRadius: radius.xl,
-    padding: spacing.md,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(226, 232, 240, 0.8)',
-    boxShadow: shadows.card,
+    borderColor: colors.border,
+    boxShadow: shadows.subtle,
     gap: spacing.sm,
   },
   studentCardSelected: {
-    backgroundColor: '#EFF6FF',
-    borderColor: '#60A5FA',
-    boxShadow: shadows.raised,
+    borderColor: colors.primary,
+    backgroundColor: '#FAFCFF',
   },
   cardPressed: {
     opacity: 0.88,
     transform: [{ scale: 0.98 }],
   },
   radioSlot: {
-    marginRight: 2,
+    paddingRight: 2,
   },
-  avatarSquircle: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: shadows.subtle,
-  },
-  avatarInitials: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#FFFFFF',
-  },
-  contentCol: {
+  studentInfoCol: {
     flex: 1,
     gap: 4,
   },
-  nameHeaderRow: {
+  primaryRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.xs,
   },
-  studentName: {
-    fontSize: 15,
-    fontWeight: '800',
+  studentFormatText: {
+    fontSize: 14,
+    fontWeight: '700',
     color: colors.textPrimary,
-    flex: 1,
   },
-  studentNameSelected: {
+  studentFormatTextSelected: {
     color: colors.primary,
   },
-  genderTag: {
-    backgroundColor: '#F1F5F9',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: radius.xs,
-  },
-  genderTagText: {
-    fontSize: 10,
-    fontWeight: '700',
+  nimHighlight: {
+    fontWeight: '500',
     color: colors.textSecondary,
+    fontSize: 13,
   },
   metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-    flexWrap: 'wrap',
   },
-  nimBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#F8FAFC',
-    paddingHorizontal: 6,
+  facultyBadge: {
+    paddingHorizontal: 7,
     paddingVertical: 2,
     borderRadius: radius.xs,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
   },
-  nimText: {
-    fontSize: 11,
-    fontFamily: 'monospace',
-    fontWeight: '700',
-    color: colors.textPrimary,
-  },
-  facultyChip: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: radius.xs,
-    maxWidth: 140,
-    flexShrink: 1,
-  },
-  facultyChipText: {
+  facultyBadgeText: {
     fontSize: 10,
     fontWeight: '700',
   },
-  chevronBox: {
-    paddingLeft: spacing.xs,
+  genderTag: {
+    fontSize: 10,
+    color: colors.textMuted,
+    fontWeight: '700',
   },
-  loadingBox: {
+  loadingCenter: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -622,47 +547,58 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   emptyContainer: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: spacing.xxl,
-    gap: spacing.sm,
+    gap: spacing.xs,
   },
-  emptyIconBox: {
+  emptyIconCircle: {
     width: 60,
     height: 60,
-    borderRadius: radius.full,
-    backgroundColor: '#F1F5F9',
+    borderRadius: 30,
+    backgroundColor: colors.surfaceSubtle,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: spacing.xs,
   },
   emptyTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
     color: colors.textPrimary,
   },
-  emptyText: {
+  emptySubtitle: {
     fontSize: 12,
     color: colors.textSecondary,
     textAlign: 'center',
-    maxWidth: 280,
-    lineHeight: 18,
+    maxWidth: 240,
   },
-  emptyAddButton: {
+  resetSearchBtn: {
+    marginTop: spacing.sm,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: radius.md,
+    backgroundColor: colors.surfaceSubtle,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  resetSearchText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.primary,
+  },
+  addStudentBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    marginTop: spacing.sm,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: radius.md,
     backgroundColor: colors.primary,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm + 2,
-    borderRadius: radius.lg,
-    marginTop: spacing.xs,
-    boxShadow: shadows.glow,
   },
-  emptyAddButtonText: {
-    fontSize: 13,
+  addStudentBtnText: {
+    fontSize: 12,
     fontWeight: '700',
     color: '#FFFFFF',
   },
 });
-

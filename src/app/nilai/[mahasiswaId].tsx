@@ -3,7 +3,7 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ActivityIndicator,
   Alert,
@@ -19,7 +19,7 @@ import { NilaiService } from '../../services/nilai-service';
 import { AcademicRulesService, AttendanceEligibility } from '../../services/academic-rules-service';
 import { PDFService } from '../../services/pdf-service';
 import { Mahasiswa, Semester, Nilai, KRS } from '../../types/mahasiswa';
-import { UBD_COLORS } from '../../constants/theme';
+import { colors, radius, spacing, shadows } from '@/theme';
 
 export default function NilaiDetailScreen() {
   const { mahasiswaId } = useLocalSearchParams<{ mahasiswaId: string }>();
@@ -197,7 +197,7 @@ export default function NilaiDetailScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -219,21 +219,23 @@ export default function NilaiDetailScreen() {
             <Text style={styles.ipsNum}>{ipsData.ips.toFixed(2)}</Text>
             <Text style={styles.ipsLabel}>IPS ({ipsData.totalSks} SKS)</Text>
           </View>
-          <TouchableOpacity
-            style={styles.printBtn}
+          <Pressable
+            style={({ pressed }) => [
+              styles.printBtn,
+              pressed && styles.btnPressed,
+            ]}
             onPress={handlePrintPDF}
             disabled={printing}
-            activeOpacity={0.7}
           >
             {printing ? (
               <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
               <>
-                <Ionicons name="print-outline" size={16} color="#FFFFFF" />
+                <Ionicons name="print-outline" size={15} color="#FFFFFF" />
                 <Text style={styles.printBtnText}>Cetak KHS</Text>
               </>
             )}
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
 
@@ -253,14 +255,18 @@ export default function NilaiDetailScreen() {
           const isAttendanceLow = attendance && !attendance.isEligible;
 
           return (
-            <TouchableOpacity
-              style={styles.card}
+            <Pressable
+              style={({ pressed }) => [
+                styles.card,
+                pressed && styles.cardPressed,
+              ]}
               onPress={() => openGradeModal(item)}
-              activeOpacity={0.7}
             >
               <View style={styles.cardLeft}>
                 <View style={styles.cardTitleRow}>
-                  <Text style={styles.kode}>{item.mata_kuliah_kode || item.kode}</Text>
+                  <View style={styles.kodePill}>
+                    <Text style={styles.kode}>{item.mata_kuliah_kode || item.kode}</Text>
+                  </View>
                   {isAttendanceLow && (
                     <View style={styles.warningPill}>
                       <Ionicons name="warning-outline" size={12} color="#DC2626" />
@@ -287,9 +293,9 @@ export default function NilaiDetailScreen() {
                     <Text style={styles.emptyGradeText}>Input Nilai</Text>
                   </View>
                 )}
-                <Ionicons name="create-outline" size={18} color="#64748B" />
+                <Ionicons name="create-outline" size={18} color={colors.textTertiary} />
               </View>
-            </TouchableOpacity>
+            </Pressable>
           );
         }}
       />
@@ -326,6 +332,7 @@ export default function NilaiDetailScreen() {
                 onChangeText={setTugas}
                 keyboardType="numeric"
                 placeholder="0 - 100"
+                placeholderTextColor={colors.textTertiary}
               />
             </View>
 
@@ -337,6 +344,7 @@ export default function NilaiDetailScreen() {
                 onChangeText={setUts}
                 keyboardType="numeric"
                 placeholder="0 - 100"
+                placeholderTextColor={colors.textTertiary}
               />
             </View>
 
@@ -348,19 +356,26 @@ export default function NilaiDetailScreen() {
                 onChangeText={setUas}
                 keyboardType="numeric"
                 placeholder="0 - 100"
+                placeholderTextColor={colors.textTertiary}
               />
             </View>
 
             <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={styles.modalCancelBtn}
+              <Pressable
+                style={({ pressed }) => [
+                  styles.modalCancelBtn,
+                  pressed && styles.btnPressed,
+                ]}
                 onPress={() => setModalVisible(false)}
                 disabled={saving}
               >
                 <Text style={styles.modalCancelText}>Batal</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.modalSaveBtn}
+              </Pressable>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.modalSaveBtn,
+                  pressed && styles.btnPressed,
+                ]}
                 onPress={handleSaveGrade}
                 disabled={saving}
               >
@@ -369,7 +384,7 @@ export default function NilaiDetailScreen() {
                 ) : (
                   <Text style={styles.modalSaveText}>Simpan Nilai</Text>
                 )}
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         </View>
@@ -381,7 +396,7 @@ export default function NilaiDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   center: {
     flex: 1,
@@ -389,95 +404,104 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   header: {
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderColor: '#E2E8F0',
+    backgroundColor: colors.surface,
+    padding: spacing.lg,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.borderSubtle,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   headerInfo: {
     flex: 1,
+    gap: 2,
   },
   nama: {
     fontSize: 16,
-    fontWeight: '800',
-    color: '#0F172A',
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   nim: {
     fontSize: 12,
-    color: '#64748B',
-    marginTop: 2,
+    color: colors.textSecondary,
   },
   sem: {
     fontSize: 12,
     fontWeight: '600',
-    color: UBD_COLORS.ACCENT_DARK,
-    marginTop: 2,
+    color: colors.primary,
   },
   headerBadges: {
     alignItems: 'flex-end',
-    gap: 6,
+    gap: 8,
   },
   ipsBadge: {
     alignItems: 'center',
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.surfaceSubtle,
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 8,
+    borderRadius: radius.sm,
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: colors.borderSubtle,
   },
   ipsNum: {
     fontSize: 15,
     fontWeight: '800',
-    color: UBD_COLORS.PRIMARY,
+    color: colors.primary,
   },
   ipsLabel: {
     fontSize: 9,
-    fontWeight: '600',
-    color: '#0284C7',
+    fontWeight: '700',
+    color: colors.textSecondary,
   },
   printBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    backgroundColor: UBD_COLORS.PRIMARY,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 6,
+    gap: 5,
+    backgroundColor: colors.primary,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: radius.md,
   },
   printBtnText: {
     color: '#FFFFFF',
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '700',
   },
+  btnPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.98 }],
+  },
   listContent: {
-    padding: 14,
+    padding: spacing.lg,
+    gap: spacing.sm,
   },
   empty: {
     padding: 40,
     alignItems: 'center',
   },
   emptyText: {
-    color: '#94A3B8',
+    color: colors.textTertiary,
     fontSize: 13,
   },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
-    padding: 14,
-    borderRadius: 12,
-    marginBottom: 10,
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.borderSubtle,
+    ...shadows.sm,
+  },
+  cardPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.99 }],
   },
   cardLeft: {
     flex: 1,
     paddingRight: 10,
+    gap: 2,
   },
   cardTitleRow: {
     flexDirection: 'row',
@@ -486,10 +510,18 @@ const styles = StyleSheet.create({
     gap: 6,
     marginBottom: 2,
   },
+  kodePill: {
+    backgroundColor: colors.surfaceSubtle,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: radius.xs,
+    borderWidth: 1,
+    borderColor: colors.borderSubtle,
+  },
   kode: {
     fontSize: 11,
     fontWeight: '700',
-    color: UBD_COLORS.PRIMARY,
+    color: colors.primary,
   },
   warningPill: {
     flexDirection: 'row',
@@ -500,7 +532,7 @@ const styles = StyleSheet.create({
     borderColor: '#FECACA',
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 4,
+    borderRadius: radius.xs,
   },
   warningPillText: {
     fontSize: 10,
@@ -510,13 +542,11 @@ const styles = StyleSheet.create({
   matkul: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
-    marginTop: 2,
+    color: colors.textPrimary,
   },
   sks: {
-    fontSize: 11,
-    color: '#64748B',
-    marginTop: 2,
+    fontSize: 12,
+    color: colors.textSecondary,
   },
   cardRight: {
     flexDirection: 'row',
@@ -525,54 +555,57 @@ const styles = StyleSheet.create({
   },
   gradeBox: {
     alignItems: 'center',
-    backgroundColor: '#F0FDF4',
+    backgroundColor: colors.surfaceSubtle,
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 8,
+    borderRadius: radius.sm,
     borderWidth: 1,
-    borderColor: '#BBF7D0',
+    borderColor: colors.borderSubtle,
     minWidth: 50,
   },
   huruf: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#166534',
+    color: colors.primary,
   },
   angka: {
     fontSize: 10,
-    color: '#15803D',
+    color: colors.textSecondary,
+    fontWeight: '600',
   },
   emptyGradeBox: {
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceSubtle,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: radius.xs,
   },
   emptyGradeText: {
     fontSize: 11,
-    color: '#64748B',
+    color: colors.textTertiary,
+    fontWeight: '600',
   },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
-    padding: 20,
+    padding: spacing.lg,
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    padding: 20,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.xl,
+    gap: spacing.sm,
+    ...shadows.lg,
   },
   modalTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: '#0F172A',
+    fontSize: 17,
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   modalSub: {
-    fontSize: 12,
-    color: '#64748B',
-    marginTop: 2,
-    marginBottom: 14,
+    fontSize: 13,
+    color: colors.textSecondary,
+    marginBottom: spacing.xs,
   },
   modalWarningBox: {
     flexDirection: 'row',
@@ -581,9 +614,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FEF2F2',
     borderWidth: 1,
     borderColor: '#FCA5A5',
-    padding: 8,
-    borderRadius: 6,
-    marginBottom: 12,
+    padding: 10,
+    borderRadius: radius.sm,
   },
   modalWarningText: {
     flex: 1,
@@ -592,45 +624,47 @@ const styles = StyleSheet.create({
     color: '#B91C1C',
   },
   formGroup: {
-    marginBottom: 12,
+    gap: 4,
   },
   inputLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#334155',
-    marginBottom: 4,
+    color: colors.textPrimary,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 8,
+    borderColor: colors.borderSubtle,
+    borderRadius: radius.sm,
     padding: 10,
     fontSize: 14,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.surfaceSubtle,
+    color: colors.textPrimary,
   },
   modalActions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    gap: 10,
-    marginTop: 16,
+    gap: spacing.sm,
+    marginTop: spacing.md,
   },
   modalCancelBtn: {
     paddingVertical: 10,
     paddingHorizontal: 16,
-    borderRadius: 8,
+    borderRadius: radius.md,
   },
   modalCancelText: {
-    color: '#64748B',
+    color: colors.textSecondary,
     fontWeight: '600',
+    fontSize: 14,
   },
   modalSaveBtn: {
-    backgroundColor: UBD_COLORS.PRIMARY,
+    backgroundColor: colors.primary,
     paddingVertical: 10,
     paddingHorizontal: 18,
-    borderRadius: 8,
+    borderRadius: radius.md,
   },
   modalSaveText: {
     color: '#FFFFFF',
     fontWeight: '700',
+    fontSize: 14,
   },
 });

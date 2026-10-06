@@ -1,4 +1,4 @@
-import { LogBox } from 'react-native';
+import { Alert, LogBox, Platform } from 'react-native';
 
 const IGNORED_WARNINGS = [
   "Can't perform a React state update on a component that hasn't mounted yet",
@@ -21,3 +21,27 @@ console.warn = (...args: unknown[]) => {
   }
   originalWarn(...args);
 };
+
+// 3. Polyfill Alert.alert for Web environment (react-native-web has empty stub)
+if (Platform.OS === 'web') {
+  Alert.alert = (title, message, buttons) => {
+    const text = [title, message].filter(Boolean).join('\n');
+    if (!buttons || buttons.length === 0) {
+      if (typeof window !== 'undefined') window.alert(text);
+      return;
+    }
+    if (buttons.length === 1) {
+      if (typeof window !== 'undefined') window.alert(text);
+      buttons[0].onPress?.();
+      return;
+    }
+    const confirmed = typeof window !== 'undefined' ? window.confirm(text) : true;
+    if (confirmed) {
+      const confirmBtn = buttons.find((b) => b.style !== 'cancel') || buttons[0];
+      confirmBtn.onPress?.();
+    } else {
+      const cancelBtn = buttons.find((b) => b.style === 'cancel');
+      cancelBtn?.onPress?.();
+    }
+  };
+}

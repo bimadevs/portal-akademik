@@ -51,7 +51,7 @@ export default function HomeScreen() {
 
   const handleLogout = () => {
     Alert.alert(
-      'Konfirmasi Logout',
+      'Konfirmasi Keluar',
       'Apakah Anda yakin ingin keluar dari sesi administrator?',
       [
         { text: 'Batal', style: 'cancel' },
@@ -71,7 +71,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      {/* Top Header Resmi UBD dengan Tombol Logout & Pengaturan */}
+      {/* Top Header Resmi UBD */}
       <UBDHeader
         showLogout
         onLogout={handleLogout}
@@ -91,23 +91,17 @@ export default function HomeScreen() {
           />
         }
       >
-        {/* Personalized Welcome Banner */}
+        {/* Executive Welcome Section */}
         <View style={styles.welcomeSection}>
-          <View style={styles.welcomeTextColumn}>
-            <View style={styles.liveIndicatorRow}>
-              <View style={styles.liveDot} />
-              <Text style={styles.liveText}>PORTAL ONLINE • AKTIF</Text>
-            </View>
-            <Text style={styles.greetingTitle}>
-              Halo, {userSession?.username ?? 'Administrator'} 👋
-            </Text>
-            <Text style={styles.greetingSubtitle}>
-              Kelola data akademik mahasiswa Universitas Buddhi Dharma
-            </Text>
-          </View>
+          <Text style={styles.greetingTitle}>
+            Halo, {userSession?.username ? userSession.username.toUpperCase() : 'ADMINISTRATOR'}
+          </Text>
+          <Text style={styles.greetingSubtitle}>
+            Sistem Informasi Akademik Terpadu Universitas Buddhi Dharma
+          </Text>
         </View>
 
-        {/* Quick Bento Stats Bar */}
+        {/* Quick Executive Stats */}
         <View style={styles.statsRow}>
           {/* Stat 1: Total Mahasiswa */}
           <Pressable
@@ -118,12 +112,12 @@ export default function HomeScreen() {
             ]}
           >
             <View style={[styles.statIconBadge, { backgroundColor: '#EFF6FF' }]}>
-              <Ionicons name="people" size={18} color="#2563EB" />
+              <Ionicons name="people" size={17} color="#1E3A8A" />
             </View>
             <Text style={styles.statNumber} numberOfLines={1}>
               {mahasiswaList.length}
             </Text>
-            <Text style={styles.statLabel} numberOfLines={1} ellipsizeMode="tail">
+            <Text style={styles.statLabel} numberOfLines={1}>
               Mahasiswa
             </Text>
           </Pressable>
@@ -131,12 +125,12 @@ export default function HomeScreen() {
           {/* Stat 2: Total Fakultas */}
           <View style={styles.statCard}>
             <View style={[styles.statIconBadge, { backgroundColor: '#F0FDF4' }]}>
-              <Ionicons name="business" size={18} color="#16A34A" />
+              <Ionicons name="business" size={17} color="#059669" />
             </View>
             <Text style={styles.statNumber} numberOfLines={1}>
               4
             </Text>
-            <Text style={styles.statLabel} numberOfLines={1} ellipsizeMode="tail">
+            <Text style={styles.statLabel} numberOfLines={1}>
               Fakultas
             </Text>
           </View>
@@ -144,43 +138,46 @@ export default function HomeScreen() {
           {/* Stat 3: Mode Offline-First */}
           <View style={styles.statCard}>
             <View style={[styles.statIconBadge, { backgroundColor: '#FAF5FF' }]}>
-              <Ionicons name="shield-checkmark" size={18} color="#9333EA" />
+              <Ionicons name="server" size={17} color="#7C3AED" />
             </View>
             <Text style={styles.statNumber} numberOfLines={1}>
               100%
             </Text>
-            <Text style={styles.statLabel} numberOfLines={1} ellipsizeMode="tail">
-              Offline
+            <Text style={styles.statLabel} numberOfLines={1}>
+              Offline Relasional
             </Text>
           </View>
         </View>
 
-        {/* Banner Media Kampus [GIF] Bergradien */}
+        {/* Banner Identitas Kampus */}
         <View style={styles.sectionBlock}>
           <CampusBanner />
         </View>
 
-        {/* 6 Grid Menu Layanan Akademik */}
+        {/* Direktori Layanan Akademik */}
         <View style={styles.sectionBlock}>
           <AcademicGrid />
         </View>
 
-        {/* Recent Student Data Spotlight Preview */}
+        {/* Recent Student Data Spotlight */}
         <View style={styles.sectionBlock}>
           <View style={styles.spotlightHeader}>
-            <View>
-              <Text style={styles.spotlightTitle}>Mahasiswa Terdaftar</Text>
+            <View style={styles.spotlightTitleCol}>
+              <Text style={styles.spotlightTitle}>Registrasi Terakhir</Text>
               <Text style={styles.spotlightSubtitle}>
-                Data terbaru dalam sistem akademik
+                Mahasiswa yang baru terdaftar dalam basis data
               </Text>
             </View>
             <Pressable
               onPress={() => router.push('/(tabs)/report')}
               hitSlop={8}
-              style={styles.viewAllButton}
+              style={({ pressed }) => [
+                styles.viewAllButton,
+                pressed && styles.viewAllButtonPressed,
+              ]}
             >
-              <Text style={styles.viewAllText}>Lihat Semua</Text>
-              <Ionicons name="arrow-forward" size={14} color={colors.primary} />
+              <Text style={styles.viewAllText}>Semua</Text>
+              <Ionicons name="arrow-forward" size={13} color={colors.primary} />
             </Pressable>
           </View>
 
@@ -196,7 +193,7 @@ export default function HomeScreen() {
               >
                 <PhotoAvatar
                   uri={m.fotoUrl || (m as any).foto_url}
-                  size={42}
+                  size={40}
                   name={m.nama}
                   shape="rounded"
                 />
@@ -218,6 +215,7 @@ export default function HomeScreen() {
 
             {recentStudents.length === 0 && (
               <View style={styles.emptySpotlight}>
+                <Ionicons name="folder-open-outline" size={28} color={colors.textMuted} />
                 <Text style={styles.emptySpotlightText}>
                   Belum ada data mahasiswa terdaftar.
                 </Text>
@@ -233,52 +231,31 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: spacing.lg,
-    paddingBottom: spacing.xxl + 20,
+    paddingBottom: spacing.xxl + 24,
     gap: spacing.lg,
   },
   welcomeSection: {
-    paddingTop: spacing.xs,
-  },
-  welcomeTextColumn: {
     gap: 4,
-  },
-  liveIndicatorRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 2,
-  },
-  liveDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
-    backgroundColor: '#10B981',
-  },
-  liveText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: '#059669',
-    letterSpacing: 0.8,
+    paddingHorizontal: 2,
   },
   greetingTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '800',
     color: colors.textPrimary,
-    letterSpacing: -0.3,
+    letterSpacing: -0.2,
   },
   greetingSubtitle: {
-    fontSize: 13,
+    fontSize: 12,
     color: colors.textSecondary,
-    lineHeight: 18,
+    lineHeight: 17,
   },
   statsRow: {
     flexDirection: 'row',
     alignItems: 'stretch',
-    justifyContent: 'space-between',
     gap: spacing.sm,
   },
   statCard: {
@@ -289,15 +266,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     paddingVertical: spacing.md,
     paddingHorizontal: 4,
-    borderRadius: radius.xl,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: 'rgba(226, 232, 240, 0.8)',
+    borderColor: colors.border,
     boxShadow: shadows.card,
     gap: 3,
   },
   statIconBadge: {
-    width: 36,
-    height: 36,
+    width: 34,
+    height: 34,
     borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
@@ -310,7 +287,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   statLabel: {
-    fontSize: 11,
+    fontSize: 10,
     color: colors.textSecondary,
     fontWeight: '600',
     textAlign: 'center',
@@ -319,7 +296,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   cardPressed: {
-    opacity: 0.85,
+    opacity: 0.88,
     transform: [{ scale: 0.98 }],
   },
   spotlightHeader: {
@@ -329,16 +306,18 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     paddingHorizontal: 2,
   },
+  spotlightTitleCol: {
+    gap: 2,
+  },
   spotlightTitle: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '800',
     color: colors.textPrimary,
     letterSpacing: -0.2,
   },
   spotlightSubtitle: {
-    fontSize: 12,
+    fontSize: 11,
     color: colors.textSecondary,
-    marginTop: 2,
   },
   viewAllButton: {
     flexDirection: 'row',
@@ -348,6 +327,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
+  },
+  viewAllButtonPressed: {
+    backgroundColor: '#DBEAFE',
   },
   viewAllText: {
     fontSize: 11,
@@ -356,10 +340,10 @@ const styles = StyleSheet.create({
   },
   spotlightList: {
     backgroundColor: colors.surface,
-    borderRadius: radius.xl,
+    borderRadius: radius.lg,
     padding: spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(226, 232, 240, 0.8)',
+    borderColor: colors.border,
     boxShadow: shadows.card,
     gap: spacing.sm,
   },
@@ -369,34 +353,22 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     gap: spacing.md,
   },
-  studentAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarInitials: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#FFFFFF',
-  },
   studentInfo: {
     flex: 1,
     gap: 2,
   },
   studentName: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
     color: colors.textPrimary,
   },
   studentNim: {
-    fontSize: 12,
+    fontSize: 11,
     color: colors.textSecondary,
     fontWeight: '500',
   },
   facultyTag: {
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceSubtle,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: radius.xs,
@@ -410,10 +382,10 @@ const styles = StyleSheet.create({
   emptySpotlight: {
     paddingVertical: spacing.md,
     alignItems: 'center',
+    gap: spacing.xs,
   },
   emptySpotlightText: {
-    fontSize: 13,
+    fontSize: 12,
     color: colors.textSecondary,
   },
 });
-

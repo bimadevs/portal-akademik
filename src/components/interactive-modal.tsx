@@ -1,12 +1,12 @@
 import React from 'react';
 import {
+  ActivityIndicator,
   Modal,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Mahasiswa } from '@/types/mahasiswa';
 import { PhotoAvatar } from './photo-avatar';
@@ -46,15 +46,12 @@ export function MahasiswaClickModal({
             />
 
             <View style={styles.headerTitleCol}>
-              <View style={styles.badgeRow}>
-                <View style={styles.activeDot} />
-                <Text style={styles.badgeLabel}>DETAIL MAHASISWA</Text>
-              </View>
+              <Text style={styles.badgeLabel}>DETAIL INFORMASI MAHASISWA</Text>
               <Text style={styles.studentHeaderName}>{mahasiswa.nama}</Text>
             </View>
 
             <Pressable onPress={onClose} hitSlop={8} style={styles.closeRoundBtn}>
-              <Ionicons name="close" size={20} color={colors.textSecondary} />
+              <Ionicons name="close" size={19} color={colors.textSecondary} />
             </Pressable>
           </View>
 
@@ -76,7 +73,7 @@ export function MahasiswaClickModal({
               <View style={styles.metaItem}>
                 <Text style={styles.metaItemLabel}>Jenis Kelamin</Text>
                 <Text style={styles.metaItemValue}>
-                  {mahasiswa.jenisKelamin === 'PRIA' ? '👨 Laki-laki' : '👩 Perempuan'}
+                  {mahasiswa.jenisKelamin === 'PRIA' ? 'Laki-laki (PRIA)' : 'Perempuan (WANITA)'}
                 </Text>
               </View>
             </View>
@@ -84,7 +81,7 @@ export function MahasiswaClickModal({
             <View style={styles.facultyRow}>
               <Text style={styles.metaItemLabel}>Fakultas</Text>
               <View style={styles.facultyChip}>
-                <Ionicons name="school-outline" size={14} color={colors.primary} />
+                <Ionicons name="school-outline" size={13} color={colors.primary} />
                 <Text style={styles.facultyChipText} numberOfLines={1}>
                   {mahasiswa.fakultas}
                 </Text>
@@ -92,7 +89,7 @@ export function MahasiswaClickModal({
             </View>
           </View>
 
-          {/* Dual Action Buttons Sesuai Spesifikasi */}
+          {/* Dual Action Buttons Sesuai Spesifikasi Mockup */}
           <View style={styles.actionRow}>
             <Pressable
               onPress={() => onRequestDelete(mahasiswa)}
@@ -110,20 +107,13 @@ export function MahasiswaClickModal({
             <Pressable
               onPress={onClose}
               style={({ pressed }) => [
-                styles.okButtonWrapper,
+                styles.okButton,
                 pressed && styles.buttonPressed,
               ]}
               accessibilityRole="button"
               accessibilityLabel="OK Tutup Dialog"
             >
-              <LinearGradient
-                colors={['#2563EB', '#1D4ED8']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.okButtonGradient}
-              >
-                <Text style={styles.okButtonText}>OK</Text>
-              </LinearGradient>
+              <Text style={styles.okButtonText}>OK</Text>
             </Pressable>
           </View>
         </View>
@@ -158,26 +148,15 @@ export function DeleteConfirmationModal({
     >
       <Pressable style={styles.backdrop} onPress={onCancel}>
         <View style={styles.dialogCard} onStartShouldSetResponder={() => true}>
-          <View style={styles.dialogHeader}>
-            <View style={styles.dangerIconCircle}>
-              <Ionicons name="warning" size={24} color={colors.danger} />
-            </View>
-            <View style={styles.headerTitleCol}>
-              <Text style={styles.dangerDialogTitle}>Konfirmasi Hapus</Text>
-              <Text style={styles.dangerDialogSubtitle}>Tindakan ini permanen</Text>
-            </View>
+          <View style={styles.deleteHeaderIconBox}>
+            <Ionicons name="alert-circle" size={28} color={colors.danger} />
           </View>
 
-          <View style={styles.deleteWarningBox}>
-            <Text style={styles.confirmMessage}>
-              Apakah Anda yakin ingin menghapus data{' '}
-              <Text style={styles.boldText}>{mahasiswa.nama}</Text> (
-              <Text style={styles.boldText}>{mahasiswa.nim}</Text>)?
-            </Text>
-            <Text style={styles.deleteWarningSubtext}>
-              Data yang dihapus akan segera hilang dari penyimpanan lokal perangkat.
-            </Text>
-          </View>
+          <Text style={styles.deleteCardTitle}>Konfirmasi Hapus Data</Text>
+          <Text style={styles.deleteCardDesc}>
+            Apakah Anda yakin ingin menghapus data mahasiswa{' '}
+            <Text style={styles.boldText}>{mahasiswa.nama}</Text> ({mahasiswa.nim})? Tindakan ini tidak dapat dibatalkan.
+          </Text>
 
           <View style={styles.actionRow}>
             <Pressable
@@ -197,17 +176,18 @@ export function DeleteConfirmationModal({
               onPress={onConfirm}
               disabled={isDeleting}
               style={({ pressed }) => [
-                styles.dangerConfirmButton,
+                styles.confirmDeleteButton,
                 pressed && styles.buttonPressed,
-                isDeleting && { opacity: 0.6 },
+                isDeleting && styles.buttonDisabled,
               ]}
               accessibilityRole="button"
-              accessibilityLabel="Konfirmasi Hapus Mahasiswa"
+              accessibilityLabel="Konfirmasi Hapus"
             >
-              <Ionicons name="trash" size={15} color="#FFFFFF" />
-              <Text style={styles.dangerConfirmButtonText}>
-                {isDeleting ? 'Menghapus...' : 'Hapus'}
-              </Text>
+              {isDeleting ? (
+                <ActivityIndicator color="#FFFFFF" size="small" />
+              ) : (
+                <Text style={styles.confirmDeleteButtonText}>Hapus</Text>
+              )}
             </Pressable>
           </View>
         </View>
@@ -219,20 +199,20 @@ export function DeleteConfirmationModal({
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+    backgroundColor: 'rgba(15, 23, 42, 0.55)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: spacing.lg,
   },
   dialogCard: {
     width: '100%',
-    maxWidth: 390,
+    maxWidth: 380,
     backgroundColor: colors.surface,
-    borderRadius: radius['2xl'],
+    borderRadius: radius.xl,
     padding: spacing.xl,
-    boxShadow: shadows.elevated,
     borderWidth: 1,
-    borderColor: 'rgba(226, 232, 240, 0.9)',
+    borderColor: colors.border,
+    boxShadow: shadows.modal,
     gap: spacing.md,
   },
   dialogHeader: {
@@ -240,37 +220,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
   },
-  avatarBadge: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: '#FFFFFF',
-  },
   headerTitleCol: {
     flex: 1,
     gap: 2,
   },
-  badgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-  },
-  activeDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#10B981',
-  },
   badgeLabel: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#059669',
+    color: colors.primary,
     letterSpacing: 0.8,
   },
   studentHeaderName: {
@@ -281,192 +238,166 @@ const styles = StyleSheet.create({
   closeRoundBtn: {
     width: 32,
     height: 32,
-    borderRadius: radius.full,
-    backgroundColor: '#F1F5F9',
+    borderRadius: radius.md,
+    backgroundColor: colors.surfaceSubtle,
     alignItems: 'center',
     justifyContent: 'center',
   },
   clickMessageBox: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.primaryLight,
     padding: spacing.md,
-    borderRadius: radius.xl,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: '#BFDBFE',
-    gap: 2,
+    gap: 3,
   },
   clickLabel: {
-    fontSize: 12,
+    fontSize: 11,
+    color: colors.textSecondary,
     fontWeight: '600',
-    color: '#1E40AF',
   },
   clickStudentTarget: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '800',
     color: colors.primary,
   },
   metaContainer: {
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.surfaceSubtle,
     padding: spacing.md,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderRadius: radius.md,
     gap: spacing.sm,
   },
   metaRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: spacing.md,
   },
   metaItem: {
-    flex: 1,
     gap: 2,
   },
   metaItemLabel: {
     fontSize: 11,
     color: colors.textSecondary,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   metaItemValue: {
     fontSize: 13,
-    fontWeight: '700',
     color: colors.textPrimary,
+    fontWeight: '700',
   },
   facultyRow: {
-    gap: 4,
-    paddingTop: spacing.xs,
-    borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
+    gap: 3,
   },
   facultyChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: radius.md,
+    gap: 5,
+    backgroundColor: colors.surface,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: radius.sm,
     borderWidth: 1,
-    borderColor: '#CBD5E1',
+    borderColor: colors.border,
     alignSelf: 'flex-start',
   },
   facultyChipText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: colors.primary,
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.textPrimary,
   },
   actionRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: spacing.md,
     marginTop: spacing.xs,
   },
-  buttonPressed: {
-    opacity: 0.8,
-    transform: [{ scale: 0.97 }],
-  },
   deleteButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 6,
-    backgroundColor: '#FEE2E2',
+    height: 44,
+    borderRadius: radius.lg,
+    backgroundColor: colors.dangerLight,
     borderWidth: 1,
     borderColor: '#FECACA',
-    paddingHorizontal: spacing.md,
-    paddingVertical: 12,
-    borderRadius: radius.xl,
-    flex: 1,
-    justifyContent: 'center',
   },
   deleteButtonText: {
     fontSize: 13,
-    color: colors.danger,
     fontWeight: '700',
+    color: colors.danger,
   },
-  okButtonWrapper: {
+  okButton: {
     flex: 1,
-    borderRadius: radius.xl,
-    overflow: 'hidden',
-    boxShadow: shadows.glow,
-  },
-  okButtonGradient: {
-    paddingVertical: 12,
+    height: 44,
+    borderRadius: radius.lg,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   okButtonText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '800',
-    color: '#FFFFFF',
-    letterSpacing: 0.5,
+    color: colors.textOnPrimary,
   },
-  dangerIconCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.xl,
-    backgroundColor: '#FEE2E2',
+  buttonPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.98 }],
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  deleteHeaderIconBox: {
+    width: 48,
+    height: 48,
+    borderRadius: radius.full,
+    backgroundColor: colors.dangerLight,
     alignItems: 'center',
     justifyContent: 'center',
+    alignSelf: 'center',
   },
-  dangerDialogTitle: {
+  deleteCardTitle: {
     fontSize: 17,
     fontWeight: '800',
-    color: colors.danger,
+    color: colors.textPrimary,
+    textAlign: 'center',
   },
-  dangerDialogSubtitle: {
-    fontSize: 12,
+  deleteCardDesc: {
+    fontSize: 13,
     color: colors.textSecondary,
-  },
-  deleteWarningBox: {
-    backgroundColor: '#FEF2F2',
-    padding: spacing.md,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    borderColor: '#FECACA',
-    gap: 4,
-  },
-  confirmMessage: {
-    fontSize: 14,
-    color: '#991B1B',
-    lineHeight: 20,
+    textAlign: 'center',
+    lineHeight: 18,
   },
   boldText: {
-    fontWeight: '800',
-  },
-  deleteWarningSubtext: {
-    fontSize: 11,
-    color: '#B91C1C',
-  },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: '#F1F5F9',
-    paddingVertical: 12,
-    borderRadius: radius.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  cancelButtonText: {
-    fontSize: 13,
     fontWeight: '700',
     color: colors.textPrimary,
   },
-  dangerConfirmButton: {
+  cancelButton: {
     flex: 1,
-    flexDirection: 'row',
+    height: 44,
+    borderRadius: radius.lg,
+    backgroundColor: colors.surfaceSubtle,
+    borderWidth: 1,
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    backgroundColor: colors.danger,
-    paddingVertical: 12,
-    borderRadius: radius.xl,
-    boxShadow: shadows.glow,
   },
-  dangerConfirmButtonText: {
+  cancelButtonText: {
     fontSize: 13,
-    fontWeight: '800',
+    fontWeight: '600',
+    color: colors.textPrimary,
+  },
+  confirmDeleteButton: {
+    flex: 1,
+    height: 44,
+    borderRadius: radius.lg,
+    backgroundColor: colors.danger,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  confirmDeleteButtonText: {
+    fontSize: 13,
+    fontWeight: '700',
     color: '#FFFFFF',
   },
 });
-

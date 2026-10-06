@@ -261,14 +261,6 @@ export default function PengaturanScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={24} color="#0F172A" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Pengaturan Sistem</Text>
-      </View>
-
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Section 1: Profil Admin */}
         <View style={styles.section}>
@@ -413,7 +405,7 @@ export default function PengaturanScreen() {
             <View style={styles.infoRow}>
               <Text style={styles.infoKey}>Versi Sistem</Text>
               <View style={styles.versionBadge}>
-                <Text style={styles.versionBadgeText}>V3.0.1 (Enterprise)</Text>
+                <Text style={styles.versionBadgeText}>v3.1.1 (Enterprise)</Text>
               </View>
             </View>
             <View style={styles.divider} />
@@ -607,25 +599,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8FAFC',
-  },
-  header: {
-    backgroundColor: '#FFFFFF',
-    paddingTop: 54,
-    paddingHorizontal: 20,
-    paddingBottom: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-  },
-  backBtn: {
-    padding: 4,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#0F172A',
   },
   scrollContent: {
     padding: 16,

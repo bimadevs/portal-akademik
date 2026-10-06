@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Pressable, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { DosenService } from '../../services/dosen-service';
 import { Dosen } from '../../types/mahasiswa';
-import { UBD_COLORS } from '../../constants/theme';
-
+import { colors, radius, spacing, shadows } from '@/theme';
 import { PhotoAvatar } from '@/components/photo-avatar';
 
 export default function DosenDetailScreen() {
@@ -25,7 +24,7 @@ export default function DosenDetailScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -39,16 +38,16 @@ export default function DosenDetailScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <View style={styles.profileCard}>
         <PhotoAvatar
           uri={dosen.fotoUrl || (dosen as any).foto_url}
-          size={90}
+          size={84}
           name={dosen.nama}
           style={{ marginBottom: 12 }}
         />
         <Text style={styles.nama}>{dosen.nama}</Text>
-        {dosen.gelar && <Text style={styles.gelar}>{dosen.gelar}</Text>}
+        {dosen.gelar ? <Text style={styles.gelar}>{dosen.gelar}</Text> : null}
         <View style={styles.badge}>
           <Text style={styles.badgeText}>{dosen.fakultas}</Text>
         </View>
@@ -62,7 +61,7 @@ export default function DosenDetailScreen() {
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Program Studi</Text>
-          <Text style={styles.val}>{dosen.prodi}</Text>
+          <Text style={styles.val}>{dosen.prodi || '-'}</Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Email</Text>
@@ -74,13 +73,16 @@ export default function DosenDetailScreen() {
         </View>
       </View>
 
-      <TouchableOpacity
-        style={styles.editBtn}
+      <Pressable
+        style={({ pressed }) => [
+          styles.editBtn,
+          pressed && styles.btnPressed,
+        ]}
         onPress={() => router.push(`/dosen/form?id=${dosen.id}`)}
       >
-        <Ionicons name="create-outline" size={20} color="#FFFFFF" />
+        <Ionicons name="create-outline" size={18} color="#FFFFFF" />
         <Text style={styles.editBtnText}>Edit Profil Dosen</Text>
-      </TouchableOpacity>
+      </Pressable>
     </ScrollView>
   );
 }
@@ -88,93 +90,88 @@ export default function DosenDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   content: {
-    padding: 20,
+    padding: spacing.lg,
     alignItems: 'center',
+    gap: spacing.md,
   },
   profileCard: {
     width: '100%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 24,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.xl,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    marginBottom: 16,
-  },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#E6F0F7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
+    borderColor: colors.borderSubtle,
+    ...shadows.sm,
   },
   nama: {
     fontSize: 18,
-    fontWeight: '800',
-    color: '#0F172A',
+    fontWeight: '700',
+    color: colors.textPrimary,
     textAlign: 'center',
   },
   gelar: {
     fontSize: 14,
-    color: '#64748B',
+    color: colors.textSecondary,
     marginTop: 2,
+    fontWeight: '500',
   },
   badge: {
-    backgroundColor: '#FEF3C7',
+    backgroundColor: colors.surfaceSubtle,
     paddingHorizontal: 12,
     paddingVertical: 4,
-    borderRadius: 20,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: colors.borderSubtle,
     marginTop: 10,
   },
   badgeText: {
     fontSize: 12,
-    color: '#92400E',
-    fontWeight: '600',
+    color: colors.primary,
+    fontWeight: '700',
   },
   detailsCard: {
     width: '100%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    marginBottom: 20,
+    borderColor: colors.borderSubtle,
+    ...shadows.sm,
   },
   sectionTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 12,
+    color: colors.textPrimary,
+    marginBottom: 8,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderColor: '#F1F5F9',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.borderSubtle,
   },
   label: {
     fontSize: 13,
-    color: '#64748B',
+    color: colors.textSecondary,
   },
   val: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   editBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: UBD_COLORS.PRIMARY,
+    backgroundColor: colors.primary,
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: 10,
+    borderRadius: radius.md,
     width: '100%',
     justifyContent: 'center',
   },
@@ -183,13 +180,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
   },
+  btnPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.99 }],
+  },
   center: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   notFound: {
-    color: '#64748B',
+    color: colors.textTertiary,
     fontSize: 16,
   },
 });

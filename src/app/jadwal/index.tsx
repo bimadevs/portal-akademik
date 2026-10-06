@@ -3,7 +3,7 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ActivityIndicator,
   Alert,
@@ -13,7 +13,7 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { JadwalService } from '../../services/jadwal-service';
 import { Jadwal, Hari, HARI_OPTIONS } from '../../types/mahasiswa';
-import { UBD_COLORS } from '../../constants/theme';
+import { colors, radius, shadows, spacing } from '@/theme';
 
 export default function JadwalListScreen() {
   const router = useRouter();
@@ -64,81 +64,132 @@ export default function JadwalListScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Day Filter Bar */}
       <View style={styles.chipBar}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipList}>
-          <TouchableOpacity
-            style={[styles.chip, selectedHari === 'SEMUA' && styles.chipActive]}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipList}
+        >
+          <Pressable
+            style={({ pressed }) => [
+              styles.chip,
+              selectedHari === 'SEMUA' && styles.chipActive,
+              pressed && styles.chipPressed,
+            ]}
             onPress={() => setSelectedHari('SEMUA')}
           >
-            <Text style={[styles.chipText, selectedHari === 'SEMUA' && styles.chipTextActive]}>
+            <Text
+              style={[
+                styles.chipText,
+                selectedHari === 'SEMUA' && styles.chipTextActive,
+              ]}
+            >
               Semua Hari
             </Text>
-          </TouchableOpacity>
+          </Pressable>
           {HARI_OPTIONS.map((hari) => (
-            <TouchableOpacity
+            <Pressable
               key={hari}
-              style={[styles.chip, selectedHari === hari && styles.chipActive]}
+              style={({ pressed }) => [
+                styles.chip,
+                selectedHari === hari && styles.chipActive,
+                pressed && styles.chipPressed,
+              ]}
               onPress={() => setSelectedHari(hari)}
             >
-              <Text style={[styles.chipText, selectedHari === hari && styles.chipTextActive]}>
+              <Text
+                style={[
+                  styles.chipText,
+                  selectedHari === hari && styles.chipTextActive,
+                ]}
+              >
                 {hari}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           ))}
         </ScrollView>
       </View>
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loadingText}>Memuat jadwal perkuliahan...</Text>
         </View>
       ) : (
         <FlatList
           data={jadwalList}
           keyExtractor={(item) => String(item.id)}
           contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryText}>
+                Ditemukan <Text style={styles.boldText}>{jadwalList.length}</Text> sesi perkuliahan
+              </Text>
+            </View>
+          }
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Ionicons name="calendar-outline" size={48} color="#94A3B8" />
-              <Text style={styles.emptyText}>Tidak ada jadwal kuliah</Text>
+              <View style={styles.emptyIconCircle}>
+                <Ionicons name="calendar-outline" size={32} color={colors.textMuted} />
+              </View>
+              <Text style={styles.emptyTitle}>Tidak Ada Jadwal Kuliah</Text>
+              <Text style={styles.emptyText}>
+                {selectedHari !== 'SEMUA'
+                  ? `Tidak ada sesi perkuliahan di hari ${selectedHari}.`
+                  : 'Belum ada jadwal yang terdaftar.'}
+              </Text>
             </View>
           }
           renderItem={({ item }) => (
             <View style={styles.card}>
               <View style={styles.timeBox}>
-                <Text style={styles.hariText}>{item.hari}</Text>
+                <Text style={styles.hariText}>{item.hari.toUpperCase()}</Text>
                 <Text style={styles.jamText}>
                   {item.jam_mulai} - {item.jam_selesai}
                 </Text>
               </View>
+
               <View style={styles.info}>
                 <View style={styles.badgeRow}>
-                  <Text style={styles.ruangBadge}>{item.ruangan}</Text>
+                  <View style={styles.ruangBadge}>
+                    <Ionicons name="location-outline" size={11} color={colors.primary} />
+                    <Text style={styles.ruangText}>{item.ruangan}</Text>
+                  </View>
                   <Text style={styles.sksText}>{item.mata_kuliah_sks} SKS</Text>
                 </View>
-                <Text style={styles.matkul}>{item.mata_kuliah_nama}</Text>
-                <Text style={styles.dosen}>
+                <Text style={styles.matkul} numberOfLines={1}>{item.mata_kuliah_nama}</Text>
+                <Text style={styles.dosen} numberOfLines={1}>
                   {item.dosen_nama || 'Dosen belum ditentukan'}
                 </Text>
               </View>
-              <TouchableOpacity
+
+              <Pressable
                 onPress={() => handleDelete(item.id, item.mata_kuliah_nama || 'jadwal')}
                 style={styles.deleteBtn}
+                hitSlop={8}
+                accessibilityLabel="Hapus Jadwal"
               >
-                <Ionicons name="trash-outline" size={20} color="#DC2626" />
-              </TouchableOpacity>
+                <Ionicons name="trash-outline" size={19} color={colors.danger} />
+              </Pressable>
             </View>
           )}
         />
       )}
 
-      <TouchableOpacity
-        style={styles.fab}
+      {/* FAB Tambah Jadwal */}
+      <Pressable
+        style={({ pressed }) => [
+          styles.fab,
+          pressed && styles.fabPressed,
+        ]}
         onPress={() => router.push('/jadwal/form')}
-        activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Tambah Jadwal Baru"
       >
-        <Ionicons name="add" size={28} color="#FFFFFF" />
-      </TouchableOpacity>
+        <Ionicons name="add" size={26} color="#FFFFFF" />
+      </Pressable>
     </View>
   );
 }
@@ -146,137 +197,184 @@ export default function JadwalListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   chipBar: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
+    paddingVertical: spacing.sm + 2,
     borderBottomWidth: 1,
-    borderColor: '#E2E8F0',
-    paddingVertical: 10,
+    borderBottomColor: colors.border,
   },
   chipList: {
-    paddingHorizontal: 16,
-    gap: 8,
+    paddingHorizontal: spacing.lg,
+    gap: spacing.xs,
   },
   chip: {
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: '#F1F5F9',
+    borderRadius: radius.full,
+    backgroundColor: colors.surfaceSubtle,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   chipActive: {
-    backgroundColor: UBD_COLORS.PRIMARY,
+    backgroundColor: colors.primaryLight,
+    borderColor: '#BFDBFE',
+  },
+  chipPressed: {
+    opacity: 0.85,
   },
   chipText: {
     fontSize: 12,
+    color: colors.textSecondary,
     fontWeight: '600',
-    color: '#475569',
   },
   chipTextActive: {
-    color: '#FFFFFF',
+    color: colors.primary,
+    fontWeight: '700',
   },
   listContent: {
-    padding: 16,
-    paddingBottom: 80,
+    padding: spacing.lg,
+    paddingBottom: 90,
+    gap: spacing.sm,
+  },
+  summaryRow: {
+    marginBottom: spacing.xs,
+  },
+  summaryText: {
+    fontSize: 11,
+    color: colors.textSecondary,
+  },
+  boldText: {
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 10,
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
+    boxShadow: shadows.subtle,
+    gap: spacing.md,
   },
   timeBox: {
-    width: 95,
-    backgroundColor: '#F8FAFC',
-    borderRadius: 8,
-    padding: 8,
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    minWidth: 84,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: '#BFDBFE',
+    gap: 2,
   },
   hariText: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '800',
-    color: UBD_COLORS.PRIMARY,
+    color: colors.primary,
+    letterSpacing: 0.5,
   },
   jamText: {
     fontSize: 10,
+    color: colors.primaryDark,
     fontWeight: '600',
-    color: '#64748B',
-    marginTop: 2,
-    textAlign: 'center',
   },
   info: {
     flex: 1,
+    gap: 2,
   },
   badgeRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginBottom: 4,
   },
   ruangBadge: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#0284C7',
-    backgroundColor: '#E0F2FE',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: colors.surfaceSubtle,
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 4,
+    borderRadius: radius.xs,
+  },
+  ruangText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   sksText: {
     fontSize: 10,
+    color: colors.textSecondary,
     fontWeight: '600',
-    color: '#64748B',
   },
   matkul: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   dosen: {
-    fontSize: 12,
-    color: '#64748B',
-    marginTop: 2,
+    fontSize: 11,
+    color: colors.textSecondary,
   },
   deleteBtn: {
     padding: 6,
+    borderRadius: radius.md,
+    backgroundColor: colors.dangerLight,
   },
   center: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: spacing.sm,
+  },
+  loadingText: {
+    fontSize: 13,
+    color: colors.textSecondary,
   },
   empty: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 60,
+    paddingTop: 50,
+    gap: 4,
+  },
+  emptyIconCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: colors.surfaceSubtle,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.xs,
+  },
+  emptyTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   emptyText: {
-    fontSize: 14,
-    color: '#64748B',
-    marginTop: 8,
+    fontSize: 12,
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
   fab: {
     position: 'absolute',
     bottom: 24,
     right: 24,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: UBD_COLORS.PRIMARY,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 3 },
+    boxShadow: shadows.cardElevated,
+  },
+  fabPressed: {
+    backgroundColor: colors.primaryHover,
+    opacity: 0.9,
+    transform: [{ scale: 0.95 }],
   },
 });

@@ -3,7 +3,7 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ActivityIndicator,
   Alert,
@@ -15,7 +15,7 @@ import { KRSService } from '../../services/krs-service';
 import { PresensiService } from '../../services/presensi-service';
 import { SemesterService } from '../../services/semester-service';
 import { StatusPresensi, STATUS_PRESENSI_OPTIONS, Semester } from '../../types/mahasiswa';
-import { UBD_COLORS } from '../../constants/theme';
+import { colors, radius, spacing, shadows } from '@/theme';
 
 interface MahasiswaPeserta {
   id: number | string;
@@ -110,7 +110,7 @@ export default function PresensiChecklistScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -121,7 +121,7 @@ export default function PresensiChecklistScreen() {
         <Text style={styles.title}>{nama}</Text>
         <View style={styles.configRow}>
           <View style={styles.configItem}>
-            <Text style={styles.configLabel}>Pertemuan Ke-</Text>
+            <Text style={styles.configLabel}>Pertemuan Ke</Text>
             <TextInput
               style={styles.configInput}
               value={pertemuanKe}
@@ -136,6 +136,7 @@ export default function PresensiChecklistScreen() {
               value={tanggal}
               onChangeText={setTanggal}
               placeholder="2026-03-30"
+              placeholderTextColor={colors.textTertiary}
             />
           </View>
         </View>
@@ -147,7 +148,7 @@ export default function PresensiChecklistScreen() {
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Ionicons name="people-outline" size={48} color="#94A3B8" />
+            <Ionicons name="people-outline" size={48} color={colors.textTertiary} />
             <Text style={styles.emptyText}>
               Belum ada mahasiswa yang mengambil mata kuliah ini
             </Text>
@@ -164,35 +165,44 @@ export default function PresensiChecklistScreen() {
               <View style={styles.statusButtons}>
                 {STATUS_PRESENSI_OPTIONS.map((st) => {
                   const isActive = currentStatus === st;
-                  let bg = '#F1F5F9';
-                  let textColor = '#64748B';
+                  let bg: string = colors.surfaceSubtle;
+                  let textColor: string = colors.textSecondary;
+                  let borderColor: string = colors.borderSubtle;
 
                   if (isActive) {
                     if (st === 'HADIR') {
-                      bg = '#16A34A';
+                      bg = colors.success;
                       textColor = '#FFFFFF';
+                      borderColor = colors.success;
                     } else if (st === 'IZIN') {
-                      bg = '#0284C7';
+                      bg = colors.info;
                       textColor = '#FFFFFF';
+                      borderColor = colors.info;
                     } else if (st === 'SAKIT') {
-                      bg = '#E5A823';
+                      bg = colors.warning;
                       textColor = '#FFFFFF';
+                      borderColor = colors.warning;
                     } else {
-                      bg = '#DC2626';
+                      bg = colors.danger;
                       textColor = '#FFFFFF';
+                      borderColor = colors.danger;
                     }
                   }
 
                   return (
-                    <TouchableOpacity
+                    <Pressable
                       key={st}
-                      style={[styles.statusBtn, { backgroundColor: bg }]}
+                      style={({ pressed }) => [
+                        styles.statusBtn,
+                        { backgroundColor: bg, borderColor },
+                        pressed && styles.btnPressed,
+                      ]}
                       onPress={() => setStatus(item.id, st)}
                     >
                       <Text style={[styles.statusBtnText, { color: textColor }]}>
                         {st[0]}
                       </Text>
-                    </TouchableOpacity>
+                    </Pressable>
                   );
                 })}
               </View>
@@ -203,8 +213,12 @@ export default function PresensiChecklistScreen() {
 
       {students.length > 0 && (
         <View style={styles.footer}>
-          <TouchableOpacity
-            style={[styles.saveBtn, saving && styles.saveBtnDisabled]}
+          <Pressable
+            style={({ pressed }) => [
+              styles.saveBtn,
+              saving && styles.saveBtnDisabled,
+              pressed && styles.btnPressed,
+            ]}
             onPress={handleSave}
             disabled={saving}
           >
@@ -213,7 +227,7 @@ export default function PresensiChecklistScreen() {
             ) : (
               <Text style={styles.saveBtnText}>Simpan Presensi</Text>
             )}
-          </TouchableOpacity>
+          </Pressable>
         </View>
       )}
     </View>
@@ -223,84 +237,86 @@ export default function PresensiChecklistScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   header: {
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderColor: '#E2E8F0',
+    backgroundColor: colors.surface,
+    padding: spacing.lg,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.borderSubtle,
+    gap: spacing.sm,
   },
   title: {
     fontSize: 16,
-    fontWeight: '800',
-    color: '#0F172A',
-    marginBottom: 10,
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   configRow: {
     flexDirection: 'row',
-    gap: 12,
+    gap: spacing.md,
   },
   configItem: {
-    width: 90,
+    width: 100,
   },
   configItemDate: {
     flex: 1,
   },
   configLabel: {
     fontSize: 11,
-    color: '#64748B',
+    color: colors.textSecondary,
     marginBottom: 4,
     fontWeight: '600',
   },
   configInput: {
-    backgroundColor: '#F1F5F9',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    backgroundColor: colors.surfaceSubtle,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 8,
     fontSize: 13,
-    color: '#0F172A',
+    color: colors.textPrimary,
     fontWeight: '600',
     borderWidth: 1,
-    borderColor: '#CBD5E1',
+    borderColor: colors.borderSubtle,
   },
   listContent: {
-    padding: 16,
-    paddingBottom: 90,
+    padding: spacing.lg,
+    paddingBottom: 100,
+    gap: spacing.sm,
   },
   studentCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    padding: spacing.md,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.borderSubtle,
+    ...shadows.sm,
   },
   studentInfo: {
     flex: 1,
+    gap: 2,
   },
   studentNama: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   studentNim: {
     fontSize: 12,
-    color: '#64748B',
-    marginTop: 2,
+    color: colors.textSecondary,
   },
   statusButtons: {
     flexDirection: 'row',
     gap: 6,
   },
   statusBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 34,
+    height: 34,
+    borderRadius: radius.xs,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
   },
   statusBtnText: {
     fontSize: 13,
@@ -311,14 +327,15 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderTopWidth: 1,
-    borderColor: '#E2E8F0',
+    backgroundColor: colors.surface,
+    padding: spacing.lg,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.borderSubtle,
+    ...shadows.md,
   },
   saveBtn: {
-    backgroundColor: UBD_COLORS.PRIMARY,
-    borderRadius: 10,
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
@@ -330,6 +347,10 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '700',
+  },
+  btnPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.99 }],
   },
   center: {
     flex: 1,
@@ -343,7 +364,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 14,
-    color: '#64748B',
+    color: colors.textSecondary,
     marginTop: 8,
     textAlign: 'center',
   },

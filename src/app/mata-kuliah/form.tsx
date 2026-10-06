@@ -3,7 +3,7 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
+  Pressable,
   ScrollView,
   StyleSheet,
   Alert,
@@ -13,7 +13,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { MataKuliahService } from '../../services/mata-kuliah-service';
 import { DosenService } from '../../services/dosen-service';
 import { Dosen } from '../../types/mahasiswa';
-import { UBD_COLORS } from '../../constants/theme';
+import { colors, radius, spacing } from '@/theme';
 
 export default function MataKuliahFormScreen() {
   const router = useRouter();
@@ -101,22 +101,20 @@ export default function MataKuliahFormScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>{isEdit ? 'Edit Mata Kuliah' : 'Tambah Mata Kuliah'}</Text>
-
+    <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <Text style={styles.label}>Kode Mata Kuliah *</Text>
       <TextInput
         style={styles.input}
         value={kode}
         onChangeText={setKode}
         placeholder="Contoh: IF101"
-        placeholderTextColor="#94A3B8"
+        placeholderTextColor={colors.textTertiary}
         autoCapitalize="characters"
       />
 
@@ -126,29 +124,29 @@ export default function MataKuliahFormScreen() {
         value={nama}
         onChangeText={setNama}
         placeholder="Contoh: Pemrograman Mobile"
-        placeholderTextColor="#94A3B8"
+        placeholderTextColor={colors.textTertiary}
       />
 
       <View style={styles.row}>
         <View style={styles.half}>
-          <Text style={styles.label}>SKS *</Text>
+          <Text style={styles.label}>Bobot SKS *</Text>
           <TextInput
             style={styles.input}
             value={sks}
             onChangeText={setSks}
             placeholder="1-6"
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor={colors.textTertiary}
             keyboardType="number-pad"
           />
         </View>
         <View style={styles.half}>
-          <Text style={styles.label}>Semester *</Text>
+          <Text style={styles.label}>Semester Ditawarkan *</Text>
           <TextInput
             style={styles.input}
             value={semester}
             onChangeText={setSemester}
             placeholder="1-8"
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor={colors.textTertiary}
             keyboardType="number-pad"
           />
         </View>
@@ -157,39 +155,51 @@ export default function MataKuliahFormScreen() {
       <Text style={styles.label}>Dosen Pengampu</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipScroll}>
         <View style={styles.chipGroup}>
-          <TouchableOpacity
-            style={[styles.chip, dosenId === null && styles.chipActive]}
+          <Pressable
+            style={({ pressed }) => [
+              styles.chip,
+              dosenId === null && styles.chipActive,
+              pressed && styles.btnPressed,
+            ]}
             onPress={() => setDosenId(null)}
           >
             <Text style={[styles.chipText, dosenId === null && styles.chipTextActive]}>
               (Belum Ditentukan)
             </Text>
-          </TouchableOpacity>
+          </Pressable>
           {dosenList.map((d) => (
-            <TouchableOpacity
+            <Pressable
               key={String(d.id)}
-              style={[styles.chip, dosenId === d.id && styles.chipActive]}
+              style={({ pressed }) => [
+                styles.chip,
+                dosenId === d.id && styles.chipActive,
+                pressed && styles.btnPressed,
+              ]}
               onPress={() => setDosenId(d.id)}
             >
               <Text style={[styles.chipText, dosenId === d.id && styles.chipTextActive]}>
                 {d.nama}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           ))}
         </View>
       </ScrollView>
 
-      <TouchableOpacity
-        style={[styles.submitBtn, saving && styles.submitBtnDisabled]}
+      <Pressable
+        style={({ pressed }) => [
+          styles.submitBtn,
+          saving && styles.submitBtnDisabled,
+          pressed && styles.btnPressed,
+        ]}
         onPress={handleSubmit}
         disabled={saving}
       >
         {saving ? (
           <ActivityIndicator color="#FFFFFF" />
         ) : (
-          <Text style={styles.submitText}>{isEdit ? 'Perbarui Data' : 'Simpan Mata Kuliah'}</Text>
+          <Text style={styles.submitText}>{isEdit ? 'Perbarui Mata Kuliah' : 'Simpan Mata Kuliah'}</Text>
         )}
-      </TouchableOpacity>
+      </Pressable>
     </ScrollView>
   );
 }
@@ -197,69 +207,67 @@ export default function MataKuliahFormScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   content: {
-    padding: 20,
+    padding: spacing.lg,
     paddingBottom: 40,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#0F172A',
-    marginBottom: 20,
   },
   label: {
     fontSize: 13,
-    fontWeight: '600',
-    color: '#334155',
+    fontWeight: '700',
+    color: colors.textPrimary,
     marginBottom: 6,
-    marginTop: 12,
+    marginTop: 14,
   },
   input: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    borderColor: colors.borderSubtle,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   row: {
     flexDirection: 'row',
-    gap: 12,
+    gap: spacing.md,
   },
   half: {
     flex: 1,
   },
   chipScroll: {
-    marginBottom: 6,
+    marginBottom: 4,
   },
   chipGroup: {
     flexDirection: 'row',
-    gap: 8,
+    gap: spacing.sm,
   },
   chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#E2E8F0',
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: radius.full,
+    backgroundColor: colors.surfaceSubtle,
+    borderWidth: 1,
+    borderColor: colors.borderSubtle,
   },
   chipActive: {
-    backgroundColor: UBD_COLORS.PRIMARY,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   chipText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#475569',
+    color: colors.textSecondary,
   },
   chipTextActive: {
     color: '#FFFFFF',
+    fontWeight: '700',
   },
   submitBtn: {
-    backgroundColor: UBD_COLORS.PRIMARY,
-    borderRadius: 10,
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
@@ -272,6 +280,10 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '700',
+  },
+  btnPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.99 }],
   },
   center: {
     flex: 1,

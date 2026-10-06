@@ -42,12 +42,6 @@ export default function KartuMahasiswaIndexScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <Ionicons name="arrow-back" size={24} color="#1E293B" />
-          </TouchableOpacity>
-          <Text style={styles.title}>Kartu Mahasiswa Digital</Text>
-        </View>
         <Text style={styles.subtitle}>Pilih mahasiswa untuk menampilkan Kartu Tanda Mahasiswa (KTM)</Text>
         <SearchBar
           value={search}
@@ -149,30 +143,16 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#FFFFFF',
-    paddingTop: 54,
-    paddingHorizontal: 20,
-    paddingBottom: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
     gap: 8,
   },
-  headerTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  backBtn: {
-    padding: 4,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#0F172A',
-  },
   subtitle: {
     fontSize: 13,
     color: '#64748B',
-    marginBottom: 4,
+    lineHeight: 18,
   },
   listContent: {
     padding: 16,

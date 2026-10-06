@@ -48,7 +48,7 @@ export function UBDHeader({
         {/* Admin Tag */}
         <View style={styles.adminTag}>
           <View style={styles.adminAvatar}>
-            <Ionicons name="person" size={12} color={colors.primary} />
+            <Ionicons name="person" size={11} color={colors.primary} />
           </View>
           <Text style={styles.adminText}>Admin</Text>
         </View>
@@ -65,7 +65,7 @@ export function UBDHeader({
             accessibilityLabel="Pengaturan Aplikasi"
             hitSlop={8}
           >
-            <Ionicons name="settings-outline" size={18} color="#475569" />
+            <Ionicons name="settings-outline" size={17} color={colors.textSecondary} />
           </Pressable>
         )}
 
@@ -81,7 +81,7 @@ export function UBDHeader({
             accessibilityLabel="Logout Administrator"
             hitSlop={8}
           >
-            <Ionicons name="log-out-outline" size={18} color={colors.danger} />
+            <Ionicons name="log-out-outline" size={17} color={colors.danger} />
           </Pressable>
         )}
       </View>
@@ -94,12 +94,12 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: colors.surface,
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.sm + 2,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(226, 232, 240, 0.8)',
+    borderBottomColor: colors.border,
   },
   containerElevated: {
     boxShadow: shadows.subtle,
@@ -109,14 +109,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logoWrapper: {
-    height: 40,
+    height: 38,
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
   logoImage: {
     width: '100%',
     height: '100%',
-    maxWidth: 190,
+    maxWidth: 185,
   },
   subtitleText: {
     fontSize: 11,
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -154,24 +154,24 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   settingsButton: {
-    width: 36,
-    height: 36,
+    width: 34,
+    height: 34,
     borderRadius: radius.md,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceSubtle,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
   },
   settingsButtonPressed: {
     opacity: 0.75,
     transform: [{ scale: 0.95 }],
   },
   logoutButton: {
-    width: 36,
-    height: 36,
+    width: 34,
+    height: 34,
     borderRadius: radius.md,
-    backgroundColor: '#FEE2E2',
+    backgroundColor: colors.dangerLight,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
@@ -182,4 +182,3 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.95 }],
   },
 });
-

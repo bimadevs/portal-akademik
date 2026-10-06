@@ -3,7 +3,7 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ActivityIndicator,
   Alert,
@@ -13,8 +13,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { DosenService } from '../../services/dosen-service';
 import { Dosen } from '../../types/mahasiswa';
 import { SearchBar } from '../../components/search-bar';
-import { UBD_COLORS } from '../../constants/theme';
 import { PhotoAvatar } from '@/components/photo-avatar';
+import { colors, radius, shadows, spacing } from '@/theme';
 
 export default function DosenListScreen() {
   const router = useRouter();
@@ -42,7 +42,7 @@ export default function DosenListScreen() {
   const handleDelete = (id: string | number, nama: string) => {
     Alert.alert(
       'Hapus Dosen',
-      `Yakin ingin menghapus dosen ${nama}?`,
+      `Yakin ingin menghapus data dosen ${nama}?`,
       [
         { text: 'Batal', style: 'cancel' },
         {
@@ -67,68 +67,100 @@ export default function DosenListScreen() {
         <SearchBar
           value={search}
           onChangeText={setSearch}
-          placeholder="Cari NIDN, nama, atau prodi..."
+          placeholder="Cari NIDN, nama, atau fakultas..."
+          onClear={() => setSearch('')}
         />
       </View>
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loadingText}>Memuat data dosen...</Text>
         </View>
       ) : (
         <FlatList
           data={dosenList}
           keyExtractor={(item) => String(item.id)}
           contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryText}>
+                Total <Text style={styles.boldText}>{dosenList.length}</Text> dosen pengampu terdaftar
+              </Text>
+            </View>
+          }
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Ionicons name="people-outline" size={48} color="#94A3B8" />
-              <Text style={styles.emptyText}>Tidak ada data dosen ditemukan</Text>
+              <View style={styles.emptyIconCircle}>
+                <Ionicons name="people-outline" size={32} color={colors.textMuted} />
+              </View>
+              <Text style={styles.emptyTitle}>Dosen Tidak Ditemukan</Text>
+              <Text style={styles.emptyText}>
+                {search ? 'Coba gunakan kata kunci pencarian yang lain.' : 'Belum ada data dosen.'}
+              </Text>
             </View>
           }
           renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.card}
+            <Pressable
+              style={({ pressed }) => [
+                styles.card,
+                pressed && styles.cardPressed,
+              ]}
               onPress={() => router.push(`/dosen/${item.id}`)}
-              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={`Detail dosen ${item.nama}`}
             >
               <PhotoAvatar
                 uri={item.fotoUrl || (item as any).foto_url}
-                size={46}
+                size={44}
                 name={item.nama}
-                style={{ marginRight: 12 }}
+                shape="rounded"
               />
               <View style={styles.info}>
-                <Text style={styles.nama}>{item.nama}</Text>
+                <Text style={styles.nama} numberOfLines={1}>{item.nama}</Text>
                 <Text style={styles.nidn}>NIDN: {item.nidn}</Text>
-                <Text style={styles.prodi}>{item.prodi}</Text>
+                <View style={styles.prodiBadge}>
+                  <Text style={styles.prodiText} numberOfLines={1}>
+                    {item.prodi || item.fakultas}
+                  </Text>
+                </View>
               </View>
               <View style={styles.actions}>
-                <TouchableOpacity
+                <Pressable
                   onPress={() => router.push(`/dosen/form?id=${item.id}`)}
                   style={styles.iconBtn}
+                  hitSlop={8}
+                  accessibilityLabel="Edit Dosen"
                 >
-                  <Ionicons name="create-outline" size={20} color="#0284C7" />
-                </TouchableOpacity>
-                <TouchableOpacity
+                  <Ionicons name="create-outline" size={19} color={colors.primary} />
+                </Pressable>
+                <Pressable
                   onPress={() => handleDelete(item.id, item.nama)}
                   style={styles.iconBtn}
+                  hitSlop={8}
+                  accessibilityLabel="Hapus Dosen"
                 >
-                  <Ionicons name="trash-outline" size={20} color="#DC2626" />
-                </TouchableOpacity>
+                  <Ionicons name="trash-outline" size={19} color={colors.danger} />
+                </Pressable>
               </View>
-            </TouchableOpacity>
+            </Pressable>
           )}
         />
       )}
 
-      <TouchableOpacity
-        style={styles.fab}
+      {/* FAB Tambah Dosen */}
+      <Pressable
+        style={({ pressed }) => [
+          styles.fab,
+          pressed && styles.fabPressed,
+        ]}
         onPress={() => router.push('/dosen/form')}
-        activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Tambah Dosen Baru"
       >
-        <Ionicons name="add" size={28} color="#FFFFFF" />
-      </TouchableOpacity>
+        <Ionicons name="add" size={26} color="#FFFFFF" />
+      </Pressable>
     </View>
   );
 }
@@ -136,92 +168,132 @@ export default function DosenListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   header: {
-    padding: 16,
-    backgroundColor: '#FFFFFF',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderColor: '#E2E8F0',
+    borderBottomColor: colors.border,
   },
   listContent: {
-    padding: 16,
-    paddingBottom: 80,
+    padding: spacing.lg,
+    paddingBottom: 90,
+    gap: spacing.sm,
+  },
+  summaryRow: {
+    marginBottom: spacing.xs,
+  },
+  summaryText: {
+    fontSize: 11,
+    color: colors.textSecondary,
+  },
+  boldText: {
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    padding: 14,
-    borderRadius: 12,
-    marginBottom: 10,
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
+    boxShadow: shadows.subtle,
+    gap: spacing.md,
   },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#E6F0F7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
+  cardPressed: {
+    opacity: 0.88,
+    transform: [{ scale: 0.98 }],
   },
   info: {
     flex: 1,
+    gap: 3,
   },
   nama: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   nidn: {
     fontSize: 12,
-    color: '#64748B',
+    color: colors.textSecondary,
+  },
+  prodiBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: radius.xs,
     marginTop: 2,
   },
-  prodi: {
-    fontSize: 12,
-    color: UBD_COLORS.ACCENT_DARK,
-    fontWeight: '600',
-    marginTop: 2,
+  prodiText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: colors.primary,
   },
   actions: {
     flexDirection: 'row',
-    gap: 8,
+    alignItems: 'center',
+    gap: 4,
   },
   iconBtn: {
     padding: 6,
+    borderRadius: radius.md,
+    backgroundColor: colors.surfaceSubtle,
   },
   center: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: spacing.sm,
+  },
+  loadingText: {
+    fontSize: 13,
+    color: colors.textSecondary,
   },
   empty: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 60,
+    paddingTop: 50,
+    gap: 4,
+  },
+  emptyIconCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: colors.surfaceSubtle,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.xs,
+  },
+  emptyTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   emptyText: {
-    fontSize: 14,
-    color: '#64748B',
-    marginTop: 8,
+    fontSize: 12,
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
   fab: {
     position: 'absolute',
     bottom: 24,
     right: 24,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: UBD_COLORS.PRIMARY,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 3 },
+    boxShadow: shadows.cardElevated,
+  },
+  fabPressed: {
+    backgroundColor: colors.primaryHover,
+    opacity: 0.9,
+    transform: [{ scale: 0.95 }],
   },
 });

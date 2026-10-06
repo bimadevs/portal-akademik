@@ -1,24 +1,24 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * Theme constants and bridge to centralized @/theme tokens.
  */
 
 import { Platform } from 'react-native';
+import { colors } from '../theme/colors';
 
 export const Colors = {
   light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
+    text: colors.textPrimary,
+    background: colors.background,
+    backgroundElement: colors.surfaceSubtle,
+    backgroundSelected: colors.primaryLight,
+    textSecondary: colors.textSecondary,
   },
   dark: {
     text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
+    background: '#090D16',
+    backgroundElement: '#131B2E',
+    backgroundSelected: '#1E293B',
+    textSecondary: '#94A3B8',
   },
 } as const;
 
@@ -26,13 +26,9 @@ export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
 export const Fonts = Platform.select({
   ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
     sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
     serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
     rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
     mono: 'ui-monospace',
   },
   default: {
@@ -62,18 +58,21 @@ export const Spacing = {
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;
 
+/**
+ * UBD_COLORS mapped directly to centralized @/theme tokens
+ */
 export const UBD_COLORS = {
-  PRIMARY: '#2B52BA',
-  PRIMARY_DARK: '#1E3A8A',
-  PRIMARY_LIGHT: '#EFF6FF',
-  ACCENT: '#3B62C6',
-  ACCENT_DARK: '#1E3A8A',
-  BACKGROUND: '#F8FAFC',
-  SURFACE: '#FFFFFF',
-  TEXT: '#0F172A',
-  TEXT_MUTED: '#64748B',
-  BORDER: '#E2E8F0',
-  DANGER: '#EF4444',
-  SUCCESS: '#10B981',
-  WARNING: '#F59E0B',
+  PRIMARY: colors.primary,
+  PRIMARY_DARK: colors.primaryDark,
+  PRIMARY_LIGHT: colors.primaryLight,
+  ACCENT: colors.accent,
+  ACCENT_DARK: colors.primaryDark,
+  BACKGROUND: colors.background,
+  SURFACE: colors.surface,
+  TEXT: colors.textPrimary,
+  TEXT_MUTED: colors.textSecondary,
+  BORDER: colors.border,
+  DANGER: colors.danger,
+  SUCCESS: colors.success,
+  WARNING: colors.warning,
 };

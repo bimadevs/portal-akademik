@@ -3,7 +3,7 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
+  Pressable,
   ScrollView,
   StyleSheet,
   Alert,
@@ -12,8 +12,7 @@ import {
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { DosenService } from '../../services/dosen-service';
 import { FAKULTAS_OPTIONS, Fakultas } from '../../types/mahasiswa';
-import { UBD_COLORS } from '../../constants/theme';
-
+import { colors, radius, spacing, shadows } from '@/theme';
 import { PhotoAvatar } from '@/components/photo-avatar';
 import { PhotoService } from '@/services/photo-service';
 
@@ -108,33 +107,33 @@ export default function DosenFormScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>{isEdit ? 'Edit Dosen' : 'Tambah Dosen Baru'}</Text>
-
+    <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       {/* Upload Foto Dosen */}
       <View style={styles.photoSection}>
         <PhotoAvatar
           uri={fotoUrl}
-          size={100}
+          size={96}
           name={nama}
           editable
           onPress={handlePickPhoto}
         />
-        <TouchableOpacity
+        <Pressable
           onPress={handlePickPhoto}
-          style={styles.changePhotoBtn}
-          activeOpacity={0.7}
+          style={({ pressed }) => [
+            styles.changePhotoBtn,
+            pressed && styles.btnPressed,
+          ]}
         >
           <Text style={styles.changePhotoText}>
             {fotoUrl ? 'Ganti Foto Dosen' : 'Upload Foto Dosen'}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
         <Text style={styles.photoHint}>Ketuk avatar untuk mengambil dari kamera atau galeri</Text>
       </View>
 
@@ -144,7 +143,7 @@ export default function DosenFormScreen() {
         value={nidn}
         onChangeText={setNidn}
         placeholder="Contoh: 0412038501"
-        placeholderTextColor="#94A3B8"
+        placeholderTextColor={colors.textTertiary}
         keyboardType="number-pad"
       />
 
@@ -154,7 +153,7 @@ export default function DosenFormScreen() {
         value={nama}
         onChangeText={setNama}
         placeholder="Contoh: Dr. Budi Santoso"
-        placeholderTextColor="#94A3B8"
+        placeholderTextColor={colors.textTertiary}
       />
 
       <Text style={styles.label}>Gelar Akademik</Text>
@@ -163,22 +162,26 @@ export default function DosenFormScreen() {
         value={gelar}
         onChangeText={setGelar}
         placeholder="Contoh: M.Kom., Ph.D."
-        placeholderTextColor="#94A3B8"
+        placeholderTextColor={colors.textTertiary}
       />
 
       <Text style={styles.label}>Fakultas</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipScroll}>
         <View style={styles.chipGroup}>
           {FAKULTAS_OPTIONS.map((f) => (
-            <TouchableOpacity
+            <Pressable
               key={f}
-              style={[styles.chip, fakultas === f && styles.chipActive]}
+              style={({ pressed }) => [
+                styles.chip,
+                fakultas === f && styles.chipActive,
+                pressed && styles.btnPressed,
+              ]}
               onPress={() => setFakultas(f)}
             >
               <Text style={[styles.chipText, fakultas === f && styles.chipTextActive]}>
                 {f.replace('Fakultas ', '')}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           ))}
         </View>
       </ScrollView>
@@ -189,7 +192,7 @@ export default function DosenFormScreen() {
         value={prodi}
         onChangeText={setProdi}
         placeholder="Contoh: Teknik Informatika"
-        placeholderTextColor="#94A3B8"
+        placeholderTextColor={colors.textTertiary}
       />
 
       <Text style={styles.label}>Email</Text>
@@ -197,8 +200,8 @@ export default function DosenFormScreen() {
         style={styles.input}
         value={email}
         onChangeText={setEmail}
-        placeholder="Contoh: dosen@budiluhur.ac.id"
-        placeholderTextColor="#94A3B8"
+        placeholder="Contoh: dosen@ubd.ac.id"
+        placeholderTextColor={colors.textTertiary}
         keyboardType="email-address"
         autoCapitalize="none"
       />
@@ -209,21 +212,25 @@ export default function DosenFormScreen() {
         value={noHp}
         onChangeText={setNoHp}
         placeholder="Contoh: 08123456789"
-        placeholderTextColor="#94A3B8"
+        placeholderTextColor={colors.textTertiary}
         keyboardType="phone-pad"
       />
 
-      <TouchableOpacity
-        style={[styles.submitBtn, saving && styles.submitBtnDisabled]}
+      <Pressable
+        style={({ pressed }) => [
+          styles.submitBtn,
+          saving && styles.submitBtnDisabled,
+          pressed && styles.btnPressed,
+        ]}
         onPress={handleSubmit}
         disabled={saving}
       >
         {saving ? (
           <ActivityIndicator color="#FFFFFF" />
         ) : (
-          <Text style={styles.submitText}>{isEdit ? 'Perbarui Data' : 'Simpan Dosen'}</Text>
+          <Text style={styles.submitText}>{isEdit ? 'Perbarui Data Dosen' : 'Simpan Dosen Baru'}</Text>
         )}
-      </TouchableOpacity>
+      </Pressable>
     </ScrollView>
   );
 }
@@ -231,62 +238,60 @@ export default function DosenFormScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   content: {
-    padding: 20,
+    padding: spacing.lg,
     paddingBottom: 40,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#0F172A',
-    marginBottom: 20,
   },
   label: {
     fontSize: 13,
-    fontWeight: '600',
-    color: '#334155',
+    fontWeight: '700',
+    color: colors.textPrimary,
     marginBottom: 6,
-    marginTop: 12,
+    marginTop: 14,
   },
   input: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    borderColor: colors.borderSubtle,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   chipScroll: {
-    marginBottom: 6,
+    marginBottom: 4,
   },
   chipGroup: {
     flexDirection: 'row',
-    gap: 8,
+    gap: spacing.sm,
   },
   chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: '#E2E8F0',
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: radius.full,
+    backgroundColor: colors.surfaceSubtle,
+    borderWidth: 1,
+    borderColor: colors.borderSubtle,
   },
   chipActive: {
-    backgroundColor: UBD_COLORS.PRIMARY,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   chipText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#475569',
+    color: colors.textSecondary,
   },
   chipTextActive: {
     color: '#FFFFFF',
+    fontWeight: '700',
   },
   submitBtn: {
-    backgroundColor: UBD_COLORS.PRIMARY,
-    borderRadius: 10,
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
@@ -300,6 +305,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
   },
+  btnPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.99 }],
+  },
   center: {
     flex: 1,
     alignItems: 'center',
@@ -308,30 +317,31 @@ const styles = StyleSheet.create({
   photoSection: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
-    paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    marginBottom: 8,
+    paddingVertical: spacing.lg,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.borderSubtle,
     gap: 8,
+    ...shadows.sm,
   },
   changePhotoBtn: {
     paddingHorizontal: 16,
     paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: '#EFF6FF',
+    borderRadius: radius.full,
+    backgroundColor: colors.surfaceSubtle,
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: colors.borderSubtle,
     marginTop: 4,
   },
   changePhotoText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
-    color: UBD_COLORS.PRIMARY,
+    color: colors.primary,
   },
   photoHint: {
     fontSize: 11,
-    color: '#94A3B8',
+    color: colors.textTertiary,
   },
 });

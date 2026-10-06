@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Pressable, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { MataKuliahService } from '../../services/mata-kuliah-service';
 import { MataKuliah } from '../../types/mahasiswa';
-import { UBD_COLORS } from '../../constants/theme';
+import { colors, radius, spacing, shadows } from '@/theme';
 
 export default function MataKuliahDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -23,7 +23,7 @@ export default function MataKuliahDetailScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -37,7 +37,7 @@ export default function MataKuliahDetailScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <View style={styles.cardHeader}>
         <View style={styles.badge}>
           <Text style={styles.badgeText}>{mk.kode}</Text>
@@ -68,13 +68,16 @@ export default function MataKuliahDetailScreen() {
         </View>
       </View>
 
-      <TouchableOpacity
-        style={styles.editBtn}
+      <Pressable
+        style={({ pressed }) => [
+          styles.editBtn,
+          pressed && styles.btnPressed,
+        ]}
         onPress={() => router.push(`/mata-kuliah/form?id=${mk.id}`)}
       >
-        <Ionicons name="create-outline" size={20} color="#FFFFFF" />
+        <Ionicons name="create-outline" size={18} color="#FFFFFF" />
         <Text style={styles.editBtnText}>Edit Mata Kuliah</Text>
-      </TouchableOpacity>
+      </Pressable>
     </ScrollView>
   );
 }
@@ -82,84 +85,88 @@ export default function MataKuliahDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   content: {
-    padding: 20,
+    padding: spacing.lg,
     alignItems: 'center',
+    gap: spacing.md,
   },
   cardHeader: {
     width: '100%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 24,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.xl,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    marginBottom: 16,
+    borderColor: colors.borderSubtle,
+    ...shadows.sm,
   },
   badge: {
-    backgroundColor: '#E0F2FE',
+    backgroundColor: colors.surfaceSubtle,
     paddingHorizontal: 12,
     paddingVertical: 4,
-    borderRadius: 8,
+    borderRadius: radius.xs,
+    borderWidth: 1,
+    borderColor: colors.borderSubtle,
     marginBottom: 10,
   },
   badgeText: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#0284C7',
+    color: colors.primary,
   },
   nama: {
     fontSize: 18,
-    fontWeight: '800',
-    color: '#0F172A',
+    fontWeight: '700',
+    color: colors.textPrimary,
     textAlign: 'center',
   },
   sub: {
     fontSize: 13,
-    color: '#64748B',
-    marginTop: 6,
+    color: colors.textSecondary,
+    marginTop: 4,
+    fontWeight: '500',
   },
   detailsCard: {
     width: '100%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    marginBottom: 20,
+    borderColor: colors.borderSubtle,
+    ...shadows.sm,
   },
   sectionTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 12,
+    color: colors.textPrimary,
+    marginBottom: 8,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderColor: '#F1F5F9',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.borderSubtle,
   },
   label: {
     fontSize: 13,
-    color: '#64748B',
+    color: colors.textSecondary,
   },
   val: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   editBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: UBD_COLORS.PRIMARY,
+    backgroundColor: colors.primary,
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: 10,
+    borderRadius: radius.md,
     width: '100%',
     justifyContent: 'center',
   },
@@ -168,13 +175,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
   },
+  btnPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.99 }],
+  },
   center: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   notFound: {
-    color: '#64748B',
+    color: colors.textTertiary,
     fontSize: 16,
   },
 });

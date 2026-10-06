@@ -8,7 +8,6 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { AuditService } from '../../services/audit-service';
 import { AuditLog } from '../../types/mahasiswa';
@@ -92,7 +91,6 @@ function getActionMeta(action: string) {
 }
 
 export default function AuditLogScreen() {
-  const router = useRouter();
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [search, setSearch] = useState('');
   const [activeChip, setActiveChip] = useState('Semua');
@@ -126,17 +124,6 @@ export default function AuditLogScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Top Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
-          <Ionicons name="arrow-back" size={24} color="#0F172A" />
-        </TouchableOpacity>
-        <View style={styles.headerTitleBox}>
-          <Text style={styles.headerTitle}>Jejak Audit Administratif</Text>
-          <Text style={styles.headerSub}>Rekam jejak mutasi & keamanan data sistem</Text>
-        </View>
-      </View>
-
       {/* Search Bar */}
       <View style={styles.searchSection}>
         <SearchBar
@@ -226,34 +213,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8FAFC',
-  },
-  header: {
-    backgroundColor: '#FFFFFF',
-    paddingTop: 50,
-    paddingHorizontal: 16,
-    paddingBottom: 14,
-    borderBottomWidth: 1,
-    borderColor: '#E2E8F0',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  backBtn: {
-    padding: 6,
-    borderRadius: 8,
-  },
-  headerTitleBox: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: '#0F172A',
-  },
-  headerSub: {
-    fontSize: 11,
-    color: '#64748B',
-    marginTop: 1,
   },
   searchSection: {
     paddingHorizontal: 16,

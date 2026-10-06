@@ -3,7 +3,7 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ActivityIndicator,
   Alert,
@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { MataKuliahService } from '../../services/mata-kuliah-service';
 import { MataKuliah } from '../../types/mahasiswa';
 import { SearchBar } from '../../components/search-bar';
-import { UBD_COLORS } from '../../constants/theme';
+import { colors, radius, shadows, spacing } from '@/theme';
 
 export default function MataKuliahListScreen() {
   const router = useRouter();
@@ -41,7 +41,7 @@ export default function MataKuliahListScreen() {
   const handleDelete = (id: string | number, nama: string) => {
     Alert.alert(
       'Hapus Mata Kuliah',
-      `Yakin ingin menghapus ${nama}?`,
+      `Yakin ingin menghapus mata kuliah ${nama}?`,
       [
         { text: 'Batal', style: 'cancel' },
         {
@@ -67,29 +67,48 @@ export default function MataKuliahListScreen() {
           value={search}
           onChangeText={setSearch}
           placeholder="Cari kode atau nama matkul..."
+          onClear={() => setSearch('')}
         />
       </View>
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loadingText}>Memuat kurikulum mata kuliah...</Text>
         </View>
       ) : (
         <FlatList
           data={list}
           keyExtractor={(item) => String(item.id)}
           contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryText}>
+                Total <Text style={styles.boldText}>{list.length}</Text> mata kuliah kurikulum
+              </Text>
+            </View>
+          }
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Ionicons name="book-outline" size={48} color="#94A3B8" />
-              <Text style={styles.emptyText}>Tidak ada mata kuliah ditemukan</Text>
+              <View style={styles.emptyIconCircle}>
+                <Ionicons name="book-outline" size={32} color={colors.textMuted} />
+              </View>
+              <Text style={styles.emptyTitle}>Mata Kuliah Tidak Ditemukan</Text>
+              <Text style={styles.emptyText}>
+                {search ? 'Coba gunakan kata kunci pencarian yang lain.' : 'Belum ada mata kuliah.'}
+              </Text>
             </View>
           }
           renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.card}
+            <Pressable
+              style={({ pressed }) => [
+                styles.card,
+                pressed && styles.cardPressed,
+              ]}
               onPress={() => router.push(`/mata-kuliah/${item.id}`)}
-              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={`Detail matkul ${item.nama}`}
             >
               <View style={styles.sksBadge}>
                 <Text style={styles.sksNumber}>{item.sks}</Text>
@@ -98,39 +117,48 @@ export default function MataKuliahListScreen() {
               <View style={styles.info}>
                 <View style={styles.topRow}>
                   <Text style={styles.kode}>{item.kode}</Text>
-                  <Text style={styles.sem}>Sem {item.semester}</Text>
+                  <Text style={styles.sem}>Semester {item.semester}</Text>
                 </View>
-                <Text style={styles.nama}>{item.nama}</Text>
-                <Text style={styles.dosen}>
+                <Text style={styles.nama} numberOfLines={1}>{item.nama}</Text>
+                <Text style={styles.dosen} numberOfLines={1}>
                   Pengampu: {item.dosen_nama || 'Belum ditentukan'}
                 </Text>
               </View>
               <View style={styles.actions}>
-                <TouchableOpacity
+                <Pressable
                   onPress={() => router.push(`/mata-kuliah/form?id=${item.id}`)}
                   style={styles.iconBtn}
+                  hitSlop={8}
+                  accessibilityLabel="Edit Mata Kuliah"
                 >
-                  <Ionicons name="create-outline" size={20} color="#0284C7" />
-                </TouchableOpacity>
-                <TouchableOpacity
+                  <Ionicons name="create-outline" size={19} color={colors.primary} />
+                </Pressable>
+                <Pressable
                   onPress={() => handleDelete(item.id, item.nama)}
                   style={styles.iconBtn}
+                  hitSlop={8}
+                  accessibilityLabel="Hapus Mata Kuliah"
                 >
-                  <Ionicons name="trash-outline" size={20} color="#DC2626" />
-                </TouchableOpacity>
+                  <Ionicons name="trash-outline" size={19} color={colors.danger} />
+                </Pressable>
               </View>
-            </TouchableOpacity>
+            </Pressable>
           )}
         />
       )}
 
-      <TouchableOpacity
-        style={styles.fab}
+      {/* FAB Tambah Mata Kuliah */}
+      <Pressable
+        style={({ pressed }) => [
+          styles.fab,
+          pressed && styles.fabPressed,
+        ]}
         onPress={() => router.push('/mata-kuliah/form')}
-        activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Tambah Mata Kuliah Baru"
       >
-        <Ionicons name="add" size={28} color="#FFFFFF" />
-      </TouchableOpacity>
+        <Ionicons name="add" size={26} color="#FFFFFF" />
+      </Pressable>
     </View>
   );
 }
@@ -138,117 +166,155 @@ export default function MataKuliahListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   header: {
-    padding: 16,
-    backgroundColor: '#FFFFFF',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderColor: '#E2E8F0',
+    borderBottomColor: colors.border,
   },
   listContent: {
-    padding: 16,
-    paddingBottom: 80,
+    padding: spacing.lg,
+    paddingBottom: 90,
+    gap: spacing.sm,
+  },
+  summaryRow: {
+    marginBottom: spacing.xs,
+  },
+  summaryText: {
+    fontSize: 11,
+    color: colors.textSecondary,
+  },
+  boldText: {
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    padding: 14,
-    borderRadius: 12,
-    marginBottom: 10,
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
+    boxShadow: shadows.subtle,
+    gap: spacing.md,
+  },
+  cardPressed: {
+    opacity: 0.88,
+    transform: [{ scale: 0.98 }],
   },
   sksBadge: {
-    width: 48,
-    height: 48,
-    borderRadius: 10,
-    backgroundColor: '#EFF6FF',
+    width: 44,
+    height: 44,
+    borderRadius: radius.md,
+    backgroundColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
     borderWidth: 1,
     borderColor: '#BFDBFE',
   },
   sksNumber: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '800',
-    color: UBD_COLORS.PRIMARY,
+    color: colors.primary,
   },
   sksLabel: {
     fontSize: 9,
     fontWeight: '700',
-    color: '#0284C7',
+    color: colors.primary,
+    marginTop: -2,
   },
   info: {
     flex: 1,
+    gap: 2,
   },
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 2,
   },
   kode: {
     fontSize: 11,
-    fontWeight: '700',
-    color: '#0284C7',
-    backgroundColor: '#E0F2FE',
-    paddingHorizontal: 6,
-    paddingVertical: 1,
-    borderRadius: 4,
+    fontWeight: '800',
+    color: colors.primary,
+    letterSpacing: 0.5,
   },
   sem: {
     fontSize: 11,
-    color: '#64748B',
+    color: colors.textSecondary,
   },
   nama: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   dosen: {
     fontSize: 12,
-    color: '#64748B',
-    marginTop: 2,
+    color: colors.textSecondary,
   },
   actions: {
     flexDirection: 'row',
-    gap: 6,
+    alignItems: 'center',
+    gap: 4,
   },
   iconBtn: {
     padding: 6,
+    borderRadius: radius.md,
+    backgroundColor: colors.surfaceSubtle,
   },
   center: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: spacing.sm,
+  },
+  loadingText: {
+    fontSize: 13,
+    color: colors.textSecondary,
   },
   empty: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 60,
+    paddingTop: 50,
+    gap: 4,
+  },
+  emptyIconCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: colors.surfaceSubtle,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.xs,
+  },
+  emptyTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   emptyText: {
-    fontSize: 14,
-    color: '#64748B',
-    marginTop: 8,
+    fontSize: 12,
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
   fab: {
     position: 'absolute',
     bottom: 24,
     right: 24,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: UBD_COLORS.PRIMARY,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 3 },
+    boxShadow: shadows.cardElevated,
+  },
+  fabPressed: {
+    backgroundColor: colors.primaryHover,
+    opacity: 0.9,
+    transform: [{ scale: 0.95 }],
   },
 });

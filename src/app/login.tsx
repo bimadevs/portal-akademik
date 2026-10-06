@@ -12,7 +12,6 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -58,7 +57,7 @@ export default function LoginScreen() {
   const handleSignUpInfo = () => {
     Alert.alert(
       'Pendaftaran Akun Administrator',
-      'Untuk pembuatan akun administrator baru, silakan menghubungi Bagian Administrasi IT Universitas Buddhi Dharma.',
+      'Untuk registrasi akun administrator baru atau reset kredensial, silakan hubungi Biro Administrasi Akademik & IT Universitas Buddhi Dharma.',
       [{ text: 'Mengerti', style: 'default' }]
     );
   };
@@ -74,76 +73,38 @@ export default function LoginScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Top Atmospheric Campus Hero */}
-          <View style={styles.heroContainer}>
-            <LinearGradient
-              colors={['#070F26', '#0F1E47', '#1E3A8A']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.heroGradient}
-            >
-              <View style={styles.ambientOrbRight} />
-              <View style={styles.ambientOrbLeft} />
-
-              {/* Logo UBD Emblem Card */}
-              <View style={styles.logoCardWrapper}>
-                <Image
-                  source={require('../../assets/images/ubd-logo.png')}
-                  style={styles.ubdLogo}
-                  resizeMode="contain"
-                  accessibilityLabel="Universitas Buddhi Dharma"
-                />
-              </View>
-
-              {/* Tagline & Identity */}
-              <View style={styles.heroTextWrapper}>
-                <View style={styles.badgePill}>
-                  <View style={styles.badgeDot} />
-                  <Text style={styles.badgePillText}>PORTAL AKADEMIK RESMI</Text>
-                </View>
-                <Text style={styles.heroTitle}>Sistem Informasi Akademik</Text>
-                <Text style={styles.heroMotto}>
-                  “Kreativitas Membangkitkan Inovasi”
-                </Text>
-              </View>
-            </LinearGradient>
-          </View>
-
-          {/* Floating Modern Login Card */}
-          <View style={styles.floatingCard}>
-            {/* Header Form */}
-            <View style={styles.cardHeader}>
-              <View>
-                <Text style={styles.cardTitle}>Masuk Administrator</Text>
-                <Text style={styles.cardSubtitle}>
-                  Silakan masukkan kredensial akun Anda
-                </Text>
-              </View>
-              <View style={styles.shieldIconBox}>
-                <Ionicons name="shield-checkmark" size={20} color={colors.primary} />
-              </View>
+          {/* Institutional Academic Header */}
+          <View style={styles.brandHero}>
+            <View style={styles.logoContainer}>
+              <Image
+                source={require('../../assets/images/ubd-logo.png')}
+                style={styles.ubdLogo}
+                resizeMode="contain"
+                accessibilityLabel="Universitas Buddhi Dharma"
+              />
             </View>
 
-            {/* Quick-Fill Demo Helper Chip for Evaluator */}
-            <Pressable
-              onPress={handleQuickFillDemo}
-              style={({ pressed }) => [
-                styles.quickFillChip,
-                pressed && styles.quickFillChipPressed,
-              ]}
-              accessibilityRole="button"
-              accessibilityLabel="Isi otomatis akun demo"
-            >
-              <Ionicons name="flash" size={14} color="#2563EB" />
-              <Text style={styles.quickFillText}>
-                Gunakan Akun Demo:{' '}
-                <Text style={styles.quickFillBold}>admin / admin</Text>
+            <View style={styles.heroTextContainer}>
+              <Text style={styles.portalCategory}>PORTAL AKADEMIK TERPADU</Text>
+              <Text style={styles.institutionName}>Universitas Buddhi Dharma</Text>
+              <Text style={styles.institutionMotto}>
+                “Kreativitas Membangkitkan Inovasi”
               </Text>
-            </Pressable>
+            </View>
+          </View>
 
-            {/* Input Field: User */}
+          {/* Form Container */}
+          <View style={styles.formContainer}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>Masuk Administrator</Text>
+              <Text style={styles.cardSubtitle}>
+                Silakan masukkan kredensial akun administrator Anda
+              </Text>
+            </View>
+
+            {/* Input: Username */}
             <View style={styles.inputGroup}>
-              <Text style={styles.fieldLabel}>User / Username</Text>
+              <Text style={styles.fieldLabel}>Username / ID Admin</Text>
               <View
                 style={[
                   styles.inputContainer,
@@ -152,7 +113,7 @@ export default function LoginScreen() {
               >
                 <Ionicons
                   name="person-outline"
-                  size={19}
+                  size={18}
                   color={focusedInput === 'user' ? colors.primary : colors.textSecondary}
                   style={styles.inputLeadingIcon}
                 />
@@ -161,7 +122,7 @@ export default function LoginScreen() {
                   onChangeText={setUsername}
                   onFocus={() => setFocusedInput('user')}
                   onBlur={() => setFocusedInput(null)}
-                  placeholder="Ketik user (admin)"
+                  placeholder="Ketik username (admin)"
                   placeholderTextColor={colors.textMuted}
                   autoCapitalize="none"
                   autoCorrect={false}
@@ -169,25 +130,24 @@ export default function LoginScreen() {
                   accessibilityLabel="Input Username Administrator"
                 />
                 {username.length > 0 && (
-                  <Pressable onPress={() => setUsername('')} hitSlop={6}>
-                    <Ionicons name="close-circle" size={16} color={colors.textMuted} />
+                  <Pressable onPress={() => setUsername('')} hitSlop={8}>
+                    <Ionicons name="close-circle" size={17} color={colors.textMuted} />
                   </Pressable>
                 )}
               </View>
             </View>
 
-            {/* Input Field: Password */}
+            {/* Input: Password */}
             <View style={styles.inputGroup}>
               <View style={styles.passwordLabelRow}>
-                <Text style={styles.fieldLabel}>Password</Text>
-                {/* Tautan Sign-up di sisi kanan sesuai spesifikasi */}
+                <Text style={styles.fieldLabel}>Kata Sandi</Text>
                 <Pressable
                   onPress={handleSignUpInfo}
                   hitSlop={8}
                   accessibilityRole="button"
                   accessibilityLabel="Informasi Pendaftaran Akun"
                 >
-                  <Text style={styles.signUpLinkText}>Sign-up / Bantuan?</Text>
+                  <Text style={styles.signUpLinkText}>Bantuan Masuk?</Text>
                 </Pressable>
               </View>
 
@@ -199,7 +159,7 @@ export default function LoginScreen() {
               >
                 <Ionicons
                   name="lock-closed-outline"
-                  size={19}
+                  size={18}
                   color={focusedInput === 'pass' ? colors.primary : colors.textSecondary}
                   style={styles.inputLeadingIcon}
                 />
@@ -224,48 +184,64 @@ export default function LoginScreen() {
                 >
                   <Ionicons
                     name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                    size={20}
+                    size={19}
                     color={colors.textSecondary}
                   />
                 </Pressable>
               </View>
             </View>
 
-            {/* Tombol LOGIN Bergradien Mewah */}
+            {/* Primary Action Button */}
             <Pressable
               onPress={handleLogin}
               disabled={isSubmitting}
               style={({ pressed }) => [
-                styles.loginButtonWrapper,
+                styles.loginButton,
                 pressed && styles.loginButtonPressed,
                 isSubmitting && styles.loginButtonDisabled,
               ]}
               accessibilityRole="button"
               accessibilityLabel="Tombol Login"
             >
-              <LinearGradient
-                colors={['#2563EB', '#1D4ED8']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.loginButtonGradient}
-              >
-                {isSubmitting ? (
-                  <ActivityIndicator color={colors.textOnPrimary} />
-                ) : (
-                  <View style={styles.buttonInner}>
-                    <Text style={styles.loginButtonText}>LOGIN</Text>
-                    <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
-                  </View>
-                )}
-              </LinearGradient>
+              {isSubmitting ? (
+                <ActivityIndicator color={colors.textOnPrimary} />
+              ) : (
+                <View style={styles.buttonInner}>
+                  <Text style={styles.loginButtonText}>MASUK KE PORTAL</Text>
+                  <Ionicons name="arrow-forward" size={17} color="#FFFFFF" />
+                </View>
+              )}
+            </Pressable>
+
+            {/* Demo Credential Card */}
+            <Pressable
+              onPress={handleQuickFillDemo}
+              style={({ pressed }) => [
+                styles.demoAccountCard,
+                pressed && styles.demoAccountCardPressed,
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel="Isi otomatis akun demo administrator"
+            >
+              <View style={styles.demoIconBox}>
+                <Ionicons name="key-outline" size={16} color={colors.primary} />
+              </View>
+              <View style={styles.demoTextBox}>
+                <Text style={styles.demoTitle}>Mode Evaluasi / Penguji</Text>
+                <Text style={styles.demoSubtitle}>
+                  Sentuh untuk mengisi otomatis:{' '}
+                  <Text style={styles.demoCode}>admin / admin</Text>
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
             </Pressable>
           </View>
 
-          {/* Footer Institusi */}
+          {/* Institutional Footer */}
           <View style={styles.footerContainer}>
-            <Ionicons name="business-outline" size={14} color={colors.textMuted} />
-            <Text style={styles.footerText}>
-              Universitas Buddhi Dharma • Kampus Karawaci
+            <Text style={styles.footerInstitution}>UNIVERSITAS BUDDHI DHARMA</Text>
+            <Text style={styles.footerCopyright}>
+              Sistem Informasi Akademik Mobile • 100% Offline-First
             </Text>
           </View>
         </ScrollView>
@@ -277,117 +253,71 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   keyboardAvoid: {
     flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: spacing.xxl,
-  },
-  heroContainer: {
-    width: '100%',
-    overflow: 'hidden',
-    borderBottomLeftRadius: radius['3xl'],
-    borderBottomRightRadius: radius['3xl'],
-    boxShadow: shadows.cardElevated,
-  },
-  heroGradient: {
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.xxl + 20,
-    paddingHorizontal: spacing.xl,
-    alignItems: 'center',
-    position: 'relative',
-  },
-  ambientOrbRight: {
-    position: 'absolute',
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: '#3B82F6',
-    opacity: 0.22,
-    top: -40,
-    right: -50,
-  },
-  ambientOrbLeft: {
-    position: 'absolute',
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    backgroundColor: '#06B6D4',
-    opacity: 0.15,
-    bottom: -20,
-    left: -40,
-  },
-  logoCardWrapper: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: radius.xl,
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    boxShadow: shadows.glow,
-    marginBottom: spacing.md,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.xxl,
+    justifyContent: 'center',
+    gap: spacing.xl,
+  },
+  brandHero: {
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  logoContainer: {
+    backgroundColor: colors.surface,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderRadius: radius.xl,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.4)',
+    borderColor: colors.border,
+    boxShadow: shadows.subtle,
   },
   ubdLogo: {
     width: 220,
     height: 48,
   },
-  heroTextWrapper: {
+  heroTextContainer: {
     alignItems: 'center',
     gap: 4,
   },
-  badgePill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: radius.full,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.25)',
-    marginBottom: 4,
-  },
-  badgeDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#38BDF8',
-  },
-  badgePillText: {
-    fontSize: 10,
+  portalCategory: {
+    fontSize: 11,
     fontWeight: '800',
-    color: '#E0F2FE',
-    letterSpacing: 1,
+    color: colors.primary,
+    letterSpacing: 1.5,
   },
-  heroTitle: {
+  institutionName: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: colors.textPrimary,
     letterSpacing: -0.3,
   },
-  heroMotto: {
+  institutionMotto: {
     fontSize: 12,
-    color: '#94A3B8',
     fontStyle: 'italic',
+    color: colors.textSecondary,
   },
-  floatingCard: {
+  formContainer: {
     backgroundColor: colors.surface,
-    marginHorizontal: spacing.lg,
-    marginTop: -32,
     borderRadius: radius['2xl'],
     padding: spacing.xl,
-    boxShadow: shadows.elevated,
     borderWidth: 1,
-    borderColor: 'rgba(226, 232, 240, 0.9)',
+    borderColor: colors.border,
+    boxShadow: shadows.card,
     gap: spacing.lg,
   },
   cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.surfaceSubtle,
+    paddingBottom: spacing.sm,
   },
   cardTitle: {
     fontSize: 18,
@@ -398,40 +328,7 @@ const styles = StyleSheet.create({
   cardSubtitle: {
     fontSize: 12,
     color: colors.textSecondary,
-    marginTop: 2,
-  },
-  shieldIconBox: {
-    width: 38,
-    height: 38,
-    borderRadius: radius.md,
-    backgroundColor: colors.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#BFDBFE',
-  },
-  quickFillChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: '#EFF6FF',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: '#BFDBFE',
-  },
-  quickFillChipPressed: {
-    opacity: 0.7,
-    backgroundColor: '#DBEAFE',
-  },
-  quickFillText: {
-    fontSize: 12,
-    color: '#1E40AF',
-  },
-  quickFillBold: {
-    fontWeight: '700',
-    color: '#1D4ED8',
+    lineHeight: 18,
   },
   inputGroup: {
     gap: 6,
@@ -454,16 +351,16 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.surface,
     borderWidth: 1.5,
-    borderColor: '#E2E8F0',
-    borderRadius: radius.md,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
     paddingHorizontal: spacing.md,
     height: 48,
   },
   inputContainerFocused: {
     borderColor: colors.primary,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     boxShadow: shadows.subtle,
   },
   inputLeadingIcon: {
@@ -478,23 +375,22 @@ const styles = StyleSheet.create({
   eyeIconBtn: {
     padding: spacing.xs,
   },
-  loginButtonWrapper: {
-    borderRadius: radius.md,
-    overflow: 'hidden',
-    boxShadow: shadows.glow,
+  loginButton: {
+    backgroundColor: colors.primary,
+    borderRadius: radius.lg,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: shadows.card,
     marginTop: spacing.xs,
   },
   loginButtonPressed: {
-    opacity: 0.9,
+    backgroundColor: colors.primaryHover,
+    opacity: 0.92,
     transform: [{ scale: 0.98 }],
   },
   loginButtonDisabled: {
     opacity: 0.6,
-  },
-  loginButtonGradient: {
-    paddingVertical: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   buttonInner: {
     flexDirection: 'row',
@@ -502,23 +398,66 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   loginButtonText: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '800',
     color: colors.textOnPrimary,
-    letterSpacing: 1,
+    letterSpacing: 0.8,
   },
-  footerContainer: {
+  demoAccountCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    marginTop: spacing.xl,
-    paddingHorizontal: spacing.lg,
+    backgroundColor: colors.primaryLight,
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
+    gap: spacing.sm,
   },
-  footerText: {
+  demoAccountCardPressed: {
+    backgroundColor: '#DBEAFE',
+    opacity: 0.85,
+  },
+  demoIconBox: {
+    width: 32,
+    height: 32,
+    borderRadius: radius.md,
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
+  },
+  demoTextBox: {
+    flex: 1,
+    gap: 2,
+  },
+  demoTitle: {
     fontSize: 12,
+    fontWeight: '700',
+    color: colors.primary,
+  },
+  demoSubtitle: {
+    fontSize: 11,
     color: colors.textSecondary,
-    fontWeight: '500',
+  },
+  demoCode: {
+    fontWeight: '700',
+    color: colors.primaryDark,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  footerContainer: {
+    alignItems: 'center',
+    gap: 4,
+    paddingTop: spacing.xs,
+  },
+  footerInstitution: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: colors.textSecondary,
+    letterSpacing: 1,
+  },
+  footerCopyright: {
+    fontSize: 11,
+    color: colors.textMuted,
   },
 });
-

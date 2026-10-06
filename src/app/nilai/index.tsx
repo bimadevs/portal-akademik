@@ -3,7 +3,7 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ActivityIndicator,
   Alert,
@@ -16,7 +16,7 @@ import { NilaiService } from '../../services/nilai-service';
 import { Mahasiswa, Semester } from '../../types/mahasiswa';
 import { SearchBar } from '../../components/search-bar';
 import { PhotoAvatar } from '../../components/photo-avatar';
-import { UBD_COLORS } from '../../constants/theme';
+import { colors, radius, spacing, shadows } from '@/theme';
 
 export default function NilaiListScreen() {
   const router = useRouter();
@@ -58,7 +58,7 @@ export default function NilaiListScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.banner}>
-        <Ionicons name="ribbon-outline" size={20} color={UBD_COLORS.PRIMARY} />
+        <Ionicons name="ribbon-outline" size={18} color={colors.primary} />
         <Text style={styles.bannerText}>
           Penilaian & KHS Mahasiswa ({semester?.nama || 'Semester Aktif'})
         </Text>
@@ -68,13 +68,13 @@ export default function NilaiListScreen() {
         <SearchBar
           value={search}
           onChangeText={setSearch}
-          placeholder="Cari NIM atau nama..."
+          placeholder="Cari NIM atau nama mahasiswa..."
         />
       </View>
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={UBD_COLORS.PRIMARY} />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : (
         <FlatList
@@ -84,19 +84,21 @@ export default function NilaiListScreen() {
           renderItem={({ item }) => {
             const ips = ipsMap[String(item.id)] || 0;
             return (
-              <TouchableOpacity
-                style={styles.card}
+              <Pressable
+                style={({ pressed }) => [
+                  styles.card,
+                  pressed && styles.cardPressed,
+                ]}
                 onPress={() => router.push(`/nilai/${item.id}`)}
-                activeOpacity={0.7}
               >
                 <PhotoAvatar
                   uri={item.fotoUrl || (item as any).foto_url}
-                  size={44}
+                  size={46}
                   name={item.nama}
                   shape="rounded"
                 />
                 <View style={styles.info}>
-                  <Text style={styles.nama}>{item.nama}</Text>
+                  <Text style={styles.nama} numberOfLines={1}>{item.nama}</Text>
                   <Text style={styles.nim}>NIM: {item.nim}</Text>
                   <Text style={styles.prodi}>{item.prodi || item.fakultas}</Text>
                 </View>
@@ -104,8 +106,8 @@ export default function NilaiListScreen() {
                   <Text style={styles.ipsNumber}>{ips.toFixed(2)}</Text>
                   <Text style={styles.ipsLabel}>IPS</Text>
                 </View>
-                <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
-              </TouchableOpacity>
+                <Ionicons name="chevron-forward" size={18} color={colors.textTertiary} />
+              </Pressable>
             );
           }}
         />
@@ -117,81 +119,82 @@ export default function NilaiListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   banner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FEF3C7',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    gap: 8,
+    backgroundColor: colors.surfaceSubtle,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    gap: spacing.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.borderSubtle,
   },
   bannerText: {
     fontSize: 13,
-    color: '#92400E',
+    color: colors.primary,
     fontWeight: '700',
   },
   header: {
-    padding: 16,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderColor: '#E2E8F0',
+    padding: spacing.md,
+    backgroundColor: colors.surface,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.borderSubtle,
   },
   listContent: {
-    padding: 16,
+    padding: spacing.lg,
+    gap: spacing.sm,
   },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 10,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    padding: spacing.md,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.borderSubtle,
+    gap: spacing.md,
+    ...shadows.sm,
   },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#E6F0F7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
+  cardPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.99 }],
   },
   info: {
     flex: 1,
+    gap: 2,
   },
   nama: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0F172A',
+    color: colors.textPrimary,
   },
   nim: {
     fontSize: 12,
-    color: '#64748B',
-    marginTop: 2,
+    color: colors.textSecondary,
   },
   prodi: {
-    fontSize: 12,
-    color: '#64748B',
-    marginTop: 2,
+    fontSize: 11,
+    color: colors.textTertiary,
   },
   ipsBox: {
     alignItems: 'center',
-    paddingHorizontal: 8,
-    marginRight: 8,
+    backgroundColor: colors.surfaceSubtle,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderRadius: radius.xs,
+    minWidth: 48,
   },
   ipsNumber: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '800',
-    color: UBD_COLORS.ACCENT_DARK,
+    color: colors.primary,
   },
   ipsLabel: {
     fontSize: 10,
-    color: '#64748B',
-    fontWeight: '600',
+    color: colors.textSecondary,
+    fontWeight: '700',
   },
   center: {
     flex: 1,
