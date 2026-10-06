@@ -39,6 +39,15 @@ These rules are strictly enforced and take precedence over all general habits. N
      - **MAJOR** (`+1.0.0`): Breaking changes, major milestone phase deliverables (e.g., V2, V3, V4), database migration versions.
    - **NEVER** finish a coding task, commit, or push code with stale, mismatched, or neglected version numbers.
 
+5. **Mandatory Documentation Synchronization Gate (`README.md` Integrity & Freshness)**:
+   - **ALWAYS** update and synchronize `README.md` whenever introducing changes that affect features, workflows, routes, data contracts, branding, or releases:
+     - **Release Version & Badges**: Update version numbers, badges, and release descriptions to match bumped SemVer versions.
+     - **Screen & Route Inventory**: Synchronize Section 8 (Screen Overview) whenever screens or routes in `src/app/` are added, removed, or altered.
+     - **Feature Highlights & Evolution**: Document new or enhanced capabilities in Section 3 (Version Evolution) and Section 4 (Feature Highlights).
+     - **System Workflows & Diagrams**: Update Mermaid diagrams if authentication, academic lifecycle, or business logic flows change.
+     - **Setup & Installation**: Keep dependencies, prerequisites, and execution commands accurate if configs or scripts change.
+   - **NEVER** finish a coding task, commit, or push code with stale, incomplete, or lagging documentation in `README.md`.
+
 ## Expo has changed — do not trust your training data
 
 Expo ships breaking changes every SDK release. APIs you remember are likely renamed, moved, or removed. Before writing any code that touches an Expo, EAS, or React Native API:
@@ -61,7 +70,7 @@ npx expo-doctor             # diagnose dependency and config issues
 npx expo install --fix      # fix incompatible package versions
 ```
 
-Run tests (`bun test`), lint (`npx expo lint`), typecheck (`npx tsc --noEmit`), and verify version synchronization before declaring any task done.
+Run tests (`bun test`), lint (`npx expo lint`), typecheck (`npx tsc --noEmit`), and verify version and `README.md` synchronization before declaring any task done.
 
 ## Navigation & Routing
 
